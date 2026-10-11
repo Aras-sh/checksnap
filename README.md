@@ -13,10 +13,10 @@ checksnap --check-all . --dry-run                              # estimate and sh
 
 | Flag | What it checks | Snap |
 |---|---|---|
-| `--check-bank` | 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen | yes |
+| `--check-bank` | 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen; findings are checked against a bundled clean-code baseline and absence-style items need 10+ files (`--bank-include-absence`) | yes |
 | `--check-dataset` | benchmark contamination, duplicates, eval leaks, PII, licences, images | optional |
-| `--check-optimization` | slow Python/PyTorch patterns | optional |
-| `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto | no |
+| `--check-optimization` | slow Python/PyTorch patterns; also `--snap-verify` and `--with-adapters` (ruff) | optional |
+| `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto; `--snap-verify` has Snap judge each finding, `--with-adapters` merges bandit/detect-secrets | optional |
 | `--check-dependencies` | loose pins, conflicts, undeclared/unused imports | no |
 | `--check-repo` | big files, missing .gitignore entries, secrets files, conflict markers | no |
 | `--check-reproducibility` | unseeded randomness, unordered data, unpinned deps | no |
@@ -55,7 +55,7 @@ To use Snap, set `SUBQ_API_KEY` (environment or a `.env` file in the current dir
   the machine, and the estimated calls and tokens, then asks `[y/N]`. `--yes` skips the prompt; without a terminal and without
   `--yes` the Snap parts are skipped (local parts still run). `--dry-run` spends and uploads nothing.
 * No price is published and responses carry no cost field, so checksnap reports **tokens**, not money. The token estimate is a
-  lower bound that gets calibrated from real usage. `--budget-tokens` (default 5,000,000) is a hard ceiling; hitting it stops the run
+  conservative upper bound (per file type) that gets calibrated from real usage. `--budget-tokens` (default 5,000,000) is a hard ceiling; hitting it stops the run
   with exit code 3 and prints the partial result.
 * The API key is read from the environment or `.env`, never printed, logged or written. Results are cached on disk
   (`--cache-dir`); a repeated scan costs 0 calls. Delete the cache directory if your data is sensitive.

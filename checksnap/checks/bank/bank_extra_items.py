@@ -95,3 +95,8 @@ ITEMS: list[dict] = [
      "true": _T, "false": _F, "why": w, "fix": f, "hints": h}
     for i, c, t, s, a, q, w, f, h in _ROWS
 ]
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"TEST-006", "TEST-015", "API-004", "API-005"}
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

@@ -219,3 +219,8 @@ ITEMS = [
      "fix": "Link a ticket and a removal condition, or fix it now.",
      "hints": r"(?i)\b(TODO|FIXME|HACK|XXX|temporary|workaround)\b"},
 ]
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"BANK-ARCH-016", "BANK-ARCH-019", "BANK-ARCH-036"}
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

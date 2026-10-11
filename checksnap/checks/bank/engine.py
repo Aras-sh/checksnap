@@ -5,6 +5,8 @@ never a crash. Packing, localizing and line pinning reuse the optimization snap 
 """
 from __future__ import annotations
 
+import dataclasses
+import hashlib
 import importlib
 import json
 import os
@@ -23,6 +25,9 @@ BUILTIN_MODULES = ("items_arch", "items_reliab", "items_sec", "items_data", "ite
 PKG = "checksnap.checks.bank"
 MAX_FILE_BYTES = 2_000_000
 LOCAL_HITS_PER_ITEM = 3
+MIN_ABSENCE_FILES = 10     # "nothing like X anywhere" claims are only meaningful when the scan sees enough of the project
+BASELINE_MARGIN, BASELINE_MAX = 0.15, 0.5
+BASELINE_DIR = Path(__file__).parent / "baseline"
 MAX_LOCALIZE = 10          # each localize bisects with extra calls; beyond this, window-level evidence only
 EXT_KINDS: dict[str, set[str]] = {}
 for _k, _exts in {
@@ -60,7 +65,11 @@ def validate(raw: Any, origin: str) -> tuple[dict | None, str | None]:
         hints = [hints]
     if not isinstance(hints, list) or any(not isinstance(h, str) for h in hints):
         return None, f"{origin}: item {raw['id']!r} hints must be a list of regex strings"
-    return {**raw, "severity": sev, "applies_to": ap, "hints": hints}, None
+    absence = raw.get("absence", False)
+    if not isinstance(absence, bool):
+        return None, f"{origin}: item {raw['id']!r} absence must be true or false"
+    title = f"[absence] {raw['title']}" if absence and "absence" not in raw["title"].lower() else raw["title"]
+    return {**raw, "title": title, "severity": sev, "applies_to": ap, "hints": hints, "absence": absence}, None
 
 
 def load_items(extra_file: str | None = None) -> tuple[list[dict], list[str]]:
@@ -131,6 +140,65 @@ def select_items(items: list[dict], categories: set[str] | None, kinds: set[str]
             and (kinds is None or "any" in it["applies_to"] or kinds & set(it["applies_to"]))]
 
 
+def drop_absence(items: list[dict], n_files: int, include: bool) -> tuple[list[dict], int]:
+    """Absence-style items need a broad scan: with fewer than MIN_ABSENCE_FILES files they are skipped unless asked for."""
+    if include or n_files >= MIN_ABSENCE_FILES:
+        return items, 0
+    kept = [it for it in items if not it.get("absence")]
+    return kept, len(items) - len(kept)
+
+
+def pack_per_file(files: list[tuple[str, str]], size: int, snap_mod: Any) -> tuple[list[Any], list[snap_layer.Span]]:
+    """One window per file (big files: one per part), so a window's best score always names exactly one file."""
+    windows: list[Any] = []
+    spans: list[snap_layer.Span] = []
+    for f in files:
+        ws, sp = snap_layer.pack([f], size, snap_mod)
+        base = windows[-1].end if windows else 0
+        spans += [dataclasses.replace(s, start=s.start + base, end=s.end + base, window=s.window + len(windows)) for s in sp]
+        windows += [snap_mod.Window(w.start + base, w.end + base, w.text) for w in ws]
+    return windows, spans
+
+
+def _baseline_state(items: list[dict], cache_dir: Path):
+    files = [(p.name, p.read_text(encoding="utf-8")) for p in sorted(BASELINE_DIR.glob("*.py"))]
+    corpus = hashlib.sha256("".join(t for _, t in files).encode()).hexdigest()[:12]
+    path = Path(cache_dir) / "bank_baseline.json"
+    try:
+        cache = json.loads(path.read_text())
+    except (OSError, ValueError):
+        cache = {}
+    ver = lambda it: hashlib.sha256(f"{corpus}\0{it['question']}\0{it['true']}\0{it['false']}".encode()).hexdigest()[:16]  # noqa: E731
+    todo = [it for it in items if cache.get(it["id"], {}).get("v") != ver(it)]
+    return files, path, cache, ver, todo
+
+
+def baseline_pending(items: list[dict], cache_dir: Path) -> tuple[int, int]:
+    """(chars of baseline corpus, items not yet cached): what a baseline run would still cost. (0, 0) when fully cached."""
+    files, _, _, _, todo = _baseline_state(items, cache_dir)
+    return (sum(len(t) for _, t in files), len(todo)) if todo else (0, 0)
+
+
+def baseline_scores(snap: Any, items: list[dict], cache_dir: Path, snap_mod: Any) -> tuple[dict[str, float], Any]:
+    """Max score of each item over the bundled clean corpus. Asked once per item (and corpus/question version), then cached.
+
+    Returns (scores, ScanResult or None when everything was cached). Raises the engine's SnapError on failure.
+    """
+    files, path, cache, ver, todo = _baseline_state(items, cache_dir)
+    scan = None
+    if todo and files:
+        windows, _ = pack_per_file(files, 100_000, snap_mod)
+        scan = snap.scan_windows(windows, questions(snap_mod, todo), label="bank-baseline")
+        for it in todo:
+            cache[it["id"]] = {"v": ver(it), "score": scan.per_question[it["id"]].max_score}
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(cache))
+        except OSError:
+            pass            # cache is an optimization; the scores in hand are still used
+    return {it["id"]: cache[it["id"]]["score"] for it in items if it["id"] in cache}, scan
+
+
 def collect_files(root: Path, kinds: set[str] | None) -> tuple[list[tuple[str, str]], set[str], list[str]]:
     """(relpath, text) for known file types under root, the union of their kinds, and notes. kinds=None keeps all."""
     paths = [(root.name, root)] if root.is_file() else []
@@ -185,12 +253,23 @@ def rank(score: float, sev: Severity) -> float:
 
 
 def interpret(scan: Any, items: list[dict], hints: dict[str, list[re.Pattern[str]]], windows: list[Any], spans: list[Any],
-              ctx: Any, snap_mod: Any, notes: list[str], top: int) -> list[Finding]:
+              ctx: Any, snap_mod: Any, notes: list[str], top: int,
+              baseline: dict[str, float] | None = None, stats: dict | None = None) -> list[Finding]:
     """Flagged questions ranked by score*severity, capped at `top`; the best few are localized to file and line."""
     by_id = {it["id"]: it for it in items}
     flagged = sorted(((qr.max_score, qid, qr.best_window) for qid, qr in scan.per_question.items()
                       if qr.max_score >= ctx.threshold and qid in by_id),
-                     key=lambda t: (-rank(t[0], by_id[t[1]]["severity"]), t[1]))[:top]
+                     key=lambda t: (-rank(t[0], by_id[t[1]]["severity"]), t[1]))
+    if baseline:
+        # an item that also fires on clean code says little about this project
+        keep = [t for t in flagged if t[1] not in baseline
+                or (baseline[t[1]] <= BASELINE_MAX and t[0] > baseline[t[1]] + BASELINE_MARGIN)]
+        if len(keep) < len(flagged):
+            notes.append(f"{len(flagged) - len(keep)} items suppressed: fire on clean code")
+        if stats is not None:
+            stats["suppressed"] = len(flagged) - len(keep)
+        flagged = keep
+    flagged = flagged[:top]
     qmap = {q.id: q for q in questions(snap_mod, items)}
     out: list[Finding] = []
     for n, (score, qid, (ws, we)) in enumerate(flagged):

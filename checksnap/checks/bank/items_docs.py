@@ -268,3 +268,8 @@ ITEMS = [
      "fix": "Document every parameter and the return value in the docstring.",
      "hints": r'"""|\'\'\''},
 ]
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"BANK-DOCS-001", "BANK-DOCS-003", "BANK-DOCS-004", "BANK-DOCS-007", "BANK-DOCS-008", "BANK-DOCS-009", "BANK-DOCS-011", "BANK-DOCS-014", "BANK-DOCS-015", "BANK-DOCS-016", "BANK-DOCS-018", "BANK-DOCS-021", "BANK-DOCS-022", "BANK-DOCS-023", "BANK-DOCS-024", "BANK-DOCS-025", "BANK-DOCS-026", "BANK-DOCS-027", "BANK-DOCS-028", "BANK-DOCS-029", "BANK-DOCS-034", }
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

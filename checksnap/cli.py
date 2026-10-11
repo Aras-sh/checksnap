@@ -158,7 +158,7 @@ def _main(argv: Sequence[str] | None) -> int:
         ctx.snap, note = _make_engine(key, args)
         if note:
             cli_notes.append(note)
-    snap_checks = [c for c in selected if c.uses_snap and not args.no_snap]
+    snap_checks = [c for c in selected if c.snap_wanted(args) and not args.no_snap]
     rows: list[tuple[str, CostEstimate]] = []
     estimate_failed = False
     for c in snap_checks:

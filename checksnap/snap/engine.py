@@ -11,7 +11,7 @@ from typing import Callable, Sequence
 
 from ..core import CostEstimate
 from .cache import DiskCache
-from .calibrate import CANARY_THRESHOLD, Calibration, CharsPerToken
+from .calibrate import CANARY_THRESHOLD, Calibration, CharsPerToken, detect_kind
 from .client import Question, SnapClient
 from .errors import BudgetExceeded, SnapAuthError, SnapError, SnapQuotaError, SnapTooLargeError
 from .localize import bisect_hit
@@ -56,6 +56,10 @@ class _Run:
     abort: threading.Event = field(default_factory=threading.Event)
 
 
+def _k(n: int) -> str:
+    return f"{n / 1000:.0f}k" if n >= 1000 else str(n)
+
+
 class SnapEngine:
     def __init__(self, client: SnapClient, cache_dir: Path | None = None, workers: int = 4,
                  budget_tokens: int | None = None, window_chars: int = 800_000, overlap_chars: int = 5_000,
@@ -82,16 +86,21 @@ class SnapEngine:
         return self._spent
 
     # ---- estimate (free) ----
-    def estimate(self, n_chars: int, n_questions: int) -> CostEstimate:
+    def estimate(self, n_chars: int, n_questions: int, kind: str | None = None) -> CostEstimate:
+        """input_tokens is the conservative upper bound (budgets and the privacy gate use it); notes carry the range.
+        `kind` is code|json|prose; unknown means code, the most token-hungry."""
         if n_chars <= 0 or n_questions <= 0:
             return CostEstimate(notes="nothing to send")
         size, ov = self.window_chars, self.overlap_chars
         windows = 1 if n_chars <= size else math.ceil((n_chars - ov) / (size - ov))
         chunks = math.ceil(n_questions / self.per_call)
         sent = (n_chars + (windows - 1) * ov) * chunks      # every question chunk re-reads every window
-        cpt = self.cpt.value
-        return CostEstimate(snap_calls=windows * chunks, input_tokens=math.ceil(sent / cpt), uploads_bytes=sent,
-                            notes=f"{windows} window(s) x {chunks} question batch(es) at {cpt:.2f} chars/token")
+        kind = kind or "code"
+        opt, cons = self.cpt.bounds(kind)
+        lo, hi = math.ceil(sent / opt), math.ceil(sent / cons)
+        return CostEstimate(snap_calls=windows * chunks, input_tokens=hi, uploads_bytes=sent,
+                            notes=f"{_k(lo)}-{_k(hi)} tokens; {windows} window(s) x {chunks} question batch(es), "
+                                  f"{kind} at {cons:.2f}-{opt:.2f} chars/token")
 
     # ---- scanning ----
     def scan(self, text: str, questions: Sequence[Question], *, label: str = "", progress=None) -> ScanResult:
@@ -215,7 +224,8 @@ class SnapEngine:
                 with self._lock:
                     run.cached += 1
                 return {q.id: float(hit["scores"][q.id]) for q in questions}, True
-        est = math.ceil(len(state) / self.cpt.value)
+        kind = detect_kind(state)
+        est = math.ceil(len(state) / self.cpt.bounds(kind)[1])     # conservative, so the budget is never overrun by a bad guess
         with self._lock:
             if self.budget_tokens is not None and self._spent + self._inflight + est > self.budget_tokens:
                 raise BudgetExceeded(f"budget of {self.budget_tokens} tokens would be exceeded "
@@ -230,7 +240,7 @@ class SnapEngine:
         with self._lock:
             self._inflight -= est
             self._spent += res.input_tokens
-            self.cpt.add(len(state), res.input_tokens)
+            self.cpt.add(len(state), res.input_tokens, kind)
             run.calls += 1
             run.tokens += res.input_tokens
         if key:

@@ -6,6 +6,8 @@ import fnmatch
 import os
 from pathlib import Path
 
+from checksnap import adapters
+from checksnap import verify
 from checksnap.core import Check, CheckResult, Context, CostEstimate, Finding, Severity, register
 
 from . import snap_layer, static
@@ -84,6 +86,8 @@ class OptimizationCheck(Check):
         g.add_argument("--max-files", type=int, default=DEFAULT_MAX_FILES, help="cap on files checked (default %(default)s)")
         g.add_argument("--static-only", action="store_true", help="skip the Snap layer")
         g.add_argument("--snap-only", action="store_true", help="skip the static layer")
+        verify.add_flag(parser)
+        adapters.add_option(g)
 
     # -- snap helpers
     def _window_size(self, ctx: Context) -> int:
@@ -93,6 +97,13 @@ class OptimizationCheck(Check):
         return not getattr(args, "static_only", False) and not ctx.no_snap
 
     def estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
+        est = self._estimate(ctx, args)
+        if verify.wanted(args):
+            local = self._run(Context(no_snap=True), args)
+            est = est + verify.estimate(ctx, collect(args)[0], local.findings)
+        return est
+
+    def _estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
         if not self._snap_wanted(ctx, args):
             return CostEstimate(notes="static analysis only; nothing is uploaded")
         _, files, _ = collect(args)
@@ -105,7 +116,12 @@ class OptimizationCheck(Check):
         return CostEstimate(windows, int(chars / 3.0), chars, "approximate: no engine attached")
 
     def run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
-        return self.timed(lambda: self._run(ctx, args))
+        def go() -> CheckResult:
+            res = self._run(ctx, args)
+            if verify.wanted(args) and not res.error:
+                verify.apply(ctx, collect(args)[0], res)
+            return res
+        return self.timed(go)
 
     def _run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
         res = CheckResult(self.name)
@@ -151,6 +167,11 @@ class OptimizationCheck(Check):
             res.notes.append("Snap layer skipped: --no-snap or no engine/API key available; only static rules ran")
         elif texts:
             self._snap(ctx, texts, static_by_file, res)
+        if getattr(args, "with_adapters", False):
+            tests = bool(getattr(args, "include_tests", False))
+            extra, notes = adapters.run(self.name, root, res.findings, lambda r: not (set(Path(r).parts) & SKIP_DIRS) and (tests or not _is_test(r)))
+            res.findings += extra
+            res.notes += notes
         res.findings.sort(key=lambda f: (-int(f.severity), f.evidence[0].file or "" if f.evidence else "", f.evidence[0].line_start or 0 if f.evidence else 0, f.rule_id))
         res.stats["by_rule"] = {}
         for f in res.findings:

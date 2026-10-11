@@ -483,3 +483,8 @@ ITEMS = [
         "hints": r"(?i)kappa|krippendorff|agreement|single annotator|auto-?label|weak label|silver",
     },
 ]
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"BANK-DATA-037"}
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

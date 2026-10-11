@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 
 from checksnap.checks.optimization import SKIP_DIRS, _is_test
+from checksnap import adapters
+from checksnap import verify
 from checksnap.core import Check, CheckResult, Context, CostEstimate, register
 
 from .rules import RULES, RuleInfo  # noqa: F401
@@ -20,6 +22,11 @@ def _root(args: argparse.Namespace) -> Path:
     if not isinstance(v, (str, os.PathLike)):
         v = getattr(args, "check_all", None)
     return Path(v if isinstance(v, (str, os.PathLike)) else ".")
+
+
+def _base(args: argparse.Namespace) -> Path:
+    r = _root(args)
+    return r.parent if r.is_file() else r
 
 
 def collect(root: Path, tests: bool) -> list[tuple[str, Path]]:
@@ -41,13 +48,27 @@ class SecurityCheck(Check):
     name = "security"
     flag = "--check-security"
     summary = "Find security problems in code: unsafe deserialization, injection, hard-coded secrets, weak crypto"
-    uses_snap = False
+    uses_snap = True        # only used by --snap-verify; without it nothing is uploaded
+
+    def snap_wanted(self, args) -> bool:
+        return bool(getattr(args, "snap_verify", False))
+
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
+        adapters.add_option(parser)
+        verify.add_flag(parser)
 
     def estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
-        return CostEstimate(notes="static analysis only; nothing is uploaded")
+        if not verify.wanted(args):
+            return CostEstimate(notes="static analysis only; nothing is uploaded")
+        return verify.estimate(ctx, _base(args), self._run(args).findings)
 
     def run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
-        return self.timed(lambda: self._run(args))
+        def go() -> CheckResult:
+            res = self._run(args)
+            if verify.wanted(args) and not res.error:
+                verify.apply(ctx, _base(args), res)
+            return res
+        return self.timed(go)
 
     def _run(self, args: argparse.Namespace) -> CheckResult:
         res = CheckResult(self.name)
@@ -68,9 +89,14 @@ class SecurityCheck(Check):
                 continue
             except (SyntaxError, ValueError, RecursionError) as e:
                 res.notes.append(f"could not parse {rel}: {type(e).__name__}")
+        if getattr(args, "with_adapters", False):
+            tests = bool(getattr(args, "include_tests", False))
+            extra, notes = adapters.run(self.name, root, res.findings, lambda r: not (set(Path(r).parts) & SKIP_DIRS) and (tests or not _is_test(r)))
+            res.findings += extra
+            res.notes += notes
         res.findings.sort(key=lambda f: (-int(f.severity), f.evidence[0].file or "", f.evidence[0].line_start or 0, f.rule_id))
         res.stats["by_rule"] = {}
         for f in res.findings:
             res.stats["by_rule"][f.rule_id] = res.stats["by_rule"].get(f.rule_id, 0) + 1
-        res.notes.append("static analysis only (no Snap layer); secrets are masked to 4 characters + length")
+        res.notes.append("static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length")
         return res

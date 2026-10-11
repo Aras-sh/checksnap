@@ -301,3 +301,8 @@ ITEMS = [
        "Use TLS and encrypt sensitive fields at rest.",
        r"http://|encrypt\w*\s*[:=]\s*(false|False)|ssl\s*[:=]\s*(false|False)"),
 ]
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"BANK-SEC-001", "BANK-SEC-002", "BANK-SEC-007", "BANK-SEC-015", "BANK-SEC-016", "BANK-SEC-021", "BANK-SEC-032", "BANK-SEC-033", "BANK-SEC-034", "BANK-SEC-039", }
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

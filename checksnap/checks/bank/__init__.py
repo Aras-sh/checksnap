@@ -43,6 +43,8 @@ class BankCheck(Check):
         g.add_argument("--bank-applies", choices=[*engine.KINDS, "any"], default=None, help="file kind to check (default: auto from extensions)")
         g.add_argument("--bank-file", metavar="FILE.json", help="extra items, same schema as the built-in ones")
         g.add_argument("--bank-top", type=int, default=DEFAULT_TOP, help="report at most N findings (default %(default)s)")
+        g.add_argument("--bank-include-absence", action="store_true",
+                       help=f"also ask absence-style items (something is missing/never done); by default only when the scan covers >= {engine.MIN_ABSENCE_FILES} files")
         g.add_argument("--bank-list", action="store_true", help="list categories, counts and items instead of checking")
 
     # -- shared setup
@@ -64,9 +66,18 @@ class BankCheck(Check):
         items, cats, _ = self._setup(args)
         (files, found, _), ap = self._files(args)
         chosen = engine.select_items(items, cats, None if ap == "any" else ({ap} if ap else found))
+        chosen, _ = engine.drop_absence(chosen, len(files), getattr(args, "bank_include_absence", False))
         chars = sum(len(t) + len(r) + 20 for r, t in files)
         if ctx.snap is not None and hasattr(ctx.snap, "estimate"):
-            return ctx.snap.estimate(chars, len(chosen))      # engine counts every question batch re-reading every window
+            est = ctx.snap.estimate(chars, len(chosen))      # engine counts every question batch re-reading every window
+            if chosen:                                       # but each file is its own window, so at least one call per file and question batch
+                est.snap_calls = max(est.snap_calls, len(files) * -(-len(chosen) // getattr(ctx.snap, 'per_call', 55)))
+                cache = getattr(ctx.snap, "cache", None)
+                base, n_todo = engine.baseline_pending(chosen, cache.root.parent if cache is not None else ctx.cache_dir)
+                if n_todo:                                   # one-time clean-code baseline; free once cached
+                    est = est + ctx.snap.estimate(base, n_todo)
+                    est.notes += "; includes the bundled clean-code baseline"
+            return est
         windows = max(1, -(-chars // 800_000)) * max(1, -(-len(chosen) // 56)) if chars and chosen else 0
         return CostEstimate(windows, int(chars * max(1, -(-len(chosen) // 56)) / 3.0), chars, "approximate: no engine attached")
 
@@ -85,6 +96,10 @@ class BankCheck(Check):
         (files, found, fnotes), ap = self._files(args)
         res.notes += fnotes
         chosen = engine.select_items(items, cats, None if ap == "any" else ({ap} if ap else found))
+        if files:
+            chosen, skipped = engine.drop_absence(chosen, len(files), getattr(args, "bank_include_absence", False))
+            if skipped:
+                res.notes.append(f"{skipped} absence items skipped: only {len(files)} files scanned (need {engine.MIN_ABSENCE_FILES}, or pass --bank-include-absence)")
         res.stats.update(files=len(files), items_asked=len(chosen), kinds=sorted(found))
         if not files:
             res.notes.append("no files of a known kind found (try --bank-applies)")
@@ -114,7 +129,7 @@ class BankCheck(Check):
     def _snap(self, ctx: Context, files, chosen, hints, res: CheckResult, top: int) -> None:
         from checksnap import snap as snap_mod          # lazy: only needed when Snap runs
         size = max(10_000, int(getattr(ctx.snap, "window_chars", 800_000)) - 1000)
-        windows, spans = snap_layer.pack(files, size, snap_mod)
+        windows, spans = engine.pack_per_file(files, size, snap_mod)
         res.stats["snap_windows"] = len(windows)
         try:
             scan = ctx.snap.scan_windows(windows, engine.questions(snap_mod, chosen), label="bank", progress=ctx.progress)
@@ -138,6 +153,33 @@ class BankCheck(Check):
         res.notes += [f"Snap: {e}" for e in scan.errors]
         flagged = sum(qr.max_score >= ctx.threshold for qr in scan.per_question.values())
         res.stats["flagged"] = flagged
-        if flagged > top:
-            res.notes.append(f"{flagged} items flagged; showing the top {top} by score x severity (raise --bank-top)")
-        res.findings += engine.interpret(scan, chosen, hints, windows, spans, ctx, snap_mod, res.notes, top)
+        baseline = self._baseline(ctx, chosen, snap_mod, res)
+        res.findings += engine.interpret(scan, chosen, hints, windows, spans, ctx, snap_mod, res.notes, top, baseline, res.stats)
+        shown = len(res.findings)
+        if flagged - res.stats.get("suppressed", 0) > shown:
+            res.notes.append(f"{flagged - res.stats.get('suppressed', 0)} items flagged; showing the top {top} by score x severity (raise --bank-top)")
+        res.notes.append(self._calibration_line(res, baseline, ctx.threshold, flagged, shown))
+
+    def _baseline(self, ctx: Context, chosen, snap_mod, res: CheckResult) -> dict[str, float] | None:
+        cache = getattr(ctx.snap, "cache", None)
+        cache_dir = cache.root.parent if cache is not None else ctx.cache_dir
+        try:
+            base, scan = engine.baseline_scores(ctx.snap, chosen, cache_dir, snap_mod)
+        except snap_mod.SnapError as e:
+            res.notes.append(f"clean-code baseline unavailable, no demotion applied: {type(e).__name__}: {e}")
+            return None
+        if scan is not None:
+            res.usage["snap_calls"] += scan.calls
+            res.usage["input_tokens"] += scan.input_tokens
+        return base or None
+
+    @staticmethod
+    def _calibration_line(res: CheckResult, baseline, thr: float, flagged: int, shown: int) -> str:
+        cal = res.stats["calibration"]
+        pct = lambda v: "n/a" if v is None else f"{v:.0%}"  # noqa: E731
+        line = f"calibration: decoy false-positive rate {pct(cal['false_positive_rate'])} ({cal['decoys']} decoys), canary recall {pct(cal['canary_recall'])}"
+        if baseline:
+            hot = sum(v >= thr for v in baseline.values())
+            res.stats["clean_code_fire_rate"] = round(hot / len(baseline), 3)
+            line += f"; clean-code baseline: {hot}/{len(baseline)} items score >= {thr:g} on typical clean Python (real false-positive rate of this bank)"
+        return line + f"; {flagged} flagged, {res.stats.get('suppressed', 0)} suppressed, {shown} shown"

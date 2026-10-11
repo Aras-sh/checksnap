@@ -306,3 +306,9 @@ ITEMS = [
      "fix": "Add a TTL, release in finally, and detect stale owners.",
      "hints": r"(?i)\.lock|acquire\(|SETNX|lockfile|flock"},
 ]
+
+
+
+# Absence-style: the answer needs the whole scope (a safeguard or artifact that could live in another file), so these run only on >= 10 files.
+ABSENCE = {"BANK-RELIAB-007", "BANK-RELIAB-008", "BANK-RELIAB-009", "BANK-RELIAB-021", "BANK-RELIAB-026", "BANK-RELIAB-028", "BANK-RELIAB-029", "BANK-RELIAB-030", "BANK-RELIAB-032", "BANK-RELIAB-039", "BANK-RELIAB-040", }
+ITEMS = [{**it, "absence": it["id"] in ABSENCE} for it in ITEMS]

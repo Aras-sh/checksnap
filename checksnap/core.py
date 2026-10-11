@@ -111,6 +111,10 @@ class Check(abc.ABC):
     summary: str = ""               # one line for --list-checks
     uses_snap: bool = True
 
+    def snap_wanted(self, args: argparse.Namespace) -> bool:
+        """Whether this run needs Snap at all (a check may only use it behind an opt-in flag)."""
+        return self.uses_snap
+
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         """Add this check's own options (all must be prefixed or clearly scoped, e.g. --benchmark)."""
 
