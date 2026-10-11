@@ -199,7 +199,8 @@ def scan(root: Path) -> tuple[list[Finding], dict, list[str]]:
             continue
         crlf = data.count(b"\r\n")
         if crlf and data.count(b"\n") > crlf:
-            findings.append(_mk("REPO-013", f"{crlf} CRLF vs {data.count(b'\n') - crlf} LF lines", [rel]))
+            lf = data.count(b"\n") - crlf
+            findings.append(_mk("REPO-013", f"{crlf} CRLF vs {lf} LF lines", [rel]))
         text = data.decode("utf-8", errors="replace")
         lines = text.splitlines()
         start = next((i for i, l in enumerate(lines) if l.startswith("<<<<<<< ")), None)
