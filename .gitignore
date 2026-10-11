@@ -17,3 +17,4 @@ showcase/claude-code/work/
 showcase/claude-code/work_requests/
 showcase/claude-code/plugin
 showcase/claude-code/raw/
+!tests/fixtures/**/.env
