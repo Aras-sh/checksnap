@@ -1,0 +1,8 @@
+
+
+
+   [1m[38;5;221mPrivacy gate[0m  [38;5;245m(offline demo, fake key, we answer n)[0m
+
+   [38;5;245mCost table first, then ask. Nothing leaves the machine.[0m
+
+   [38;5;245mEach Snap call carries 8 decoys + 1 canary to measure its own false-positive rate.[0m

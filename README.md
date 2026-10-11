@@ -1,5 +1,7 @@
 # checksnap
 
+![checksnap demo](showcase/showcase.gif)
+
 One CLI that checks things with [SubQ Snap](https://subq.ai) (a long-context decision model) plus free local analysis.
 Each check is a flag.
 

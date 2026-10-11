@@ -1,0 +1,9 @@
+name: CI
+on: pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: some-org/deploy-action@v2
+      - run: echo "${{ github.event.pull_request.title }}"

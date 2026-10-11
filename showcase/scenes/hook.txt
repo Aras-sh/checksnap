@@ -1,0 +1,8 @@
+
+
+
+   [1m[38;5;203mOne CLI.[0m
+
+   [1mA dozen things that quietly break your project.[0m
+
+   [38;5;245mchecksnap: free local checks, optional SubQ Snap[0m

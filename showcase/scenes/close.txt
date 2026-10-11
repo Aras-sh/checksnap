@@ -1,0 +1,12 @@
+
+
+
+   [1m[38;5;114mHonest numbers[0m  [38;5;245mbenchmarks/compare/RESULTS.md[0m
+
+   [38;5;114m+[0m Claude plugin digest: 1.4-1.9 kB vs 80-140 kB raw output
+
+   [38;5;114m+[0m Bank: 9/10 precision@10, 27/30 planted bugs found
+
+   [38;5;221m![0m Limit: security recall 28% of bandit's examples without --with-adapters
+
+   [1mgithub.com/Aras-sh/checksnap[0m
