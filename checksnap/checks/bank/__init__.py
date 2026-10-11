@@ -48,6 +48,8 @@ class BankCheck(Check):
                        help="ask only the N highest-severity items (default: all); caps cost, which grows with the number of questions")
         g.add_argument("--bank-include-absence", action="store_true",
                        help=f"also ask absence-style items (something is missing/never done); by default only when the scan covers >= {engine.MIN_ABSENCE_FILES} files")
+        g.add_argument("--bank-hints", action="store_true",
+                       help="without Snap, list free regex-hint candidates (INFO, noisy: 0/12 real when hand-graded on requests)")
         g.add_argument("--bank-list", action="store_true", help="list categories, counts and items instead of checking")
 
     # -- shared setup
@@ -126,8 +128,11 @@ class BankCheck(Check):
         top = max(1, getattr(args, "bank_top", DEFAULT_TOP) or DEFAULT_TOP)
         hints = engine.compile_hints(chosen, res.notes)
         if ctx.no_snap or ctx.snap is None:
-            res.notes.append("Snap skipped: --no-snap or no engine/API key; only the free regex-hint pre-screen ran (INFO candidates, nothing was judged)")
-            res.findings = engine.local_hints(files, chosen, hints)[:top]
+            if getattr(args, "bank_hints", False):
+                res.notes.append("Snap skipped: --no-snap or no engine/API key; only the free regex-hint pre-screen ran (INFO candidates, nothing was judged)")
+                res.findings = engine.local_hints(files, chosen, hints)[:top]
+            else:
+                res.notes.append("Snap skipped: --no-snap or no engine/API key; the bank needs Snap (add --bank-hints for the free regex pre-screen, which is noisy: graded 0/12 real on requests)")
         elif chosen:
             self._snap(ctx, files, chosen, hints, res, top)
         res.stats["by_rule"] = {}

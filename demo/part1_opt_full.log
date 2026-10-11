@@ -1,0 +1,9 @@
+Destination: api.subq.ai
+check               upload   calls        tokens
+optimization      219.1 KB       2        92,974
+TOTAL             219.1 KB       2        92,974
+note (optimization): 70k-91k tokens; 1 window(s) x 1 question batch(es), each call carries its questions (~5k of the total), code at 2.50-3.30 chars/token; snap-verify: 4 finding excerpt(s) of ~2 KB, 55 per call
+
+real	0m13.091s
+user	0m0.462s
+sys	0m0.012s

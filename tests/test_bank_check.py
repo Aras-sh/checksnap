@@ -73,11 +73,13 @@ def test_list_needs_no_path():
 def test_no_snap_prescreen(proj):
     chk, ctx = BankCheck(), Context(no_snap=True)
     assert chk.estimate(ctx, make_args(proj)).snap_calls == 0
-    res = chk.run(ctx, make_args(proj))
+    quiet = chk.run(ctx, make_args(proj))
+    assert not quiet.findings and any("--bank-hints" in n for n in quiet.notes)      # hints are opt-in: graded 0/12 real
+    res = chk.run(ctx, make_args(proj, bank_hints=True))
     assert any("Snap skipped" in n for n in res.notes)
     assert res.findings and {f.source for f in res.findings} == {"local-hint"} and all(f.severity == Severity.INFO for f in res.findings)
     assert any(f.rule_id == "PERF-GEN-003" and f.evidence[0].file == "app.py" for f in res.findings)
-    assert len(chk.run(ctx, make_args(proj, bank_top=2)).findings) == 2
+    assert len(chk.run(ctx, make_args(proj, bank_top=2, bank_hints=True)).findings) == 2
 
 
 def test_applies_filter_changes_files(proj):

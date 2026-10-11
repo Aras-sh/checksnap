@@ -1,0 +1,32 @@
+== optimization (5.6s) ==
+[MEDIUM] OPT-SNAP-010 Configuration re-read on every call (snap score=0.82) adapters.py:696
+    Snap score 0.82 (candidate, not proof). Snap question: is it true that a configuration file, environment, or settings object is read and parsed inside a function that is called frequently instead of once at startup? Repeated I/O and parsing of constant data. Load once and pass or cache it.
+    > 'resp = conn.urlopen(' window=[0, 62108]
+    > 'os.environ.get("REQUESTS_CA_BUNDLE")' window=[0, 62108]
+    fix: Load once and pass or cache it.
+[LOW] OPT-SNAP-001 Same expensive computation repeated across modules (snap score=0.69)
+    Snap score 0.69 (candidate, not proof). Snap question: is it true that the same expensive computation (parsing, feature extraction, model forward pass, big aggregation) is performed independently in several functions or modules instead of once and shared? Redundant work multiplies runtime. Compute once and pass the result, or memoize.
+    window=[0, 62108]
+    fix: Compute once and pass the result, or memoize.
+[LOW] OPT-SNAP-004 Missing caching where inputs repeat (snap score=0.66)
+    Snap score 0.66 (candidate, not proof). Snap question: is it true that a pure or slow function is called repeatedly with the same arguments (e.g. lookups, parsing, remote fetches) and its results are not cached? Repeated identical work. Add functools.lru_cache (on functions, not methods) or a small dict cache.
+    window=[0, 62108]
+    fix: Add functools.lru_cache (on functions, not methods) or a small dict cache.
+[LOW] OPT-SNAP-006 Synchronous I/O on a hot path (snap score=0.80) adapters.py:2
+    Snap score 0.80 (candidate, not proof). Snap question: is it true that request handlers, event loops or per-item processing functions perform blocking file, network or subprocess I/O synchronously? Blocking I/O serializes the hot path. Use async I/O, a thread pool, or move it off the hot path.
+    > 'requests.adapters' window=[0, 62108]
+    > 'requests.sessions' window=[0, 62108]
+    fix: Use async I/O, a thread pool, or move it off the hot path.
+[LOW] OPT-SNAP-007 Unnecessary data copies (snap score=0.62) sessions.py:205
+    Snap score 0.62 (candidate, not proof). Snap question: is it true that large data structures (lists, arrays, dataframes, bytes) are copied, deep-copied or converted back and forth where a view or in-place operation would do? Copies cost time and memory. Use views, in-place ops, memoryview or iterate lazily.
+    > 'prepared_request = req.copy()' window=[0, 62108]
+    fix: Use views, in-place ops, memoryview or iterate lazily.
+[LOW] OPT-SNAP-008 Unbounded growth of in-memory structures (snap score=0.64) sessions.py:209
+    Snap score 0.64 (candidate, not proof). Snap question: is it true that module-level or long-lived lists, dicts or caches grow with every request or item and are never evicted, trimmed or bounded? Memory grows until the process dies. Bound with LRU/maxlen/TTL.
+    > 'hist.append(resp)' window=[0, 62108]
+    fix: Bound with LRU/maxlen/TTL.
+
+Summary: 0 high, 1 medium, 5 low, 0 info
+Snap usage: 1 calls, 19,546 input tokens
+Calibration [optimization]: decoys=8, false_positive_rate=0.0, canaries=1, canary_recall=1.0
+Flags are candidates, not proof; see the calibration line for this run's measured false-positive rate.

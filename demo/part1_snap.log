@@ -1,0 +1,9 @@
+Destination: api.subq.ai
+check               upload   calls        tokens
+optimization       60.7 KB       1        29,475
+TOTAL              60.7 KB       1        29,475
+note (optimization): 23k-29k tokens; 1 window(s) x 1 question batch(es), each call carries its questions (~5k of the total), code at 2.50-3.30 chars/token
+
+real	0m5.665s
+user	0m0.144s
+sys	0m0.017s

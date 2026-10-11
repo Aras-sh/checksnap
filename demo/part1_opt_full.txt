@@ -1,0 +1,81 @@
+== optimization (12.8s) ==
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static score=0.79) cookies.py:306
+    membership test against list `domains` inside a loop
+    > 'if cookie.domain not in domains:'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static score=0.73) cookies.py:314
+    membership test against list `paths` inside a loop
+    > 'if cookie.path not in paths:'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static score=0.80) cookies.py:598
+    membership test against list `names_from_jar` inside a loop
+    > 'if overwrite or (name not in names_from_jar):'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-SNAP-013 Expensive object recreated per call (snap score=0.62) _internal_utils.py:13
+    Snap score 0.62 (candidate, not proof). Snap question: is it true that expensive objects (HTTP sessions, database connections, clients, compiled regexes, loaded models, tokenizers) are created inside functions called many times rather than once and reused? Setup cost is paid on every call. Create once (module level or injected) and reuse.
+    > '_VALID_HEADER_NAME_RE_BYTE = re.compile(rb"^[^:\\s][^:\\r\\n]*\\Z")' window=[0, 216489]
+    > '>>> s = requests.Session()' window=[0, 216489]
+    > 'with sessions.Session() as session:' window=[0, 216489]
+    > 'pat = re.compile(r"digest ", flags=re.IGNORECASE)' window=[0, 216489]
+    > '>>> s = requests.Session()' window=[0, 216489]
+    fix: Create once (module level or injected) and reuse.
+[LOW] OPT-PY-003 Membership test against a list inside a loop (static score=0.49) cookies.py:326
+    membership test against list `domains` inside a loop [snap judged unlikely: score 0.49]
+    > 'if cookie.domain is not None and cookie.domain in domains:  # type: ignore[reportUnnecessaryComparison]  # defensive check'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[LOW] OPT-SNAP-001 Same expensive computation repeated across modules (snap score=0.50)
+    Snap score 0.50 (candidate, not proof). Snap question: is it true that the same expensive computation (parsing, feature extraction, model forward pass, big aggregation) is performed independently in several functions or modules instead of once and shared? Redundant work multiplies runtime. Compute once and pass the result, or memoize.
+    window=[0, 216489]
+    fix: Compute once and pass the result, or memoize.
+[LOW] OPT-SNAP-004 Missing caching where inputs repeat (snap score=0.66)
+    Snap score 0.66 (candidate, not proof). Snap question: is it true that a pure or slow function is called repeatedly with the same arguments (e.g. lookups, parsing, remote fetches) and its results are not cached? Repeated identical work. Add functools.lru_cache (on functions, not methods) or a small dict cache.
+    window=[0, 216489]
+    fix: Add functools.lru_cache (on functions, not methods) or a small dict cache.
+[LOW] OPT-SNAP-006 Synchronous I/O on a hot path (snap score=0.59) __init__.py:14
+    Snap score 0.59 (candidate, not proof). Snap question: is it true that request handlers, event loops or per-item processing functions perform blocking file, network or subprocess I/O synchronously? Blocking I/O serializes the hot path. Use async I/O, a thread pool, or move it off the hot path.
+    > ">>> r = requests.get('https://www.python.org')" window=[0, 216489]
+    > '__url__ = "https://requests.readthedocs.io"' window=[0, 216489]
+    > 'requests._internal_utils' window=[0, 216489]
+    > 'requests._types' window=[0, 216489]
+    > 'requests.adapters' window=[0, 216489]
+    fix: Use async I/O, a thread pool, or move it off the hot path.
+[LOW] OPT-SNAP-007 Unnecessary data copies (snap score=0.61) auth.py:302
+    Snap score 0.61 (candidate, not proof). Snap question: is it true that large data structures (lists, arrays, dataframes, bytes) are copied, deep-copied or converted back and forth where a view or in-place operation would do? Copies cost time and memory. Use views, in-place ops, memoryview or iterate lazily.
+    > 'prep = r.request.copy()' window=[0, 216489]
+    > 'state = self.__dict__.copy()' window=[0, 216489]
+    > 'p.headers = self.headers.copy() if self.headers is not None else None  # type: ignore[assignment]' window=[0, 216489]
+    > 'prepared_request = req.copy()' window=[0, 216489]
+    > 'new_proxies = proxies.copy()' window=[0, 216489]
+    fix: Use views, in-place ops, memoryview or iterate lazily.
+[LOW] OPT-SNAP-008 Unbounded growth of in-memory structures (snap score=0.50) __init__.py:70
+    Snap score 0.50 (candidate, not proof). Snap question: is it true that module-level or long-lived lists, dicts or caches grow with every request or item and are never evicted, trimmed or bounded? Memory grows until the process dies. Bound with LRU/maxlen/TTL.
+    > 'urllib3_version_list.append("0")' window=[0, 216489]
+    > '_r.history.append(r)' window=[0, 216489]
+    > 'clearables.append((cookie.domain, cookie.path, cookie.name))' window=[0, 216489]
+    > 'url.append(path)' window=[0, 216489]
+    > 'hist.append(resp)' window=[0, 216489]
+    fix: Bound with LRU/maxlen/TTL.
+[LOW] OPT-SNAP-010 Configuration re-read on every call (snap score=0.64) adapters.py:696
+    Snap score 0.64 (candidate, not proof). Snap question: is it true that a configuration file, environment, or settings object is read and parsed inside a function that is called frequently instead of once at startup? Repeated I/O and parsing of constant data. Load once and pass or cache it.
+    > 'resp = conn.urlopen(' window=[0, 216489]
+    > ':param \\*\\*kwargs: Optional arguments that ``json.loads`` takes.' window=[0, 216489]
+    > 'os.environ.get("REQUESTS_CA_BUNDLE")' window=[0, 216489]
+    > 'netrc_file = os.environ.get("NETRC")' window=[0, 216489]
+    fix: Load once and pass or cache it.
+[LOW] OPT-SNAP-017 Quadratic algorithm spread across helpers (snap score=0.79) cookies.py:598
+    Snap score 0.79 (candidate, not proof). Snap question: is it true that a helper that scans a whole collection linearly (search, membership, count, index) is called inside a loop over a similarly sized collection, making the algorithm quadratic? O(n*m) hidden by function boundaries. Index with a dict/set first.
+    > 'ookies from another CookieJar or dict-like"""\n        if isinstance(other, cookielib.CookieJar):\n            for cookie in other:\n                self.set_cookie(copy.copy(cookie))\n        else:\n            super().update(other)\n\n    def _find(\n        self, name: str, domain: str | None = None, pat' window=[0, 216489]
+    fix: Index with a dict/set first.
+[LOW] OPT-SNAP-025 List used for hot lookups (snap score=0.64)
+    Snap score 0.64 (candidate, not proof). Snap question: is it true that lists or arrays are used for frequent membership or key lookups where a set or dict would be much faster? Linear scans per lookup. Use set/dict.
+    window=[0, 216489]
+    fix: Use set/dict.
+[LOW] OPT-SNAP-029 Temporary files written and re-read in the same process (snap score=0.75) utils.py:19
+    Snap score 0.75 (candidate, not proof). Snap question: is it true that data is written to temporary files or disk caches and read back by the same process where it could stay in memory? Disk round trip. Keep it in memory or use a pipe.
+    > '"""\nrequests.utils\n~~~~~~~~~~~~~~\n\nThis module provides utility functions that are used within Requests\nthat are also useful for external consumption.\n"""\n\nfrom __future__ import annotations\n\nimport codecs\nimport contextlib\nimport io\nimport os\nimport re\nimport socket\nimport struct\nimport sys\nimport ' window=[0, 216489]
+    fix: Keep it in memory or use a pipe.
+
+Summary: 0 high, 4 medium, 10 low, 0 info
+Snap usage: 2 calls, 62,418 input tokens
+Calibration [optimization]: decoys=8, false_positive_rate=0.0, canaries=1, canary_recall=1.0
+Flags are candidates, not proof; see the calibration line for this run's measured false-positive rate.

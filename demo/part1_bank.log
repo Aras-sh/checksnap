@@ -1,0 +1,9 @@
+Destination: api.subq.ai
+check               upload   calls        tokens
+bank                3.0 MB     114     1,000,000
+TOTAL               3.0 MB     114     1,000,000
+note (bank): 196k-4395k tokens; 1 window(s) x 3 question batch(es), each call carries its questions (~22k of the total), code at 3.28-3.65 chars/token; includes up to 25 localizations (<= 4176k tokens, 20 one-question calls each); bundled clean-code baseline, one packed window, run once then cached: 23k-27k tokens, 3 call(s); capped at --budget-tokens 1000000
+
+real	0m40.474s
+user	0m0.278s
+sys	0m0.030s

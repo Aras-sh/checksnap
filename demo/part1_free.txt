@@ -1,0 +1,204 @@
+== bank (0.2s) ==
+[INFO] BANK-ARCH-003 Circular import between modules (local-hint) models.py:12
+    Regex hint only (candidate, nothing was judged). Cycles cause import-order bugs and signal tangled ownership.
+    > '# Import encoding now, to avoid implicit import later.'
+    fix: Extract the shared piece into a third module or invert the dependency.
+[INFO] BANK-ARCH-005 Business rule duplicated in several places (local-hint) __init__.py:1
+    Regex hint only (candidate, nothing was judged). Copies drift apart and produce inconsistent results.
+    > '#   __'
+    fix: Move the rule into one function and call it everywhere.
+[INFO] BANK-ARCH-005 Business rule duplicated in several places (local-hint) __version__.py:1
+    Regex hint only (candidate, nothing was judged). Copies drift apart and produce inconsistent results.
+    > '# .-. .-. .-. . . .-. .-. .-. .-.'
+    fix: Move the rule into one function and call it everywhere.
+[INFO] BANK-ARCH-005 Business rule duplicated in several places (local-hint) _internal_utils.py:1
+    Regex hint only (candidate, nothing was judged). Copies drift apart and produce inconsistent results.
+    > '"""'
+    fix: Move the rule into one function and call it everywhere.
+[INFO] BANK-ARCH-016 [absence] Non-idempotent retryable operation (local-hint) adapters.py:21
+    Regex hint only (candidate, nothing was judged). Retries create duplicate charges, rows or emails.
+    > 'MaxRetryError,'
+    fix: Record a unique request ID and skip work already done.
+[INFO] BANK-ARCH-016 [absence] Non-idempotent retryable operation (local-hint) exceptions.py:94
+    Regex hint only (candidate, nothing was judged). Retries create duplicate charges, rows or emails.
+    > 'Requests that produced this error are safe to retry.'
+    fix: Record a unique request ID and skip work already done.
+[INFO] BANK-ARCH-016 [absence] Non-idempotent retryable operation (local-hint) sessions.py:57
+    Regex hint only (candidate, nothing was judged). Retries create duplicate charges, rows or emails.
+    > 'should_bypass_proxies,  # re-export for external consumers'
+    fix: Record a unique request ID and skip work already done.
+[INFO] BANK-ARCH-036 [absence] Missing input validation at boundary (local-hint) adapters.py:679
+    Regex hint only (candidate, nothing was judged). Bad input reaches deep code and causes crashes or injection.
+    > 'chunked = not (request.body is None or "Content-Length" in request.headers)'
+    fix: Validate with a schema at the entry point.
+[INFO] BANK-ARCH-036 [absence] Missing input validation at boundary (local-hint) auth.py:289
+    Regex hint only (candidate, nothing was judged). Bad input reaches deep code and causes crashes or injection.
+    > 'if (seek := getattr(r.request.body, "seek", None)) is not None:'
+    fix: Validate with a schema at the entry point.
+[INFO] BANK-ARCH-036 [absence] Missing input validation at boundary (local-hint) models.py:1096
+    Regex hint only (candidate, nothing was judged). Bad input reaches deep code and causes crashes or injection.
+    > ':param \\*\\*kwargs: Optional arguments that ``json.loads`` takes.'
+    fix: Validate with a schema at the entry point.
+[INFO] BANK-DATA-001 Label-derived feature column (local-hint) utils.py:292
+    Regex hint only (candidate, nothing was judged). A feature that encodes the label gives inflated metrics that vanish in production.
+    > 'archive with the location of an extracted copy of the target, or else'
+    fix: Drop the label-derived column from the feature set and recompute metrics.
+[INFO] BANK-DATA-008 Future information in features (local-hint) __init__.py:41
+    Regex hint only (candidate, nothing was judged). Temporal leakage inflates scores that cannot be reproduced live.
+    > 'from __future__ import annotations'
+    fix: Use point-in-time joins and trailing-only windows.
+[INFO] BANK-DATA-008 Future information in features (local-hint) _types.py:10
+    Regex hint only (candidate, nothing was judged). Temporal leakage inflates scores that cannot be reproduced live.
+    > 'from __future__ import annotations'
+    fix: Use point-in-time joins and trailing-only windows.
+[INFO] BANK-DATA-008 Future information in features (local-hint) adapters.py:9
+    Regex hint only (candidate, nothing was judged). Temporal leakage inflates scores that cannot be reproduced live.
+    > 'from __future__ import annotations'
+    fix: Use point-in-time joins and trailing-only windows.
+[INFO] BANK-DATA-010 Email addresses present (local-hint) __version__.py:11
+    Regex hint only (candidate, nothing was judged). Emails are personal data and create privacy and compliance exposure.
+    > '__author_email__ = "me@kennethreitz.org"'
+    fix: Redact or pseudonymize addresses before storing or sharing.
+[INFO] BANK-DATA-014 Credentials or keys in data (local-hint) adapters.py:284
+    Regex hint only (candidate, nothing was judged). Secrets in datasets or logs get redistributed and learned by models.
+    > 'username, password = get_auth_from_url(proxy)'
+    fix: Rotate the secret and scrub it from the data and its history.
+[INFO] BANK-DATA-014 Credentials or keys in data (local-hint) auth.py:34
+    Regex hint only (candidate, nothing was judged). Secrets in datasets or logs get redistributed and learned by models.
+    > 'def _basic_auth_str(username: bytes | str, password: bytes | str) -> str:'
+    fix: Rotate the secret and scrub it from the data and its history.
+[INFO] BANK-DATA-014 Credentials or keys in data (local-hint) sessions.py:359
+    Regex hint only (candidate, nothing was judged). Secrets in datasets or logs get redistributed and learned by models.
+    > 'username, password = get_auth_from_url(new_proxies[scheme])'
+    fix: Rotate the secret and scrub it from the data and its history.
+[INFO] BANK-RELIAB-001 Swallowed exception with bare pass (local-hint) __init__.py:51
+    Regex hint only (candidate, nothing was judged). Silent failures hide data loss and make incidents impossible to diagnose.
+    > 'except ImportError:'
+    fix: Log with context and re-raise, or handle the specific exception deliberately.
+[INFO] BANK-RELIAB-001 Swallowed exception with bare pass (local-hint) _internal_utils.py:50
+    Regex hint only (candidate, nothing was judged). Silent failures hide data loss and make incidents impossible to diagnose.
+    > 'except UnicodeEncodeError:'
+    fix: Log with context and re-raise, or handle the specific exception deliberately.
+[INFO] BANK-RELIAB-001 Swallowed exception with bare pass (local-hint) adapters.py:64
+    Regex hint only (candidate, nothing was judged). Silent failures hide data loss and make incidents impossible to diagnose.
+    > 'except ImportError:'
+    fix: Log with context and re-raise, or handle the specific exception deliberately.
+[INFO] BANK-RELIAB-006 Unbounded retry loop (local-hint) models.py:950
+    Regex hint only (candidate, nothing was judged). A permanent failure turns into an infinite loop that burns resources and floods logs.
+    > 'while True:'
+    fix: Cap attempts and total elapsed time, then surface the error.
+[INFO] BANK-RELIAB-007 [absence] Retrying non-idempotent operations (local-hint) adapters.py:34
+    Regex hint only (candidate, nothing was judged). Retries after ambiguous failures duplicate charges, messages, or rows.
+    > 'from urllib3.util.retry import Retry'
+    fix: Add an idempotency key or deduplicate on the receiving side.
+[INFO] BANK-RELIAB-007 [absence] Retrying non-idempotent operations (local-hint) exceptions.py:94
+    Regex hint only (candidate, nothing was judged). Retries after ambiguous failures duplicate charges, messages, or rows.
+    > 'Requests that produced this error are safe to retry.'
+    fix: Add an idempotency key or deduplicate on the receiving side.
+[INFO] BANK-RELIAB-007 [absence] Retrying non-idempotent operations (local-hint) status_codes.py:88
+    Regex hint only (candidate, nothing was judged). Retries after ambiguous failures duplicate charges, messages, or rows.
+    > '449: ("retry_with", "retry"),'
+    fix: Add an idempotency key or deduplicate on the receiving side.
+== ci (0.0s) ==
+no findings
+== config (0.0s) ==
+no findings
+== dataset (0.0s) ==
+no findings
+== dependencies (0.0s) ==
+no findings
+== docker (0.0s) ==
+no findings
+== optimization (0.1s) ==
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static) cookies.py:306
+    membership test against list `domains` inside a loop
+    > 'if cookie.domain not in domains:'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static) cookies.py:314
+    membership test against list `paths` inside a loop
+    > 'if cookie.path not in paths:'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static) cookies.py:326
+    membership test against list `domains` inside a loop
+    > 'if cookie.domain is not None and cookie.domain in domains:  # type: ignore[reportUnnecessaryComparison]  # defensive check'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+[MEDIUM] OPT-PY-003 Membership test against a list inside a loop (static) cookies.py:598
+    membership test against list `names_from_jar` inside a loop
+    > 'if overwrite or (name not in names_from_jar):'
+    fix: Build `set(some_list)` once before the loop (when the items are hashable).
+== repo (0.0s) ==
+[MEDIUM] REPO-003 No .gitignore (local)
+    fix: Add a .gitignore (for Python: __pycache__/, .venv/, .env, runs/, data/).
+[LOW] REPO-006 No README (local)
+    fix: Add README.md.
+[INFO] REPO-007 No LICENSE (local)
+    fix: Add a LICENSE file (see choosealicense.com).
+[INFO] REPO-015 TODO / FIXME comments (local) _types.py
+    6 markers in 4 files
+    fix: Turn important ones into issues.
+== reproducibility (0.1s) ==
+[MEDIUM] REP-014 Third-party imports but no dependency manifest (static)
+    imports: OpenSSL, _typeshed, certifi, chardet, charset_normalizer, cryptography, idna, simplejson
+    fix: Add a requirements.txt or pyproject.toml, preferably with pinned versions.
+== security (0.0s) ==
+[LOW] SEC-009 assert used to validate input (static) _internal_utils.py:46
+    assert on a function argument
+    > 'assert isinstance(u_string, str)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) adapters.py:375
+    assert on a function argument
+    > 'assert _is_prepared(req)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) adapters.py:481
+    assert on a function argument
+    > 'assert _is_prepared(request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) adapters.py:581
+    assert on a function argument
+    > 'assert _is_prepared(request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) adapters.py:659
+    assert on a function argument
+    > 'assert _is_prepared(request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) cookies.py:46
+    assert on a function argument
+    > 'assert _is_prepared(request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) sessions.py:318
+    assert on a function argument
+    > 'assert _is_prepared(prepared_request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) sessions.py:350
+    assert on a function argument
+    > 'assert _is_prepared(prepared_request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+[LOW] SEC-009 assert used to validate input (static) sessions.py:770
+    assert on a function argument
+    > 'assert _is_prepared(request)'
+    fix: Raise `ValueError` / `TypeError` explicitly for validation; keep `assert` for internal invariants and tests.
+== sql (0.0s) ==
+no findings
+== traininglog (0.0s) ==
+no findings
+== web (0.0s) ==
+no findings
+
+Summary: 0 high, 6 medium, 10 low, 27 info
+Snap usage: 0 calls, 0 input tokens
+Flags are candidates, not proof; see the calibration line for this run's measured false-positive rate.
+Note [bank] Snap skipped: --no-snap or no engine/API key; only the free regex-hint pre-screen ran (INFO candidates, nothing was judged)
+Note [ci] no .github/workflows/*.yml or .gitlab-ci.yml found
+Note [ci] line-based scan, not a YAML parser: unusual formatting (anchors, includes) can be missed; secret values are never printed
+Note [config] no .env.example found: CFG-015 (undocumented env vars) skipped
+Note [config] static analysis only (no Snap layer); secrets are masked to 4 characters + length
+Note [dataset] no readable data files in /home/aras/Projects/checksnap/showcase/claude-code/work_requests/src/requests (looked for .bmp, .csv, .gif, .jpeg, .jpg, .json, .jsonl, .png, .tif, .tiff, .tsv, .txt, .webp)
+Note [dataset] Snap parts skipped (DS-CONTAM-001, DS-LIC-001 Snap question): --no-snap
+Note [dependencies] no dependency manifest found (requirements*.txt, pyproject.toml, setup.cfg, environment.yml, Pipfile)
+Note [docker] static analysis only (no Snap layer); secret values are never printed, only variable names
+Note [optimization] Snap layer skipped: --no-snap or no engine/API key available; only static rules ran
+Note [reproducibility] local static analysis only (no Snap layer for this check)
+Note [security] static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length
+Note [sql] static analysis only (no Snap layer); dialect-neutral heuristics, index checks only see the scanned files
+Note [traininglog] no training-log records found (need >= 2 lines with numeric metrics)
+Note [web] static analysis only; findings are heuristics, capped at 10 per rule per file

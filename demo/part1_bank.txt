@@ -1,0 +1,85 @@
+== bank (40.4s) ==
+[HIGH] BANK-ARCH-005 Business rule duplicated in several places (snap score=0.60)
+    Snap score 0.60 (candidate, not proof). Copies drift apart and produce inconsistent results.
+    > 'somewhere in these 19 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py, api.py, auth.py, certs.py, compat.py, cookies.py (+9 more)' window=[0, 216489]
+    fix: Move the rule into one function and call it everywhere.
+[HIGH] BANK-DATA-010 Email addresses present (snap score=0.86) __version__.py:11
+    Snap score 0.86 (candidate, not proof). Emails are personal data and create privacy and compliance exposure.
+    > '__author_email__ = "me@kennethreitz.org"' window=[0, 216489]
+    fix: Redact or pseudonymize addresses before storing or sharing.
+[HIGH] BANK-RELIAB-001 Swallowed exception with bare pass (snap score=0.83) __init__.py:103
+    Snap score 0.83 (candidate, not proof). Silent failures hide data loss and make incidents impossible to diagnose.
+    > 'except ValueError:' window=[0, 216489]
+    fix: Log with context and re-raise, or handle the specific exception deliberately.
+[HIGH] BANK-RELIAB-038 Batch failures dropped silently (snap score=0.87) __init__.py:1
+    Snap score 0.87 (candidate, not proof). Silent partial failure leaves data incomplete while dashboards show green.
+    > '#   __\n#  /__)  _  _     _   _ _/   _\n# / (   (- (/ (/ (- _)  /  _)\n#          /\n\n"""\nRequests HTTP Library\n~~~~~~~~~~~~~~~~~~~~~\n\nRequests is an HTTP library, written in Python, for human beings.\nBasic GET usage:\n\n   >>> import requests\n   >>> r = requests.get(\'https://www.python.org\')\n   >>> r.sta' window=[0, 216489]
+    fix: Collect failures, report them, and return a non-zero status when any occurred.
+[HIGH] BANK-SEC-016 [absence] Server-side request to user URL (snap score=0.97) __init__.py:14
+    Snap score 0.97 (candidate, not proof). SSRF reaches internal services and cloud metadata credentials.
+    > ">>> r = requests.get('https://www.python.org')" window=[0, 216489]
+    fix: Allowlist destinations and block private and link-local ranges.
+[MEDIUM] API-006 Return type varies with input (snap score=0.91) auth.py:59
+    Snap score 0.91 (candidate, not proof). Every caller needs special cases.
+    > '"problems.",\n            category=DeprecationWarning,\n        )\n        password = str(password)\n    # -- End Removal --\n\n    if isinstance(username, str):\n        username = username.encode("latin1")\n\n    if isinstance(password, str):\n        password = password.encode("latin1")\n\n    authstr = "Bas' window=[0, 216489]
+    fix: Return one type; use Optional or raise.
+[MEDIUM] BANK-DOCS-029 [absence] Deprecated feature without replacement (snap score=0.69)
+    Snap score 0.69 (candidate, not proof). Users cannot plan the migration.
+    > 'somewhere in these 5 files: adapters.py, auth.py, exceptions.py, sessions.py, utils.py' window=[0, 216489]
+    fix: Add 'use X instead; removed in version Y' to each deprecation.
+[MEDIUM] BANK-RELIAB-035 Naive local timestamps (snap score=0.82)
+    Snap score 0.82 (candidate, not proof). Naive times break across hosts, DST changes, and ordering comparisons.
+    > 'somewhere in these 2 files: api.py, auth.py' window=[0, 216489]
+    fix: Use timezone-aware UTC timestamps.
+[MEDIUM] BANK-SEC-020 Session cookie missing security flags (snap score=0.87)
+    Snap score 0.87 (candidate, not proof). Missing flags allow script theft, plaintext transmission and cross-site use.
+    > 'somewhere in these 9 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py, api.py, auth.py, certs.py, compat.py' window=[0, 216489]
+    fix: Set Secure, HttpOnly and SameSite=Lax or Strict.
+[MEDIUM] BANK-SEC-022 Logout does not invalidate token (snap score=0.71)
+    Snap score 0.71 (candidate, not proof). Stolen tokens stay usable after the user believes they signed out.
+    > 'somewhere in these 5 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py' window=[0, 216489]
+    fix: Revoke server-side sessions and refresh tokens on logout and password change.
+[MEDIUM] BANK-SEC-032 [absence] State-changing request lacks CSRF protection (snap score=0.80)
+    Snap score 0.80 (candidate, not proof). Attacker pages can trigger actions in the victim's session.
+    > 'somewhere in these 19 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py, api.py, auth.py, certs.py, compat.py, cookies.py (+9 more)' window=[0, 216489]
+    fix: Require CSRF tokens or SameSite cookies and do not exempt routes casually.
+[MEDIUM] BANK-SEC-033 [absence] Login or reset lacks rate limiting (snap score=0.74) adapters.py:357
+    Snap score 0.74 (candidate, not proof). Attackers can brute-force credentials and codes.
+    > 'LS certificate file, "\n                    f"invalid path: {conn.cert_file}"\n                )\n            if conn.key_file and not os.path.exists(conn.key_file):\n                raise OSError(\n                    f"Could not find the TLS key file, invalid path: {conn.key_file}"\n                )\n\n ' window=[0, 216489]
+    fix: Add per-account and per-IP throttling.
+[MEDIUM] PERF-GEN-008 Large payload held in memory when it could stream (snap score=0.54) models.py:239
+    Snap score 0.54 (candidate, not proof). Peak memory scales with input size.
+    > 'fdata = fp.read()' window=[0, 216489]
+    fix: Stream or chunk the input.
+[LOW] BANK-ARCH-013 Dead module never imported (snap score=0.82)
+    Snap score 0.82 (candidate, not proof). Dead code is maintenance load and misleads readers about what the system does.
+    > 'somewhere in these 5 files: adapters.py, compat.py, cookies.py, sessions.py, utils.py' window=[0, 216489]
+    fix: Delete it; version control keeps history.
+[LOW] BANK-ARCH-026 Configuration read from environment everywhere (snap score=0.91) sessions.py:857
+    Snap score 0.91 (candidate, not proof). Config surface is undiscoverable and defaults diverge between call sites.
+    > 'os.environ.get("REQUESTS_CA_BUNDLE")' window=[0, 216489]
+    > 'netrc_file = os.environ.get("NETRC")' window=[0, 216489]
+    fix: Load settings once in a central module.
+[LOW] BANK-ARCH-033 Inheritance used for code reuse (snap score=0.62)
+    Snap score 0.62 (candidate, not proof). It breaks substitutability and creates fragile hierarchies.
+    > 'somewhere in these 4 files: adapters.py, auth.py, cookies.py, models.py' window=[0, 216489]
+    fix: Use composition or split the base class.
+[LOW] BANK-DOCS-006 Stale TODO promise in docs (snap score=0.70)
+    Snap score 0.70 (candidate, not proof). Untracked promises go stale and mislead readers about what exists.
+    > 'somewhere in these 6 files: _types.py, adapters.py, auth.py, hooks.py, models.py, utils.py' window=[0, 216489]
+    fix: Link each note to an issue or delete it.
+[LOW] BANK-RELIAB-008 [absence] No circuit breaker on dependency (snap score=0.94)
+    Snap score 0.94 (candidate, not proof). Repeated calls to a dead dependency tie up threads and propagate the outage upstream.
+    > 'somewhere in these 19 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py, api.py, auth.py, certs.py, compat.py, cookies.py (+9 more)' window=[0, 216489]
+    fix: Wrap the dependency client in a circuit breaker with a fallback.
+[LOW] BANK-SEC-026 Secret compared with plain equality (snap score=0.56)
+    Snap score 0.56 (candidate, not proof). Timing differences can leak the secret byte by byte.
+    > 'somewhere in these 19 files: __init__.py, __version__.py, _internal_utils.py, _types.py, adapters.py, api.py, auth.py, certs.py, compat.py, cookies.py (+9 more)' window=[0, 216489]
+    fix: Use hmac.compare_digest or the language equivalent.
+
+Summary: 5 high, 8 medium, 6 low, 0 info
+Snap usage: 98 calls, 972,177 input tokens
+Calibration [bank]: decoys=24, false_positive_rate=0.0, canaries=3, canary_recall=1.0
+Flags are candidates, not proof; see the calibration line for this run's measured false-positive rate.
+Note [bank] 15 items suppressed: fire on clean code
+Note [bank] calibration: decoy false-positive rate 0% (24 decoys), canary recall 100%; clean-code baseline: 15/152 items score >= 0.5 on typical clean Python (real false-positive rate of this bank); 34 flagged, 15 suppressed, 19 shown

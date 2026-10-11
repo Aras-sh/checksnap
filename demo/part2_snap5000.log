@@ -1,0 +1,9 @@
+Destination: api.subq.ai
+check               upload   calls        tokens
+dataset             5.7 MB       9     1,828,851
+TOTAL               5.7 MB       9     1,828,851
+note (dataset): upper bound from file sizes; prefiltered mode sends less; localising hits adds a few calls each
+
+real	0m19.739s
+user	0m9.530s
+sys	0m0.031s
