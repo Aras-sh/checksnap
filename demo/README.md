@@ -126,4 +126,4 @@ The original 5,000-row GSM8K Snap run missed both canaries, so it was invalid. R
 | 5,000 (800k-char window) | 3 | 377,966 | 126k | **0.0** (twice) |
 | 5,000 (300k-char window, new default) | 5 | 388,510 | ~78k | 1.0 |
 
-One dataset, one run per row (n=1), so the exact boundary (between 104k and 126k tokens/call) is only roughly known. The dataset check now uses 300,000-character windows. With valid canaries (1.0) the full 5,000 train rows x 56 test items give **0 Snap contamination findings**; this covers 5,000 of 7,473 train rows and 56 of 1,319 test items, not the whole benchmark. Extra cost of this section: about 1.4M tokens (~$0.13).
+One dataset, one run per row (n=1), so the exact boundary (between 104k and 126k tokens/call) is only roughly known. The dataset check now uses 300,000-character windows. With valid canaries (1.0) the full 5,000 train rows x 56 test items give **0 Snap contamination findings**; this covers 5,000 of 7,473 train rows and 56 of 1,319 test items, not the whole benchmark. Extra cost of this section: about 1.66M tokens (~$0.15).
