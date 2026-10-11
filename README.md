@@ -49,7 +49,7 @@ pip install -e .            # runtime dependency: httpx only
 pip install -e '.[images]'  # optional: Pillow for image checks
 ```
 
-Python 3.10+.
+Python 3.11+.
 
 ## Quickstart (no key, no network)
 

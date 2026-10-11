@@ -16,7 +16,7 @@ Principles
    (api.subq.ai), bytes that leave the machine, estimated calls/tokens and asks for confirmation (or `--yes`).
 3. **Honest output.** Flags are candidates, not proof. Every Snap finding carries its score, the window it came from and,
    where possible, a snippet. The report states the measured false-positive rate of THIS run (decoys) and any partial results.
-4. **Boring and robust.** Python 3.10+, runtime dependency: `httpx` only (Pillow optional for images). Results survive
+4. **Boring and robust.** Python 3.11+, runtime dependency: `httpx` only (Pillow optional for images). Results survive
    crashes (cache), failures degrade to notes instead of tracebacks.
 
 ## 1. Layout and ownership (one owner per file; do not edit files you do not own)
