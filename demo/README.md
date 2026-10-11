@@ -30,7 +30,7 @@ python -m checksnap --check-dataset data/train5000.jsonl --benchmark data/test56
 
 **GSM8K free pass (full train x full test, 14 s):** 0 exact matches, 0 duplicates (DS-DUP) at Jaccard 0.8. 3 13-gram hits (1 HIGH, 2 MEDIUM) and 79 8-gram hits (LOW). PII: 1 credit-card + 1 phone, both false positives (arithmetic numbers such as `1000`, `960-...` in solutions). 1 length-outlier note.
 
-**GSM8K Snap (DS-CONTAM-001):** train rows 1-1400: 3 calls, 154,443 tokens, 9 s. Train rows 1-5000: 3 calls, 377,966 tokens, 20 s. Both: **0 Snap contamination findings**; decoy false-positive rate 0% at threshold 0.5. Mode `prefiltered` (only records sharing rare words are sent).
+**GSM8K Snap (DS-CONTAM-001):** train rows 1-1400: 3 calls, 154,443 tokens, 9 s. Train rows 1-5000: 3 calls, 377,966 tokens, 20 s. Both: **0 Snap contamination findings** (but only the 1,400-row run is valid: the 5,000-row run missed both canaries, canary_recall=0.0, so Snap did not read that text); decoy false-positive rate 0% at threshold 0.5. Mode `prefiltered` (only records sharing rare words are sent).
 
 ## 3. Tokens and time
 
