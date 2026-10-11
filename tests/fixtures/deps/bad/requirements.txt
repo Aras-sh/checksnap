@@ -1,0 +1,11 @@
+--index-url http://pypi.example.org/simple
+--extra-index-url https://pypi.internal.example/simple
+--trusted-host pypi.internal.example
+numpy
+pillow>=9
+requests==2.0.0
+flask==2.3.0
+flask==2.3.0
+left-pad-py==1.0
+django==1.11.29
+git+https://github.com/foo/bar.git#egg=bar

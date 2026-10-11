@@ -3,7 +3,7 @@ take the CLI down: it is skipped and reported by `checksnap --list-checks`."""
 import importlib
 
 _LOAD_ERRORS: dict[str, str] = {}
-for _name in ("dataset", "optimization"):
+for _name in ("dataset", "optimization", "traininglog", "repro", "security", "deps", "gitrepo"):
     try:
         importlib.import_module(f"{__name__}.{_name}")
     except Exception as exc:  # noqa: BLE001

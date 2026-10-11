@@ -50,7 +50,7 @@ def _rule_catalog(checks: Sequence[Check]) -> dict[str, object]:
     rules: dict[str, object] = {}
     for c in checks:
         try:
-            rules.update(getattr(importlib.import_module(f"checksnap.checks.{c.name}"), "RULES", {}))
+            rules.update(getattr(importlib.import_module(type(c).__module__), "RULES", {}))
         except Exception:  # noqa: BLE001  (a broken check package must not break --explain for the others)
             continue
     return rules
@@ -120,11 +120,12 @@ def _main(argv: Sequence[str] | None) -> int:
     args = parser.parse_args(argv)
 
     if args.list_checks:
+        w = max([len(c.flag) for c in checks] + [22]) + 2
         for c in checks:
-            print(f"{c.flag:<22}{c.summary}")
+            print(f"{c.flag:<{w}}{c.summary}")
         from . import checks as pkg
         for name, err in getattr(pkg, "_LOAD_ERRORS", {}).items():
-            print(f"{'(unavailable) ' + name:<22}{err}")
+            print(f"{'(unavailable) ' + name:<{w}}{err}")
         return 0
     if args.explain:
         return _explain(args.explain, checks)
