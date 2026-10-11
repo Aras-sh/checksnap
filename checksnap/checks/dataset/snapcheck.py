@@ -14,7 +14,7 @@ from .records import BItem, Rec
 from .textutil import words
 
 PER_CALL_ITEMS = 55         # engine adds 8 decoys + 1 canary to each 64-question call; 56 would split into 55+1 and double the calls
-WINDOW_CHARS = 800_000
+WINDOW_CHARS = 300_000     # canary vs window curve (demo/README.md): 104k tokens/call passed, 126k missed both canaries
 NEEDLE_CHARS = 600
 CHARS_PER_TOKEN = 3.3
 LIC_SAMPLE_CHARS = 340_000

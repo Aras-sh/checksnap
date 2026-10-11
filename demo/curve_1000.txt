@@ -1,0 +1,24 @@
+== dataset (8.5s) ==
+[MEDIUM] DS-CONTAM-002 Benchmark item overlaps the data (13-gram) (hash score=0.29) train1000.jsonl:21
+    test56.jsonl:56: 13-gram match, 30% of its n-grams found. First seen in train1000.jsonl:21.
+    > 'Max bought stamps at the post office. Some of the stamps had a snowflake design, some had a truck design, and some had a rose design. Max bought 16 snowflake st'
+    fix: Deduplicate the training data against the benchmark and drop the matching records.
+[LOW] DS-HYG-004 Length outliers (local) train1000.jsonl:400
+    2 records outside [0, 1452] chars (quartiles 368..639).
+    > '1601 chars'
+    > '1515 chars'
+    fix: Inspect; truncate or drop.
+[LOW] DS-PII-001 phone number found in records (local) train1000.jsonl:62
+    4 matches in 3 records.
+    > '1000... (12 chars)'
+    > '960-... (11 chars)'
+    > '960-... (11 chars)'
+    > '300\n... (11 chars)'
+    fix: Redact or drop the records; rotate leaked secrets.
+
+Summary: 0 high, 1 medium, 2 low, 0 info
+Snap usage: 3 calls, 127,045 input tokens
+Calibration [dataset]: decoys=16, false_positive_rate=0.0, canaries=2, canary_recall=1.0
+Flags are candidates, not proof; see the calibration line for this run's measured false-positive rate.
+Note [dataset] contam-mode prefiltered: only records sharing rare words with an item were sent; paraphrases with few shared words can be missed
+Note [dataset] Snap calibration: decoy false-positive rate 0% at threshold 0.5

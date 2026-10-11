@@ -112,3 +112,18 @@ Verdict: **no verbatim or answer-level leak found in the pairs I read.** 2 of 3 
 - GSM8K Snap covered 5,000 of 7,473 train rows against 56 of 1,319 test items, in `prefiltered` mode (can miss paraphrases with few shared words). Full train x full test would cost >2M tokens by dry-run (est. 41.5M upper bound). "Nothing found" applies to that slice only; the free pass covered everything.
 - Snap missed 2 of 2 same-template controls; whether it should flag those is a definition question, but do not claim it catches them.
 - One run per config, single repo, single dataset; no ground truth for the optimization findings beyond my own reading.
+
+## 5. Canary vs window size (added after the redesign review)
+
+The original 5,000-row GSM8K Snap run missed both canaries, so it was invalid. Re-running it reproduced the miss (`part2_snap5000_rerun.txt`: canary_recall=0.0, the CLI now errors and exits 3). Slices of 1,000-4,000 rows (`curve_*.txt`) all passed. So the limit is the tokens in one call, not the dataset.
+
+| Train rows | Snap calls | Input tokens | ~tokens/call | Canary recall |
+|---|---|---|---|---|
+| 1,000 | 3 | 127,045 | 42k | 1.0 |
+| 2,000 | 3 | 197,609 | 66k | 1.0 |
+| 3,000 | 3 | 257,288 | 86k | 1.0 |
+| 4,000 | 3 | 313,133 | 104k | 1.0 |
+| 5,000 (800k-char window) | 3 | 377,966 | 126k | **0.0** (twice) |
+| 5,000 (300k-char window, new default) | 5 | 388,510 | ~78k | 1.0 |
+
+One dataset, one run per row (n=1), so the exact boundary (between 104k and 126k tokens/call) is only roughly known. The dataset check now uses 300,000-character windows. With valid canaries (1.0) the full 5,000 train rows x 56 test items give **0 Snap contamination findings**; this covers 5,000 of 7,473 train rows and 56 of 1,319 test items, not the whole benchmark. Extra cost of this section: about 1.4M tokens (~$0.13).
