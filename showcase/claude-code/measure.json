@@ -1,0 +1,38 @@
+{
+ "work_with": {
+  "cost_usd": 0.0037,
+  "turns": 8,
+  "duration_s": 9.6,
+  "input": 8,
+  "output": 1729,
+  "cache_create": 10552,
+  "cache_read": 75748
+ },
+ "work_without": {
+  "cost_usd": 0.0039,
+  "turns": 10,
+  "duration_s": 16.8,
+  "input": 14,
+  "output": 2940,
+  "cache_create": 4309,
+  "cache_read": 152604
+ },
+ "work_requests_with": {
+  "cost_usd": 0.0056,
+  "turns": 13,
+  "duration_s": 18.3,
+  "input": 14,
+  "output": 3115,
+  "cache_create": 12580,
+  "cache_read": 148658
+ },
+ "work_requests_without": {
+  "cost_usd": 0.028,
+  "turns": 23,
+  "duration_s": 77.3,
+  "input": 36,
+  "output": 15707,
+  "cache_create": 58732,
+  "cache_read": 839834
+ }
+}

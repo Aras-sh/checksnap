@@ -1,0 +1,14 @@
+
+
+
+   [1m[38;5;111mInstall[0m  [38;5;245m(card: not run live, it edits your config)[0m
+
+   
+
+   [38;5;114m/plugin marketplace add Aras-sh/checksnap[0m
+
+   [38;5;114m/plugin install checksnap@checksnap[0m
+
+   
+
+   [38;5;245mNext: a real session, haiku, unedited.[0m

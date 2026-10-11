@@ -2,6 +2,17 @@
 
 ![checksnap demo](showcase/showcase.gif)
 
+## Use it in Claude Code
+
+![checksnap in Claude Code](showcase/claude-code/claude-code.gif)
+
+```
+/plugin marketplace add Aras-sh/checksnap
+/plugin install checksnap@checksnap
+```
+
+Then ask: "scan this project for bugs with checksnap". Measured numbers: [showcase/claude-code/README.md](showcase/claude-code/README.md).
+
 One CLI that checks things with [SubQ Snap](https://subq.ai) (a long-context decision model) plus free local analysis.
 Each check is a flag.
 

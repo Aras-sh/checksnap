@@ -1,0 +1,8 @@
+
+
+
+   [1m[38;5;203mClaude Code + checksnap[0m
+
+   [1mfind bugs without burning your usage[0m
+
+   [38;5;245ma plugin: local checks, one compact digest[0m

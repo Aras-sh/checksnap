@@ -298,7 +298,7 @@ def t_detail(a):
     return _cap("\n".join(out))
 
 
-PATH = {"path": {"type": "string", "description": "Absolute path of the project (or one file)."}}
+PATH = {"path": {"type": "string", "description": "Absolute path of the project (or one file). Optional: defaults to the current directory."}}
 TOOLS = {
     "checksnap_list": (t_list, "List checksnap checks and what they cover, one line each. Free.",
                        {"type": "object", "properties": {}}),
@@ -306,7 +306,7 @@ TOOLS = {
         "Run checksnap's local checks (free, nothing uploaded) and return a compact digest: counts plus the top findings, "
         "one line each. Call this FIRST instead of reading or grepping the repo. use_snap=true uploads file contents to "
         "api.subq.ai and is refused unless confirm_upload=true; NEVER set confirm_upload without asking the user first.",
-        {"type": "object", "required": ["path"], "properties": {
+        {"type": "object", "properties": {
             **PATH, "checks": {"description": "'auto' (default) or a list such as ['security','docker'].",
                                "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]},
             "use_snap": {"type": "boolean", "default": False},
@@ -320,7 +320,7 @@ TOOLS = {
             "index": {"type": "integer", "default": 0, "description": "0-based among matches."}}}),
     "checksnap_estimate": (t_estimate,
         "Free table of what the Snap parts would upload and cost (bytes, calls, tokens). Nothing is sent.",
-        {"type": "object", "required": ["path"], "properties": {**PATH, "checks": {
+        {"type": "object", "properties": {**PATH, "checks": {
             "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]}}}),
 }
 

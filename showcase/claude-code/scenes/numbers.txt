@@ -1,0 +1,12 @@
+
+
+
+   [1m[38;5;114mMeasured[0m  [38;5;245msame task, haiku, claude -p, 1 run each[0m
+
+   [38;5;114m+[0m requests repo: $0.0056 vs $0.0280 plain, 13 vs 23 turns
+
+   [38;5;114m+[0m tokens out: 3,115 vs 15,707; cache read 148k vs 839k
+
+   [38;5;221m![0m Tiny 4-file project: $0.0037 vs $0.0039, barely cheaper
+
+   [1mgithub.com/Aras-sh/checksnap[0m

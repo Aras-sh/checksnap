@@ -13,3 +13,7 @@ benchmarks/compare/bin/
 benchmarks/compare/dl/
 benchmarks/compare/.snapcache/
 benchmarks/compare/__pycache__/
+showcase/claude-code/work/
+showcase/claude-code/work_requests/
+showcase/claude-code/plugin
+showcase/claude-code/raw/
