@@ -14,6 +14,9 @@ from .core import CheckResult, Context, CostEstimate, Finding, Severity, severit
 RADIUS, MAX_CHARS, MAX_LINE = 25, 2048, 200
 UNLIKELY = 0.5
 NO_UPLOAD = {"SEC-006", "EXT-BANDIT-B105", "EXT-BANDIT-B106", "EXT-BANDIT-B107"}   # hard-coded secret: the excerpt would ship the secret itself
+# Classes where hand-grading (benchmarks/compare/verify_grading.md) showed Snap wrongly downgrading real issues:
+# TLS verify=False, SQL formatting, tar extraction, world-writable chmod. Their local rules are precise, so they skip verification.
+NO_VERIFY = {"SEC-008", "SEC-010", "SEC-011", "SEC-015", "EXT-BANDIT-B501", "EXT-BANDIT-B608", "EXT-BANDIT-B103", "EXT-BANDIT-B202"}
 NOTE = "snap judged unlikely"
 
 
@@ -47,7 +50,7 @@ def excerpt(base: Path, f: Finding) -> str | None:
 
 def candidates(base: Path, findings: list[Finding]) -> list[tuple[Finding, str]]:
     return [(f, x) for f in findings
-            if f.source != "snap" and f.severity > Severity.INFO and f.rule_id not in NO_UPLOAD and not f.rule_id.startswith("EXT-DETECT-SECRETS") and (x := excerpt(base, f))]
+            if f.source != "snap" and f.severity > Severity.INFO and f.rule_id not in NO_UPLOAD and f.rule_id not in NO_VERIFY and not f.rule_id.startswith("EXT-DETECT-SECRETS") and (x := excerpt(base, f))]
 
 
 def _question(n: int, f: Finding):

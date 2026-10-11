@@ -1,5 +1,14 @@
 # checksnap vs existing tools: benchmark results
 
+# snap-verify grading (T7, vulnerable_12, hand-graded 2026-10-11)
+
+Full table: `verify_grading.md`. I read all 47 downgraded findings in context, plus a seeded (seed 1) random sample of 20 of the 87 kept ones.
+
+- **Downgrades correct: 31/47.** True issues wrongly downgraded: **16/47** (11 are httpx `verify=False`, plus os.chmod 0o007 on /etc/passwd, SQL `%s` into `cur.execute`, tarfile `filter="fully_trusted"`, 2 weak: SHA-1, chmod 0o777 on a /tmp path).
+- **Precision (estimate, not measured):** before verify ~67% (16 + 17/20 x 87 = ~90 true of 134); after verify (the 87 kept) ~85% (17/20 sampled, 95% interval about 64-95%). So verify gains ~18 points of precision but loses ~18% of the true findings (74 of ~90 kept).
+- Snap's low scores are right for inert/constant-command subprocess and import notices (all 12 B603, imports, eval of a literal) and wrong for TLS verify=False (scored 0.04, all real). Caveats: one grader, one 12-file fixture corpus, small sample.
+
+
 # After cost fix (2026-10-11, same day)
 
 Cause of the regression: every Snap call bills the state **and all its questions** (up to 64 per call, ~360 chars / ~110 tokens each, about 7k tokens per call). Real probe: 50 questions + a 12-char state = 5,568 tokens; the 13.7 KB project state alone = ~3.9k tokens (3.5 chars/token). Cost = calls x (state + questions), and per-file windows multiplied the calls by 60. Verified with `FakeSnapServer` (now bills question text like the real service): the per-file design on the 60 files made 204 calls (180 scan + 24 baseline) with an average of 103 state tokens against 7,516 question tokens per call, 99% of the spend. The old "30,913 tokens = 1.38 chars/token" calibration was also wrong: it folded question tokens into the state ratio (that is why the old seeds, 1.3 chars/token for code, were far too pessimistic for state and far too optimistic for the question-heavy case).
