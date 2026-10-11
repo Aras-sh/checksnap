@@ -1,0 +1,31 @@
+{
+  "name": "checksnap",
+  "displayName": "checksnap",
+  "version": "0.1.0",
+  "description": "Find bugs with checksnap's local checks at a tiny token cost: compact digests, Snap only after consent",
+  "author": {
+    "name": "Aras",
+    "url": "https://github.com/Aras-sh"
+  },
+  "repository": "https://github.com/Aras-sh/checksnap",
+  "license": "MIT",
+  "keywords": ["bugs", "lint", "security", "docker", "ci", "mcp"],
+  "mcpServers": {
+    "checksnap": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp_server.py"],
+      "env": {
+        "SUBQ_API_KEY": "${user_config.subq_api_key}"
+      }
+    }
+  },
+  "userConfig": {
+    "subq_api_key": {
+      "type": "string",
+      "title": "SubQ API key (optional)",
+      "description": "Only needed for the Snap parts, which also need your explicit consent per scan. Leave empty for local checks.",
+      "sensitive": true,
+      "required": false
+    }
+  }
+}

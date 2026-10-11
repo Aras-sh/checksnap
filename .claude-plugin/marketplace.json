@@ -1,0 +1,12 @@
+{
+  "name": "checksnap",
+  "description": "Token-lean bug finding with checksnap",
+  "owner": { "name": "Aras", "url": "https://github.com/Aras-sh" },
+  "plugins": [
+    {
+      "name": "checksnap",
+      "source": "./",
+      "description": "Local bug checks as compact digests; Snap only after consent"
+    }
+  ]
+}

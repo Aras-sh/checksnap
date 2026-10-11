@@ -69,6 +69,23 @@ To use Snap, set `SUBQ_API_KEY` (environment or a `.env` file in the current dir
 * Static optimization rules are heuristics over Python `ast`; other languages get the Snap layer only.
 * `--contam-mode prefiltered` is cheaper but loses some recall; `exhaustive` (default) does not.
 
+## Claude plugin
+
+Let Claude Code find bugs with checksnap while spending very little of your usage.
+
+```
+/plugin marketplace add Aras-sh/checksnap
+/plugin install checksnap@checksnap
+```
+
+Tools: `checksnap_list` (checks, one line each), `checksnap_scan` (digest of the top findings), `checksnap_detail` (one finding with
+evidence and fix, no rescan), `checksnap_estimate` (free upload/cost table). The `bugscan` skill tells Claude to scan first and
+read only what the digest points at.
+
+Why it is cheap: the checks run locally and are free; a scan returns at most ~3,000 characters (one line per finding, repeats
+collapsed as `x7`, no snippets); Claude never reads the repo to look for bugs; Snap runs only after you agree, because the call
+refuses without `confirm_upload=true` and states what would be uploaded to `api.subq.ai`. See [docs/PLUGIN.md](docs/PLUGIN.md).
+
 ## More
 
 * [docs/USAGE.md](docs/USAGE.md): all options, exit codes, config file, CI use
