@@ -24,7 +24,7 @@ _STATIC = [
      "Strings are immutable: `s += x` or `s = s + x` copies the whole string each iteration, so the loop is quadratic in output size. "
      "The same applies to `lst = lst + [x]` (a list `+=` extends in place and is fine).",
      "Collect parts in a list and `''.join(parts)` once; use `lst.append` / `lst.extend`."),
-    ("OPT-PY-002", M, "Regular expression with a constant pattern used inside a loop",
+    ("OPT-PY-002", L, "Regular expression with a constant pattern used inside a loop",
      "`re.compile` in a loop recompiles every time; `re.match/search/sub/...` with a constant pattern pays a cache lookup per call "
      "and hides that the pattern never changes.",
      "Hoist `PATTERN = re.compile(...)` to module level and call `PATTERN.match(...)` in the loop."),

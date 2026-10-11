@@ -86,6 +86,8 @@ class BankCheck(Check):
                 est = est + b
             budget = getattr(ctx.snap, "budget_tokens", None)
             if budget is not None and est.input_tokens > budget:       # the engine stops spending at the budget (localization degrades first)
+                scale = budget / est.input_tokens
+                est.uploads_bytes, est.snap_calls = int(est.uploads_bytes * scale), max(1, int(est.snap_calls * scale))
                 est.input_tokens = budget
                 est.notes += f"; capped at --budget-tokens {budget}"
             return est
