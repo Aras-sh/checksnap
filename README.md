@@ -13,6 +13,7 @@ checksnap --check-all . --dry-run                              # estimate and sh
 
 | Flag | What it checks | Snap |
 |---|---|---|
+| `--check-bank` | 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen | yes |
 | `--check-dataset` | benchmark contamination, duplicates, eval leaks, PII, licences, images | optional |
 | `--check-optimization` | slow Python/PyTorch patterns | optional |
 | `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto | no |

@@ -26,6 +26,7 @@ Exit codes: 0 ok, 1 findings at or above `--fail-on`, 2 usage error, 3 a check f
 
 | Flag | What it checks | Snap |
 |---|---|---|
+| `--check-bank` | 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen | yes |
 | `--check-dataset` | benchmark contamination, duplicates, eval leaks, PII, licences, images | optional |
 | `--check-optimization` | slow Python/PyTorch patterns | optional |
 | `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto | no |
@@ -83,3 +84,15 @@ add `--format sarif -o checksnap.sarif` to upload to code scanning. Use `--no-sn
 `python -m benchmarks.run` plants known contaminated records and known slow code, and reports recall and false positives against
 the in-process fake Snap server. `--real` uses the real API (needs `SUBQ_API_KEY`, spends tokens). The fake server only matches
 verbatim needles, so its recall says the plumbing works, not how good Snap is at paraphrases.
+
+## --check-bank
+
+```
+checksnap --check-bank src/                      # ask every relevant question in one Snap pass
+checksnap --check-bank --bank-list               # print the bank, no path or Snap needed
+checksnap --check-bank . --bank-categories SEC,DOCS --bank-top 10
+checksnap --check-bank . --bank-file mine.json   # add your own items (same schema)
+checksnap --explain BANK-SEC-011
+```
+
+Items filter themselves by file kind (`--bank-applies`). Flags are candidates, not proof. With `--no-snap` only regex hints run (INFO).

@@ -1,0 +1,5 @@
+{"items": [
+ {"id": "USR-001", "category": "custom", "title": "Marker present", "severity": "HIGH", "applies_to": ["code"],
+  "question": "the marker CUSTOM_MARK is present", "true": "yes", "false": "no", "why": "because", "fix": "remove", "hints": ["CUSTOM_MARK"]},
+ {"id": "USR-BAD", "category": "custom", "title": "no severity"}
+]}
