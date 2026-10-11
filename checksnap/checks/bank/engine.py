@@ -101,6 +101,16 @@ def load_items(extra_file: str | None = None) -> tuple[list[dict], list[str]]:
     return items, notes
 
 
+class _AnyOf:
+    """Several hint regexes, each keeping its own flags (a joined pattern would reject inline (?i))."""
+
+    def __init__(self, pats: list[re.Pattern[str]]) -> None:
+        self.pats = pats
+
+    def search(self, text: str):
+        return next((m for p in self.pats if (m := p.search(text))), None)
+
+
 def compile_hints(items: list[dict], notes: list[str]) -> dict[str, list[re.Pattern[str]]]:
     out: dict[str, list[re.Pattern[str]]] = {}
     for it in items:
@@ -186,7 +196,7 @@ def interpret(scan: Any, items: list[dict], hints: dict[str, list[re.Pattern[str
     for n, (score, qid, (ws, we)) in enumerate(flagged):
         it = by_id[qid]
         pats = hints.get(qid) or []
-        shim = SimpleNamespace(info=SimpleNamespace(id=qid), hint=re.compile("|".join(f"(?:{p.pattern})" for p in pats), re.M) if pats else None)
+        shim = SimpleNamespace(info=SimpleNamespace(id=qid), hint=_AnyOf(pats) if pats else None)
         extra = {"window": [ws, we], "score": round(score, 4), "category": it["category"]}
         ev: list[Evidence] = []
         if n < MAX_LOCALIZE and hasattr(ctx.snap, "localize"):
