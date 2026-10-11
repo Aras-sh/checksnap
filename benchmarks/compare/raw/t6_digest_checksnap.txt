@@ -1,0 +1,19 @@
+checksnap /home/aras/Projects/checksnap/benchmarks/compare/data/t6/checksnap: 7 high, 95 medium, 33 low, 3 info | checks: ci,config,dependencies,docker,optimization,repo,reproducibility,security,sql,web | min=medium
+HIGH DEP-007 tests/fixtures/deps/bad/requirements.txt:11 Git dependency without a pinned commit
+HIGH DEP-008 tests/fixtures/deps/bad/requirements.txt:1 Plain http:// index or package URL
+HIGH DEP-010 tests/fixtures/deps/bad/requirements.txt:3 TLS verification disabled for a package host
+HIGH OPT-PY-007 examples/optimization/slow.py:29 Blocking call inside `async def`
+HIGH REPO-005 tests/fixtures/configcheck/good/.env.production Secrets file in the tree and not ignored
+HIGH SEC-006 benchmarks/compare/gen_secrets.py:19 Hard-coded secret or token
+HIGH SEC-006 checksnap/checks/bank/items_data.py:167 Hard-coded secret or token
+MEDIUM CI-005 .github/workflows/ci.yml:4 No permissions: block (token gets the repository default)
+MEDIUM DEP-001 tests/fixtures/deps/bad/requirements.txt:4 Dependency has no version constraint
+MEDIUM DEP-001 tests/fixtures/repro/bad/requirements.txt:1 Dependency has no version constraint
+MEDIUM DEP-003 tests/fixtures/deps/bad/requirements.txt:5 Conflicting specs for the same package across files x2
+MEDIUM DEP-003 tests/fixtures/deps/good/pyproject.toml:4 Conflicting specs for the same package across files x2
+MEDIUM DEP-003 tests/fixtures/repro/good/requirements.txt:2 Conflicting specs for the same package across files
+MEDIUM DEP-009 tests/fixtures/deps/bad/requirements.txt:2 Extra package index (dependency-confusion risk)
+MEDIUM DEP-011 tests/fixtures/deps/bad/requirements-extra.txt:1 Pinned version older than the recommended minimum (heuristic)
+(+35 more groups; raise top or min_severity)
+note: config: no .env.example found: CFG-015 (undocumented env vars) skipped
+Next: checksnap_detail(rule_id[, path, index]) for evidence + fix; do not re-read the repo.

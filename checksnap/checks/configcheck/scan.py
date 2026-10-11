@@ -14,7 +14,7 @@ from .rules import RULES
 
 SECRET_KEY = re.compile(r"(^|[_.\-])(password|passwd|pwd|secret|secret_?key|api_?key|apikey|access_?key|auth_?token|token|private_?key)$", re.I)
 PASS_KEY = re.compile(r"(^|[_.\-])(password|passwd|pwd|secret)$", re.I)
-PLACEHOLDER = re.compile(r"^(<.*>|\$\{?\w.*|\{\{.*|%\(.*|enc\(|vault:|your[-_ ]|xxx|\*+$|example|dummy|todo|none$|null$|true$|false$|env|os\.)", re.I)
+PLACEHOLDER = re.compile(r"^(<.*>|\$\{+\s*\w.*|\{\{.*|%\(.*|enc\(|vault:|your[-_ ]|xxx|\*+$|example|dummy|todo|none$|null$|true$|false$|env|os\.)", re.I)
 TOKEN = re.compile(r"(?<![A-Za-z0-9_-])(?:AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9_-]{20,}|xox[abprs]-[A-Za-z0-9-]{10,}|-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----)")
 URL_PASS = re.compile(r"://[^/\s:@]+:([^@\s/]+)@")
 WEAK = {"admin", "password", "changeme", "change_me", "123456", "12345678", "123456789", "secret", "root", "letmein", "qwerty",

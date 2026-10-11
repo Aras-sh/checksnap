@@ -98,3 +98,9 @@ def test_all_rules_covered():
 
 def test_missing_path():
     assert _run("/nonexistent/zzz").error
+
+
+def test_github_secrets_reference_is_not_a_plaintext_secret(tmp_path):
+    from checksnap.checks.configcheck.scan import PLACEHOLDER
+    assert PLACEHOLDER.match("${{ secrets.API_TOKEN }}")
+    assert PLACEHOLDER.match("${DB_PASSWORD}")

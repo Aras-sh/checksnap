@@ -1,0 +1,16 @@
+checksnap /home/aras/Projects/checksnap/benchmarks/compare/data/requests: 5 high, 23 medium, 28 low, 12 info | checks: ci,config,dependencies,optimization,repo,reproducibility,security,web | min=medium
+HIGH CFG-003 .github/workflows/close-issues.yml:19 Secret in plain text x2
+HIGH REPO-005 tests/certs/expired/server/server.pem Secrets file in the tree and not ignored
+HIGH REPO-005 tests/certs/mtls/client/client.pem Secrets file in the tree and not ignored
+HIGH REPO-005 tests/certs/valid/server/server.pem Secrets file in the tree and not ignored
+MEDIUM DEP-001 pyproject.toml:6 Dependency has no version constraint x10
+MEDIUM DEP-001 requirements-dev.txt:3 Dependency has no version constraint x3
+MEDIUM DEP-003 requirements-dev.txt:2 Conflicting specs for the same package across files
+MEDIUM DEP-005 docs/_themes/flask_theme_support.py:1 Imported package has no declared dependency
+MEDIUM DEP-005 setup.py:1 Imported package has no declared dependency
+MEDIUM DEP-005 src/requests/compat.py:1 Imported package has no declared dependency
+MEDIUM OPT-PY-003 src/requests/cookies.py:306 Membership test against a list inside a loop x4
+MEDIUM REP-013 pyproject.toml Unpinned dependencies
+MEDIUM REP-013 requirements-dev.txt:2 Unpinned dependencies
+note: config: no .env.example found: CFG-015 (undocumented env vars) skipped
+Next: checksnap_detail(rule_id[, path, index]) for evidence + fix; do not re-read the repo.

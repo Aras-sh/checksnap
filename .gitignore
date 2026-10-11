@@ -7,3 +7,9 @@ __pycache__/
 .env
 dist/
 build/
+.bench-venv/
+benchmarks/compare/data/
+benchmarks/compare/bin/
+benchmarks/compare/dl/
+benchmarks/compare/.snapcache/
+benchmarks/compare/__pycache__/

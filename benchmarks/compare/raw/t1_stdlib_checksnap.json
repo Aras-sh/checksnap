@@ -1,0 +1,37 @@
+[
+ {
+  "file": "04_runpy.py",
+  "line": 88,
+  "rule": "SEC-003"
+ },
+ {
+  "file": "09_rlcompleter.py",
+  "line": 155,
+  "rule": "SEC-003"
+ },
+ {
+  "file": "19_tracemalloc.py",
+  "line": 439,
+  "rule": "SEC-001"
+ },
+ {
+  "file": "00_copyreg.py",
+  "line": 56,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "05_subprocess.py",
+  "line": 176,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "12_process.py",
+  "line": 82,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "12_process.py",
+  "line": 195,
+  "rule": "SEC-009"
+ }
+]

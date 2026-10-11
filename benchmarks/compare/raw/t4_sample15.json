@@ -1,0 +1,837 @@
+{
+ "hadolint": [
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 7,
+   "rule": "DL3059",
+   "msg": "Multiple consecutive `RUN` instructions. Consider consolidation.",
+   "src": "RUN apk add curl"
+  },
+  {
+   "file": "03_backend/Dockerfile",
+   "line": 24,
+   "rule": "DL3018",
+   "msg": "Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`",
+   "src": "RUN <<EOF"
+  },
+  {
+   "file": "07_backend/Dockerfile",
+   "line": 35,
+   "rule": "DL3022",
+   "msg": "`COPY --from` should reference a previously defined `FROM` alias",
+   "src": "COPY --from=gloursdocker/docker / /"
+  },
+  {
+   "file": "03_backend/Dockerfile",
+   "line": 24,
+   "rule": "DL3019",
+   "msg": "Use the `--no-cache` switch to avoid the need to use `--update` and remove `/var/cache/apk/*` when done installing packages",
+   "src": "RUN <<EOF"
+  },
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 4,
+   "rule": "DL3042",
+   "msg": "Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`",
+   "src": "RUN pip install --upgrade pip"
+  },
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 7,
+   "rule": "DL3018",
+   "msg": "Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`",
+   "src": "RUN apk add curl"
+  },
+  {
+   "file": "09_flask/Dockerfile",
+   "line": 26,
+   "rule": "DL3022",
+   "msg": "`COPY --from` should reference a previously defined `FROM` alias",
+   "src": "COPY --from=gloursdocker/docker / /"
+  },
+  {
+   "file": "09_flask/Dockerfile",
+   "line": 15,
+   "rule": "DL3019",
+   "msg": "Use the `--no-cache` switch to avoid the need to use `--update` and remove `/var/cache/apk/*` when done installing packages",
+   "src": "RUN <<EOF"
+  },
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 4,
+   "rule": "DL3013",
+   "msg": "Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`",
+   "src": "RUN pip install --upgrade pip"
+  },
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 27,
+   "rule": "DL3042",
+   "msg": "Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`",
+   "src": "RUN pip install -r requirements.txt"
+  },
+  {
+   "file": "08_backend/Dockerfile",
+   "line": 33,
+   "rule": "DL3022",
+   "msg": "`COPY --from` should reference a previously defined `FROM` alias",
+   "src": "COPY --from=gloursdocker/docker / /"
+  },
+  {
+   "file": "08_backend/Dockerfile",
+   "line": 22,
+   "rule": "DL3019",
+   "msg": "Use the `--no-cache` switch to avoid the need to use `--update` and remove `/var/cache/apk/*` when done installing packages",
+   "src": "RUN <<EOF"
+  },
+  {
+   "file": "09_flask/Dockerfile",
+   "line": 15,
+   "rule": "DL3018",
+   "msg": "Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>`",
+   "src": "RUN <<EOF"
+  },
+  {
+   "file": "07_backend/Dockerfile",
+   "line": 35,
+   "rule": "DL3067",
+   "msg": "Do not copy an entire filesystem from another stage",
+   "src": "COPY --from=gloursdocker/docker / /"
+  },
+  {
+   "file": "09_flask/Dockerfile",
+   "line": 26,
+   "rule": "DL3067",
+   "msg": "Do not copy an entire filesystem from another stage",
+   "src": "COPY --from=gloursdocker/docker / /"
+  }
+ ],
+ "checksnap-docker": [
+  {
+   "file": "15_aspnetapp/Dockerfile",
+   "line": 14,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM base AS final"
+  },
+  {
+   "file": "00_proxy/Dockerfile",
+   "line": 1,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM nginx:1.13-alpine"
+  },
+  {
+   "file": "08_backend/Dockerfile",
+   "line": 2,
+   "rule": "DOC-010",
+   "msg": "No .dockerignore next to the Dockerfile",
+   "src": "FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder"
+  },
+  {
+   "file": "17_backend/Dockerfile",
+   "line": 3,
+   "rule": "DOC-010",
+   "msg": "No .dockerignore next to the Dockerfile",
+   "src": "FROM --platform=$BUILDPLATFORM golang:1.18 AS build"
+  },
+  {
+   "file": "02_web/Dockerfile",
+   "line": 1,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM node:14.17.3-alpine3.14"
+  },
+  {
+   "file": "12_frontend/Dockerfile",
+   "line": 36,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM nginx:1.13-alpine"
+  },
+  {
+   "file": "18_backend/Dockerfile",
+   "line": 37,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM development as dev-envs"
+  },
+  {
+   "file": "01_flask-redis/Dockerfile",
+   "line": 15,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM builder as dev-envs"
+  },
+  {
+   "file": "04_app/Dockerfile",
+   "line": 7,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM builder as dev-envs"
+  },
+  {
+   "file": "11_frontend/Dockerfile",
+   "line": 30,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM development as dev-envs"
+  },
+  {
+   "file": "04_app/Dockerfile",
+   "line": 3,
+   "rule": "DOC-010",
+   "msg": "No .dockerignore next to the Dockerfile",
+   "src": "FROM --platform=$BUILDPLATFORM php:8.0.9-apache as builder"
+  },
+  {
+   "file": "15_aspnetapp/Dockerfile",
+   "line": 14,
+   "rule": "DOC-011",
+   "msg": "No HEALTHCHECK",
+   "src": "FROM base AS final"
+  },
+  {
+   "file": "09_flask/Dockerfile",
+   "line": 13,
+   "rule": "DOC-002",
+   "msg": "Container runs as root (no USER)",
+   "src": "FROM builder as dev-envs"
+  },
+  {
+   "file": "03_backend/Dockerfile",
+   "line": 2,
+   "rule": "DOC-010",
+   "msg": "No .dockerignore next to the Dockerfile",
+   "src": "FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS builder"
+  },
+  {
+   "file": "06_flask/Dockerfile",
+   "line": 4,
+   "rule": "DOC-007",
+   "msg": "pip install without --no-cache-dir",
+   "src": "RUN pip install --upgrade pip"
+  }
+ ],
+ "actionlint": [
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 66,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:51: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 23,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:3:28: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "flask__publish.yaml",
+   "line": 25,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:56: Double quote to prevent globbing and word splitting",
+   "src": "- run: echo \"SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)\" >> $GITHUB_ENV"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 20,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:16: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 34,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:16: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 49,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:80: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 34,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:4:15: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "flask__publish.yaml",
+   "line": 44,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:55: Double quote to prevent globbing and word splitting",
+   "src": "run: gh release create --draft --repo ${GITHUB_REPOSITORY} ${GITHUB_REF_NAME} dist/*"
+  },
+  {
+   "file": "fastapi__prepare-release.yml",
+   "line": 65,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:6:9: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "fastapi__pre-commit.yml",
+   "line": 56,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:35: Double quote to prevent globbing and word splitting",
+   "src": "run: uv run prek run --from-ref origin/${GITHUB_BASE_REF} --to-ref HEAD --show-diff-on-failure"
+  },
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 49,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2006:style:1:18: Use $(...) notation instead of legacy backticks `...`",
+   "src": "run: |"
+  },
+  {
+   "file": "flask__publish.yaml",
+   "line": 44,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:34: Double quote to prevent globbing and word splitting",
+   "src": "run: gh release create --draft --repo ${GITHUB_REPOSITORY} ${GITHUB_REF_NAME} dist/*"
+  },
+  {
+   "file": "fastapi__prepare-release.yml",
+   "line": 65,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:6:39: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 20,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:4:15: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  },
+  {
+   "file": "fastapi__build-docs.yml",
+   "line": 65,
+   "rule": "shellcheck",
+   "msg": "shellcheck reported issue in this script: SC2086:info:1:56: Double quote to prevent globbing and word splitting",
+   "src": "run: |"
+  }
+ ],
+ "checksnap-ci": [
+  {
+   "file": "fastapi__prepare-release.yml",
+   "line": 22,
+   "rule": "CI-009",
+   "msg": "Deploy job without concurrency control",
+   "src": "prepare-release:"
+  },
+  {
+   "file": "bandit__publish-to-pypi.yml",
+   "line": 36,
+   "rule": "CI-002",
+   "msg": "Action or workflow referenced by branch (@main / @master) or a non-version ref",
+   "src": "uses: pypa/gh-action-pypi-publish@release/v1"
+  },
+  {
+   "file": "fastapi__build-docs.yml",
+   "line": 123,
+   "rule": "CI-014",
+   "msg": "runs-on: *-latest (runner image drifts)",
+   "src": "runs-on: ubuntu-latest"
+  },
+  {
+   "file": "flask__publish.yaml",
+   "line": 35,
+   "rule": "CI-014",
+   "msg": "runs-on: *-latest (runner image drifts)",
+   "src": "runs-on: ubuntu-latest"
+  },
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 11,
+   "rule": "CI-009",
+   "msg": "Deploy job without concurrency control",
+   "src": "build-and-publish:"
+  },
+  {
+   "file": "fastapi__build-docs.yml",
+   "line": 118,
+   "rule": "CI-008",
+   "msg": "Job without timeout-minutes",
+   "src": "docs-all-green:  # This job does nothing and is only used for the branch protection"
+  },
+  {
+   "file": "flask__lock.yaml",
+   "line": 15,
+   "rule": "CI-008",
+   "msg": "Job without timeout-minutes",
+   "src": "lock:"
+  },
+  {
+   "file": "bandit__build-publish-image.yml",
+   "line": 11,
+   "rule": "CI-008",
+   "msg": "Job without timeout-minutes",
+   "src": "build-and-publish:"
+  },
+  {
+   "file": "bandit__dependency-review.yml",
+   "line": 8,
+   "rule": "CI-008",
+   "msg": "Job without timeout-minutes",
+   "src": "dependency-review:"
+  },
+  {
+   "file": "fastapi__sponsors.yml",
+   "line": 18,
+   "rule": "CI-014",
+   "msg": "runs-on: *-latest (runner image drifts)",
+   "src": "runs-on: ubuntu-latest"
+  },
+  {
+   "file": "bandit__publish-to-pypi.yml",
+   "line": 17,
+   "rule": "CI-001",
+   "msg": "Action pinned to a tag, not a commit SHA",
+   "src": "uses: actions/setup-python@v7"
+  },
+  {
+   "file": "requests__publish.yml",
+   "line": 52,
+   "rule": "CI-009",
+   "msg": "Deploy job without concurrency control",
+   "src": "publish:"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 29,
+   "rule": "CI-014",
+   "msg": "runs-on: *-latest (runner image drifts)",
+   "src": "runs-on: ubuntu-latest"
+  },
+  {
+   "file": "bandit__publish-to-pypi.yml",
+   "line": 6,
+   "rule": "CI-009",
+   "msg": "Deploy job without concurrency control",
+   "src": "build-n-publish:"
+  },
+  {
+   "file": "requests__publish.yml",
+   "line": 18,
+   "rule": "CI-008",
+   "msg": "Job without timeout-minutes",
+   "src": "build:"
+  }
+ ],
+ "yamllint": [
+  {
+   "file": "fastapi__pre-commit.yml",
+   "line": 37,
+   "rule": "comments-indentation",
+   "msg": "comment not indented like content (comments-indentation)",
+   "src": "# To be able to commit it needs the head branch of the PR, the remote one"
+  },
+  {
+   "file": "en__mkdocs.yml",
+   "line": 9,
+   "rule": "indentation",
+   "msg": "wrong indentation: expected 4 but found 2 (indentation)",
+   "src": "- media: (prefers-color-scheme)"
+  },
+  {
+   "file": "flask__lock.yaml",
+   "line": 7,
+   "rule": "truthy",
+   "msg": "truthy value should be one of [false, true] (truthy)",
+   "src": "on:"
+  },
+  {
+   "file": "en__mkdocs.yml",
+   "line": 85,
+   "rule": "indentation",
+   "msg": "wrong indentation: expected 6 but found 4 (indentation)",
+   "src": "- tutorial/index.md"
+  },
+  {
+   "file": "fastapi__sponsors.yml",
+   "line": 47,
+   "rule": "comments",
+   "msg": "too few spaces before comment: expected 2 (comments)",
+   "src": "uses: mxschmitt/action-tmate@35b54afac29c97fb54faba5b513f8fbd1882f113 # v3.24"
+  },
+  {
+   "file": "fastapi__pre-commit.yml",
+   "line": 85,
+   "rule": "comments",
+   "msg": "too few spaces before comment: expected 2 (comments)",
+   "src": "- uses: pre-commit-ci/lite-action@5d6cc0eb514c891a40562a58a8e71576c5c7fb43 # v1.1.0"
+  },
+  {
+   "file": "en__mkdocs.yml",
+   "line": 60,
+   "rule": "indentation",
+   "msg": "wrong indentation: expected 12 but found 10 (indentation)",
+   "src": "- griffe_typingdoc"
+  },
+  {
+   "file": "en__mkdocs.yml",
+   "line": 178,
+   "rule": "indentation",
+   "msg": "wrong indentation: expected 6 but found 4 (indentation)",
+   "src": "- deployment/index.md"
+  },
+  {
+   "file": "fastapi__sponsors.yml",
+   "line": 32,
+   "rule": "line-length",
+   "msg": "line too long (84 > 80 characters) (line-length)",
+   "src": "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0"
+  },
+  {
+   "file": "fastapi__bump-pre-commit-hooks.yml",
+   "line": 27,
+   "rule": "line-length",
+   "msg": "line too long (84 > 80 characters) (line-length)",
+   "src": "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 3,
+   "rule": "truthy",
+   "msg": "truthy value should be one of [false, true] (truthy)",
+   "src": "on:"
+  },
+  {
+   "file": "requests__lint.yml",
+   "line": 14,
+   "rule": "indentation",
+   "msg": "wrong indentation: expected 6 but found 4 (indentation)",
+   "src": "- uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0"
+  },
+  {
+   "file": "requests__publish.yml",
+   "line": 70,
+   "rule": "line-length",
+   "msg": "line too long (92 > 80 characters) (line-length)",
+   "src": "uses: \"pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b\" # v1.14.0"
+  },
+  {
+   "file": "fastapi__bump-pre-commit-hooks.yml",
+   "line": 3,
+   "rule": "truthy",
+   "msg": "truthy value should be one of [false, true] (truthy)",
+   "src": "on:"
+  },
+  {
+   "file": "fastapi__deploy-docs.yml",
+   "line": 29,
+   "rule": "line-length",
+   "msg": "line too long (84 > 80 characters) (line-length)",
+   "src": "uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0"
+  }
+ ],
+ "checksnap-config": [
+  {
+   "file": "fastapi__deploy-docs.yml",
+   "line": 55,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "github-token: ${{ secrets.GITHUB_TOKEN }}"
+  },
+  {
+   "file": "fastapi__bump-pre-commit-hooks.yml",
+   "line": 44,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GH_TOKEN: ${{ steps.pr-submit.outputs.token }}"
+  },
+  {
+   "file": "fastapi__sponsors.yml",
+   "line": 59,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "SPONSORS_TOKEN: ${{ secrets.SPONSORS_TOKEN }} # zizmor: ignore[secrets-outside-env]"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 19,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GH_TOKEN: ${{ github.token }}"
+  },
+  {
+   "file": "fastapi__deploy-docs.yml",
+   "line": 42,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+  },
+  {
+   "file": "fastapi__create-draft-release.yml",
+   "line": 46,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GH_TOKEN: ${{ github.token }}"
+  },
+  {
+   "file": "fastapi__sponsors.yml",
+   "line": 60,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GITHUB_TOKEN: ${{ steps.pr-submit.outputs.token }}"
+  },
+  {
+   "file": "fastapi__deploy-docs.yml",
+   "line": 80,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+  },
+  {
+   "file": "fastapi__issue-manager.yml",
+   "line": 34,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "token: ${{ secrets.GITHUB_TOKEN }}"
+  },
+  {
+   "file": "fastapi__pre-commit.yml",
+   "line": 73,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GH_TOKEN: ${{ steps.pr-push.outputs.token }}"
+  },
+  {
+   "file": "requests__close-issues.yml",
+   "line": 33,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GH_TOKEN: ${{ github.token }}"
+  },
+  {
+   "file": "fastapi__deploy-docs.yml",
+   "line": 73,
+   "rule": "CFG-003",
+   "msg": "Secret in plain text",
+   "src": "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+  }
+ ],
+ "sqlfluff": [
+  {
+   "file": "07_test_db_employees_partitioned_5.1.sql",
+   "line": 69,
+   "rule": "LT01",
+   "msg": "Expected only single space before 'NOT' keyword. Found '             '.",
+   "src": "emp_no      INT             NOT NULL,"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 15,
+   "rule": "CV06",
+   "msg": "Statements must end with a semi-colon.",
+   "src": "DELETE FROM store ;"
+  },
+  {
+   "file": "01_sql-server-sakila-db_sql-server-sakila-schema.sql",
+   "line": 302,
+   "rule": "LT01",
+   "msg": "Expected only single space before 'INDEX' keyword. Found '  '.",
+   "src": "CREATE  INDEX idx_fk_store_address ON store(address_id)"
+  },
+  {
+   "file": "02_test_db_test_employees_md5.sql",
+   "line": 49,
+   "rule": "LT01",
+   "msg": "Expected only single space before numeric literal. Found '      '.",
+   "src": "('titles',      443308,'d12d5f746b88f07e69b9e36675b6067abb01b60e',"
+  },
+  {
+   "file": "06_test_db_employees_partitioned.sql",
+   "line": 70,
+   "rule": "LT01",
+   "msg": "Expected only single space before 'NOT' keyword. Found '         '.",
+   "src": "dept_no     CHAR(4)         NOT NULL,"
+  },
+  {
+   "file": "08_test_db_show_elapsed.sql",
+   "line": 3,
+   "rule": "LT01",
+   "msg": "Expected single whitespace between naked identifier and raw comparison operator '='.",
+   "src": "(select create_time from information_schema.tables where table_schema='employees' and table_name='employees')"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 20,
+   "rule": "LT01",
+   "msg": "Unexpected whitespace before statement terminator ';'.",
+   "src": "DELETE FROM language ;"
+  },
+  {
+   "file": "02_test_db_test_employees_md5.sql",
+   "line": 74,
+   "rule": "LT02",
+   "msg": "Line should not be indented.",
+   "src": "SELECT @crc := MD5(CONCAT_WS('#',@crc, dept_no,emp_no, from_date,to_date))"
+  },
+  {
+   "file": "06_test_db_employees_partitioned.sql",
+   "line": 59,
+   "rule": "LT02",
+   "msg": "Expected indent of 4 spaces.",
+   "src": "emp_no       INT             NOT NULL,"
+  },
+  {
+   "file": "14_postgresql_employees.sql",
+   "line": 89,
+   "rule": "LT05",
+   "msg": "Line is too long (83 > 80).",
+   "src": "ON d.emp_no=l.emp_no AND d.from_date=l.from_date AND l.to_date = d.to_date;"
+  },
+  {
+   "file": "08_test_db_show_elapsed.sql",
+   "line": 3,
+   "rule": "LT01",
+   "msg": "Expected single whitespace between raw comparison operator '=' and quoted literal.",
+   "src": "(select create_time from information_schema.tables where table_schema='employees' and table_name='employees')"
+  },
+  {
+   "file": "02_test_db_test_employees_md5.sql",
+   "line": 118,
+   "rule": "CV10",
+   "msg": "Inconsistent use of preferred quote style 'single quotes'. Use 'OK' instead of \"OK\".",
+   "src": "select 'CRC' as summary,  if(@crc_fail = 0, \"OK\", \"FAIL\" ) as 'result'"
+  },
+  {
+   "file": "14_postgresql_employees.sql",
+   "line": 36,
+   "rule": "LT01",
+   "msg": "Expected only single space before 'NOT' keyword. Found '     '.",
+   "src": "dept_name   VARCHAR(40)     NOT NULL,"
+  },
+  {
+   "file": "01_sql-server-sakila-db_sql-server-sakila-schema.sql",
+   "line": 176,
+   "rule": "LT01",
+   "msg": "Expected single whitespace between comma ',' and quoted literal.",
+   "src": "ALTER TABLE film ADD CONSTRAINT CHECK_special_rating CHECK(rating in ('G','PG','PG-13','R','NC-17'))"
+  },
+  {
+   "file": "14_postgresql_employees.sql",
+   "line": 64,
+   "rule": "LT01",
+   "msg": "Expected only single space before 'DATE' keyword. Found '   '.",
+   "src": "from_date   DATE            NOT NULL,"
+  }
+ ],
+ "checksnap-sql": [
+  {
+   "file": "03_sqlite-sakila-db_sqlite-sakila-delete-data.sql",
+   "line": 36,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM actor"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 7,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM rental ;"
+  },
+  {
+   "file": "01_sql-server-sakila-db_sql-server-sakila-schema.sql",
+   "line": 174,
+   "rule": "SQL-006",
+   "msg": "LIKE with a leading wildcard",
+   "src": "special_features like '%Behind the Scenes%')"
+  },
+  {
+   "file": "13_mysql-sakila-db_mysql-sakila-drop-objects.sql",
+   "line": 12,
+   "rule": "SQL-003",
+   "msg": "DROP TABLE without IF EXISTS / unguarded TRUNCATE",
+   "src": "DROP TABLE payment;"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 10,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM film_actor ;"
+  },
+  {
+   "file": "03_sqlite-sakila-db_sqlite-sakila-delete-data.sql",
+   "line": 24,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM film_actor"
+  },
+  {
+   "file": "03_sqlite-sakila-db_sqlite-sakila-delete-data.sql",
+   "line": 44,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM language"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 8,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM customer ;"
+  },
+  {
+   "file": "00_cockroachdb-sakila-db_cockroachdb-sakila-delete-data.sql",
+   "line": 13,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM category ;"
+  },
+  {
+   "file": "13_mysql-sakila-db_mysql-sakila-drop-objects.sql",
+   "line": 21,
+   "rule": "SQL-003",
+   "msg": "DROP TABLE without IF EXISTS / unguarded TRUNCATE",
+   "src": "DROP TABLE actor;"
+  },
+  {
+   "file": "11_postgres-sakila-db_postgres-sakila-drop-objects.sql",
+   "line": 25,
+   "rule": "SQL-003",
+   "msg": "DROP TABLE without IF EXISTS / unguarded TRUNCATE",
+   "src": "DROP TABLE staff CASCADE;"
+  },
+  {
+   "file": "03_sqlite-sakila-db_sqlite-sakila-delete-data.sql",
+   "line": 20,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM film_category"
+  },
+  {
+   "file": "13_mysql-sakila-db_mysql-sakila-drop-objects.sql",
+   "line": 28,
+   "rule": "SQL-003",
+   "msg": "DROP TABLE without IF EXISTS / unguarded TRUNCATE",
+   "src": "DROP TABLE country;"
+  },
+  {
+   "file": "11_postgres-sakila-db_postgres-sakila-drop-objects.sql",
+   "line": 26,
+   "rule": "SQL-003",
+   "msg": "DROP TABLE without IF EXISTS / unguarded TRUNCATE",
+   "src": "DROP TABLE city CASCADE;"
+  },
+  {
+   "file": "10_postgres-sakila-db_postgres-sakila-delete-data.sql",
+   "line": 6,
+   "rule": "SQL-002",
+   "msg": "UPDATE or DELETE without WHERE",
+   "src": "DELETE FROM payment ;"
+  }
+ ]
+}
