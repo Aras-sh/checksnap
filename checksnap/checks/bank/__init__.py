@@ -35,8 +35,9 @@ def _root(args: argparse.Namespace) -> Path:
 class BankCheck(Check):
     name = "bank"
     flag = "--check-bank"
-    summary = "Ask Snap a bank of ready-made architecture, reliability, security, data, docs and testing questions about your files"
+    summary = "Experimental, not in --check-all: ask Snap a bank of ready-made architecture, reliability, security, data, docs and testing questions about your files"
     uses_snap = True
+    in_check_all = False    # measured 0/12 real findings (docs/REDESIGN.md): opt-in only, hidden from --check-all
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         g = parser.add_argument_group("bank check")

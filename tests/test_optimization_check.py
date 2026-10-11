@@ -15,7 +15,7 @@ MARK = "SLOW_PATTERN_MARKER"
 
 def make_args(root, **kw):
     ns = argparse.Namespace(check_optimization=str(root), profile="auto", include=None, exclude=None, include_tests=False,
-                            max_files=2000, static_only=False, snap_only=False)
+                            max_files=2000, static_only=False, snap_only=False, with_snap=True)
     ns.__dict__.update(kw)
     return ns
 
@@ -157,3 +157,12 @@ def test_snap_auth_error_becomes_note(project, tmp_path):
         assert any("Snap layer failed" in n for n in res.notes) and res.findings   # static findings survive
         assert res.error and "SnapAuthError" in res.error     # spec section 7: auth => exit 3
         client.close()
+
+
+def test_snap_layer_is_off_unless_with_snap(project, tmp_path):
+    check = OptimizationCheck()
+    off = make_args(project, with_snap=False)
+    assert not check.snap_wanted(off) and check.snap_wanted(make_args(project)) and check.snap_wanted(make_args(project, with_snap=False, snap_only=True))
+    assert check.estimate(Context(), off).snap_calls == 0
+    res = check.run(Context(), off)
+    assert any("--with-snap" in n for n in res.notes) and not any(f.source == "snap" for f in res.findings)

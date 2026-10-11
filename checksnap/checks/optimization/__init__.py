@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 from checksnap import adapters
-from checksnap import verify
+from checksnap import triage
 from checksnap.core import Check, CheckResult, Context, CostEstimate, Finding, Severity, register
 
 from . import snap_layer, static
@@ -74,7 +74,7 @@ def _read(p: Path) -> str | None:
 class OptimizationCheck(Check):
     name = "optimization"
     flag = "--check-optimization"
-    summary = "Find performance problems in code: static Python/PyTorch rules plus Snap for cross-file patterns"
+    summary = "Find performance problems in code: static Python/PyTorch rules (free); --with-snap adds the experimental Snap layer"
     uses_snap = True
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
@@ -84,24 +84,28 @@ class OptimizationCheck(Check):
         g.add_argument("--exclude", action="append", metavar="GLOB", help="skip files matching GLOB (repeatable)")
         g.add_argument("--include-tests", action="store_true", help="also check test files (skipped by default)")
         g.add_argument("--max-files", type=int, default=DEFAULT_MAX_FILES, help="cap on files checked (default %(default)s)")
-        g.add_argument("--static-only", action="store_true", help="skip the Snap layer")
-        g.add_argument("--snap-only", action="store_true", help="skip the static layer")
-        verify.add_flag(parser)
+        g.add_argument("--with-snap", action="store_true", help="also run the experimental Snap layer (off by default: 0 confirmed defects, ~30%% precision)")
+        g.add_argument("--static-only", action="store_true", help="skip the Snap layer (the default; kept for scripts)")
+        g.add_argument("--snap-only", action="store_true", help="skip the static layer (implies --with-snap)")
+        triage.add_flag(parser)
         adapters.add_option(g)
 
     # -- snap helpers
     def _window_size(self, ctx: Context) -> int:
         return max(10_000, int(getattr(ctx.snap, "window_chars", 800_000)) - 1000)
 
+    @staticmethod
+    def _layer_on(args: argparse.Namespace) -> bool:
+        return bool(getattr(args, "with_snap", False) or getattr(args, "snap_only", False)) and not getattr(args, "static_only", False)
+
+    def snap_wanted(self, args: argparse.Namespace) -> bool:
+        return self._layer_on(args)
+
     def _snap_wanted(self, ctx: Context, args: argparse.Namespace) -> bool:
-        return not getattr(args, "static_only", False) and not ctx.no_snap
+        return self._layer_on(args) and not ctx.no_snap
 
     def estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
-        est = self._estimate(ctx, args)
-        if verify.wanted(args):
-            local = self._run(Context(no_snap=True), args)
-            est = est + verify.estimate(ctx, collect(args)[0], local.findings)
-        return est
+        return self._estimate(ctx, args)
 
     def _estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
         if not self._snap_wanted(ctx, args):
@@ -118,8 +122,8 @@ class OptimizationCheck(Check):
     def run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
         def go() -> CheckResult:
             res = self._run(ctx, args)
-            if verify.wanted(args) and not res.error:
-                verify.apply(ctx, collect(args)[0], res)
+            if triage.wanted(args) and not res.error:
+                triage.apply(collect(args)[0], res, args)
             return res
         return self.timed(go)
 
@@ -163,6 +167,8 @@ class OptimizationCheck(Check):
                 res.notes.append("non-Python files are covered by the Snap layer only")
         if getattr(args, "static_only", False):
             res.notes.append("Snap layer skipped: --static-only")
+        elif not self._layer_on(args):
+            res.notes.append("static rules only; the experimental Snap layer is off unless --with-snap is given")
         elif ctx.no_snap or ctx.snap is None:
             res.notes.append("Snap layer skipped: --no-snap or no engine/API key available; only static rules ran")
         elif texts:

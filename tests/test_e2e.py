@@ -112,3 +112,29 @@ def test_snap_auth_or_quota_failure_exits_3(data, tmp_path, monkeypatch, status)
             __import__("checksnap.snap", fromlist=["x"]).SnapClient(api_key=k, url=srv.url), cache_dir=tmp_path / "c"), ""))
         code = cli.main(["--check-dataset", str(root / "data.jsonl"), "--benchmark", str(root / "bench.jsonl"), "--yes", "-q"])
     assert code == 3
+
+
+def test_missed_canary_invalidates_snap_findings_and_exits_3(data, tmp_path, monkeypatch):
+    from checksnap.snap.fake_server import FakeSnapServer, default_scorer
+    monkeypatch.setenv("SUBQ_API_KEY", "fake-key-for-local-server")
+    root, _, planted = data
+
+    def blind(state, q):                       # Snap that never finds the planted canary sentence
+        return 0.04 if "Checksnap canary" in q.get("instructions", "") else default_scorer(state, q)
+
+    with FakeSnapServer(scorer=blind) as srv:
+        code, res = run_cli(["--check-dataset", str(root / "data.jsonl"), "--benchmark", str(root / "bench.jsonl"),
+                             "--cache-dir", str(tmp_path / "c")], fake_url=srv.url)
+    assert code == 3
+    assert not any(f["source"] == "snap" for f in findings(res))
+    assert sum(f["rule_id"] == "DS-CONTAM-002" for f in findings(res)) >= len(planted)      # local findings kept
+    assert any("canary missed" in n for r in res for n in r["notes"]) and any("canary missed" in (r["error"] or "") for r in res)
+
+
+def test_check_all_skips_bank_and_snap_layer(tmp_path, capsys):
+    (tmp_path / "a.py").write_text("x = 1\n")
+    cli.main(["--check-all", str(tmp_path), "--no-snap", "--format", "json", "-o", str(tmp_path / "o.json")])
+    names = [r["check"] for r in json.loads((tmp_path / "o.json").read_text())["results"]]
+    assert "bank" not in names and "optimization" in names
+    cli.main(["--check-bank", str(tmp_path), "--no-snap", "--format", "json", "-o", str(tmp_path / "o.json")])
+    assert [r["check"] for r in json.loads((tmp_path / "o.json").read_text())["results"]] == ["bank"]

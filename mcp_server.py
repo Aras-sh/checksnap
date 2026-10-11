@@ -116,12 +116,14 @@ def _ctx(snap_engine, budget=None):
 
 def _run_check(check, ctx, args, limit):
     """Run one check in a daemon thread; (result, note). A check over `limit` seconds is abandoned."""
-    from checksnap.core import CheckResult
+    from checksnap.core import CheckResult, invalidate_on_missed_canary
     box = []
 
     def work():
         try:
-            box.append(check.run(ctx, args))
+            res = check.run(ctx, args)
+            invalidate_on_missed_canary(res)
+            box.append(res)
         except Exception as exc:  # noqa: BLE001
             box.append(CheckResult(check=check.name, error=f"{type(exc).__name__}: {exc}"))
     t = threading.Thread(target=work, daemon=True)
@@ -262,7 +264,7 @@ def t_estimate(a):
     root = _resolve(a.get("path", "."))
     c = a.get("checks")
     if c in (None, "", "auto", ["auto"]):
-        c = ["optimization", "bank"]
+        c = ["optimization"]
     names, avail = _select(root, c)
     args = _args_for(names, avail, root, True)
     return _cap("Free estimate, nothing sent.\n" + _fmt_est(_estimate_rows(names, avail, args, _key())))
@@ -304,8 +306,8 @@ TOOLS = {
                        {"type": "object", "properties": {}}),
     "checksnap_scan": (t_scan,
         "Run checksnap's local checks (free, nothing uploaded) and return a compact digest: counts plus the top findings, "
-        "one line each. Call this FIRST instead of reading or grepping the repo. use_snap=true uploads file contents to "
-        "api.subq.ai and is refused unless confirm_upload=true; NEVER set confirm_upload without asking the user first.",
+        "one line each. Call this FIRST instead of reading or grepping the repo. use_snap=true (only the dataset check uses Snap; "
+        "the bank and the Snap optimization layer are never run from here) uploads file contents to api.subq.ai and is refused unless confirm_upload=true; NEVER set confirm_upload without asking the user first.",
         {"type": "object", "properties": {
             **PATH, "checks": {"description": "'auto' (default) or a list such as ['security','docker'].",
                                "anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]},

@@ -110,6 +110,7 @@ class Check(abc.ABC):
     flag: str = ""                  # "--check-dataset"
     summary: str = ""               # one line for --list-checks
     uses_snap: bool = True
+    in_check_all: bool = True       # False = hidden from --check-all, still available by its own flag
 
     def snap_wanted(self, args: argparse.Namespace) -> bool:
         """Whether this run needs Snap at all (a check may only use it behind an opt-in flag)."""
@@ -156,3 +157,18 @@ def severity_counts(findings: Iterable[Finding]) -> dict[str, int]:
     for f in findings:
         out[f.severity.name] += 1
     return out
+
+
+CANARY_MISSED = "Snap did not read the text (canary missed); Snap findings are not valid"
+
+
+def invalidate_on_missed_canary(res: CheckResult) -> None:
+    """A planted canary sentence that Snap does not find means it never read the window: drop its findings, keep local
+    ones, and set res.error so the CLI exits 3 (docs/REDESIGN.md section 3)."""
+    rec = (res.stats.get("calibration") or {}).get("canary_recall")
+    if rec is None or rec >= 1.0:
+        return
+    dropped = sum(f.source == "snap" for f in res.findings)
+    res.findings = [f for f in res.findings if f.source != "snap"]
+    res.error = res.error or CANARY_MISSED
+    res.notes.append(f"{CANARY_MISSED} (canary recall {rec:.0%}; {dropped} Snap finding(s) dropped, local findings kept)")

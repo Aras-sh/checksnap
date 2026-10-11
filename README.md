@@ -18,7 +18,7 @@ Each check is a flag.
 
 ```
 checksnap --check-dataset data/ --benchmark gsm8k_test.jsonl   # contamination, duplicates, leaks, PII, hygiene
-checksnap --check-optimization ./myproject                     # slow-code patterns (static + Snap)
+checksnap --check-optimization ./myproject                     # slow-code patterns (free static rules)
 checksnap --check-all . --dry-run                              # estimate and show what would be uploaded
 ```
 
@@ -26,10 +26,10 @@ checksnap --check-all . --dry-run                              # estimate and sh
 
 | Flag | What it checks | Snap |
 |---|---|---|
-| `--check-bank` | 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen; findings are checked against a bundled clean-code baseline and absence-style items need 10+ files (`--bank-include-absence`) | yes |
+| `--check-bank` | experimental, **not in `--check-all`** (measured 0/12 real findings on requests; name it to run it): 211 ready-made questions (architecture, reliability, security, data, docs, testing) Snap answers about your files; `--bank-list` prints them, `--no-snap` runs a free regex pre-screen; findings are checked against a bundled clean-code baseline and absence-style items need 10+ files (`--bank-include-absence`) | yes |
 | `--check-dataset` | benchmark contamination, duplicates, eval leaks, PII, licences, images | optional |
-| `--check-optimization` | slow Python/PyTorch patterns; also `--snap-verify` and `--with-adapters` (ruff) | optional |
-| `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto; `--snap-verify` has Snap judge each finding, `--with-adapters` merges bandit/detect-secrets | optional |
+| `--check-optimization` | slow Python/PyTorch patterns (free static rules); `--with-snap` adds the experimental Snap layer (off by default, no confirmed defects); `--with-adapters` (ruff) | no (`--with-snap`: yes) |
+| `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto; `--triage` lowers provably harmless findings (constant-argument command execution, import notices) to INFO, free and local; `--snap-verify` is a deprecated alias of it; `--with-adapters` merges bandit/detect-secrets | no |
 | `--check-dependencies` | loose pins, conflicts, undeclared/unused imports | no |
 | `--check-repo` | big files, missing .gitignore entries, secrets files, conflict markers | no |
 | `--check-reproducibility` | unseeded randomness, unordered data, unpinned deps | no |
@@ -40,7 +40,7 @@ checksnap --check-all . --dry-run                              # estimate and sh
 | `--check-config` | config files: duplicate keys, plain-text secrets, weak passwords, `.env` drift | no |
 | `--check-web` | HTML/CSS/JS: accessibility, SEO basics, mixed content, heavy assets | no |
 
-`--check-all` runs every check; `checksnap --explain RULE_ID` explains a rule; all rules are in [docs/RULES.md](docs/RULES.md).
+`--check-all` runs every default check (not `--check-bank`; the Snap layer of `--check-optimization` stays off); `checksnap --explain RULE_ID` explains a rule; all rules are in [docs/RULES.md](docs/RULES.md).
 
 ## Install
 
@@ -75,8 +75,10 @@ To use Snap, set `SUBQ_API_KEY` (environment or a `.env` file in the current dir
 
 ## Limits
 
-* Findings are **candidates, not proof**. Every Snap finding shows its score and the window it came from. Each run also reports
-  its own measured false-positive rate (decoy questions that should never fire) and canary recall (planted sentences it should find).
+* Findings are **candidates, not proof**. Every Snap finding shows its score and the window it came from. Each Snap call also carries a
+  canary (a planted sentence it must find). If Snap misses it, it did not read the text: the run says "Snap did not read the text (canary
+  missed); Snap findings are not valid", drops that check's Snap findings, keeps the local ones, and exits 3. The decoy false-positive
+  rate only measures exact-sentence retrieval, not whether a code finding is right.
 * A Snap score is a probability for one window, not a verdict. Raise `--threshold` to cut false positives and lose recall.
 * N-gram checks are blind to items shorter than n words and to paraphrases; that is what Snap is for.
 * Static optimization rules are heuristics over Python `ast`; other languages get the Snap layer only.

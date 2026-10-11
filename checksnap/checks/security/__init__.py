@@ -7,7 +7,7 @@ from pathlib import Path
 
 from checksnap.checks.optimization import SKIP_DIRS, _is_test
 from checksnap import adapters
-from checksnap import verify
+from checksnap import triage
 from checksnap.core import Check, CheckResult, Context, CostEstimate, register
 
 from .rules import RULES, RuleInfo  # noqa: F401
@@ -48,25 +48,20 @@ class SecurityCheck(Check):
     name = "security"
     flag = "--check-security"
     summary = "Find security problems in code: unsafe deserialization, injection, hard-coded secrets, weak crypto"
-    uses_snap = True        # only used by --snap-verify; without it nothing is uploaded
-
-    def snap_wanted(self, args) -> bool:
-        return bool(getattr(args, "snap_verify", False))
+    uses_snap = False       # --triage (alias --snap-verify) is a free local rule; nothing is uploaded
 
     def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         adapters.add_option(parser)
-        verify.add_flag(parser)
+        triage.add_flag(parser)
 
     def estimate(self, ctx: Context, args: argparse.Namespace) -> CostEstimate:
-        if not verify.wanted(args):
-            return CostEstimate(notes="static analysis only; nothing is uploaded")
-        return verify.estimate(ctx, _base(args), self._run(args).findings)
+        return CostEstimate(notes="static analysis only; nothing is uploaded")
 
     def run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
         def go() -> CheckResult:
             res = self._run(args)
-            if verify.wanted(args) and not res.error:
-                verify.apply(ctx, _base(args), res)
+            if triage.wanted(args) and not res.error:
+                triage.apply(_base(args), res, args)
             return res
         return self.timed(go)
 
@@ -98,5 +93,5 @@ class SecurityCheck(Check):
         res.stats["by_rule"] = {}
         for f in res.findings:
             res.stats["by_rule"][f.rule_id] = res.stats["by_rule"].get(f.rule_id, 0) + 1
-        res.notes.append("static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length")
+        res.notes.append("static analysis only (no Snap layer); secrets are masked to 4 characters + length")
         return res

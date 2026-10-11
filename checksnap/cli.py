@@ -12,7 +12,7 @@ from typing import Sequence
 
 from . import __version__
 from .config import ConfigError, apply_defaults, load_config
-from .core import Check, CheckResult, Context, CostEstimate, Severity, all_checks
+from .core import Check, CheckResult, Context, CostEstimate, Severity, all_checks, invalidate_on_missed_canary
 from .privacy import confirm_upload, estimate_table, load_api_key
 from .report import FORMATS, render
 
@@ -23,7 +23,7 @@ def build_parser(checks: Sequence[Check]) -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="checksnap", description="Check datasets and code with SubQ Snap plus local analysis.")
     for c in checks:
         p.add_argument(c.flag, nargs="?", const=".", default=None, metavar="PATH", help=c.summary)
-    p.add_argument("--check-all", nargs="?", const=".", default=None, metavar="PATH", help="run every check on PATH")
+    p.add_argument("--check-all", nargs="?", const=".", default=None, metavar="PATH", help="run every default check on PATH (not --check-bank: name it explicitly)")
     p.add_argument("--list-checks", action="store_true", help="list available checks and exit")
     p.add_argument("--explain", metavar="RULE_ID", help="explain a rule and exit")
     p.add_argument("--format", choices=FORMATS, default="text")
@@ -79,7 +79,9 @@ def _make_engine(key: str, args: argparse.Namespace):
 def _run_one(check: Check, ctx: Context, args: argparse.Namespace) -> CheckResult:
     """Run a check; any exception becomes result.error so the other checks still run."""
     try:
-        return check.run(ctx, args)
+        res = check.run(ctx, args)
+        invalidate_on_missed_canary(res)
+        return res
     except Exception as exc:  # noqa: BLE001
         kind = type(exc).__name__
         res = CheckResult(check=check.name, error=f"{kind}: {exc}")
@@ -132,7 +134,7 @@ def _main(argv: Sequence[str] | None) -> int:
 
     if args.check_all is not None:
         for c in checks:
-            if getattr(args, c.flag[2:].replace("-", "_")) is None:
+            if c.in_check_all and getattr(args, c.flag[2:].replace("-", "_")) is None:
                 setattr(args, c.flag[2:].replace("-", "_"), args.check_all)
     selected = [c for c in checks if getattr(args, c.flag[2:].replace("-", "_")) is not None]
     if not selected:

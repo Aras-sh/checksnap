@@ -8,7 +8,7 @@ description: Find and fix bugs in a project cheaply with checksnap. Use when the
 Use the `checksnap` MCP tools. They run locally and return short digests, so never read or grep the whole repo yourself.
 
 1. **Scan first.** Call `checksnap_scan(path=<absolute project path>)`. Default `checks="auto"` picks checks from the file types.
-   Name checks explicitly (see `checksnap_list`) only if the user asks for a specific area. `dataset`, `training-log` and `bank` run only when named.
+   Name checks explicitly (see `checksnap_list`) only if the user asks for a specific area. `dataset`, `training-log` and `bank` run only when named; `bank` is experimental (0/12 real findings measured), avoid it.
 2. **Triage the digest.** Each line is `SEV RULE path:line title`, `xN` means N repeats in that file. Work from the top (HIGH first).
    Ignore low-value lines; the digest is candidates, not proof.
 3. **Detail only what you will act on.** Call `checksnap_detail(rule_id, path?, index?)` for those findings. It does not rescan.
