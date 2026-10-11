@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def test_manifests_parse_and_match():
     plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
     market = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
-    assert plugin["name"] == "checksnap" and plugin["version"] == "0.1.0" and plugin["license"] == "MIT"
+    assert plugin["name"] == "checksnap" and plugin["version"] == "0.1.1" and plugin["license"] == "MIT"
     assert plugin["mcpServers"]["checksnap"]["args"] == ["${CLAUDE_PLUGIN_ROOT}/mcp_server.py"]
     key = plugin["userConfig"]["subq_api_key"]
     assert key["sensitive"] is True and key["required"] is False

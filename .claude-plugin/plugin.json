@@ -1,7 +1,7 @@
 {
   "name": "checksnap",
   "displayName": "checksnap",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Find bugs with checksnap's local checks at a tiny token cost: compact digests, Snap only after consent",
   "author": {
     "name": "Aras",
