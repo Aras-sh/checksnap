@@ -1,0 +1,8 @@
+services:
+  - name: a
+    port: 1
+  - name: b
+    port: 2
+web:
+  port: 1
+  port: 2

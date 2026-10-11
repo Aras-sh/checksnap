@@ -6,9 +6,13 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import sys
 from pathlib import Path
 
-PACKAGES = ("checksnap.checks.dataset", "checksnap.checks.optimization")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # so `python benchmarks/gen_rules.py` works too
+
+PACKAGES = tuple(f"checksnap.checks.{n}" for n in (
+    "dataset", "optimization", "security", "deps", "gitrepo", "repro", "traininglog", "docker", "cicd", "sqlcheck", "configcheck", "webcheck"))
 
 
 def render() -> str:

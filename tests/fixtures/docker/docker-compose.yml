@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres
+    privileged: true
+    network_mode: host
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: supersecret1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

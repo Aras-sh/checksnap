@@ -22,6 +22,27 @@ checksnap [--check-dataset [PATH]] [--check-optimization [PATH]] [--check-all [P
 
 Exit codes: 0 ok, 1 findings at or above `--fail-on`, 2 usage error, 3 a check failed, budget exceeded, or auth/quota error.
 
+## Checks
+
+| Flag | What it checks | Snap |
+|---|---|---|
+| `--check-dataset` | benchmark contamination, duplicates, eval leaks, PII, licences, images | optional |
+| `--check-optimization` | slow Python/PyTorch patterns | optional |
+| `--check-security` | unsafe deserialization, injection, hard-coded secrets, weak crypto | no |
+| `--check-dependencies` | loose pins, conflicts, undeclared/unused imports | no |
+| `--check-repo` | big files, missing .gitignore entries, secrets files, conflict markers | no |
+| `--check-reproducibility` | unseeded randomness, unordered data, unpinned deps | no |
+| `--check-training-log` | NaNs, spikes, plateaus, overfitting in training logs | no |
+| `--check-docker` | Dockerfile and compose: `:latest` images, root user, secrets, exposed ports | no |
+| `--check-ci` | GitHub Actions and GitLab CI: unpinned actions, script injection, loose permissions | no |
+| `--check-sql` | `.sql` and migrations: missing WHERE, risky DDL, missing indexes, money as float | no |
+| `--check-config` | config files: duplicate keys, plain-text secrets, weak passwords, `.env` drift | no |
+| `--check-web` | HTML/CSS/JS: accessibility, SEO basics, mixed content, heavy assets | no |
+
+`--check-all` runs every check; `checksnap --explain RULE_ID` explains a rule; all rules are in [docs/RULES.md](RULES.md).
+
+All take an optional PATH (default `.`) and honour `--include-tests`, `--format`, `--fail-on`. Details for the two Snap-backed checks follow.
+
 ## --check-dataset
 
 ```

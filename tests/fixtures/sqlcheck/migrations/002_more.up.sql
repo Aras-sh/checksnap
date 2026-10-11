@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE a ADD COLUMN note text;
+COMMIT;
