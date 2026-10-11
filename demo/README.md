@@ -98,9 +98,9 @@ Verdict: **no verbatim or answer-level leak found in the pairs I read.** 2 of 3 
 ## 6. What to say at launch
 
 - One command runs ~13 checks; on psf/requests the free pass takes 0.6 s and the full Snap optimization run takes 13 s and 62k tokens (~$0.006 at $0.09/M).
-- Cost is predictable: dry-run gave an upper bound, real usage was lower (bank 0.97M vs 5.0M est.), and `--budget-tokens` stopped runs. Whole demo: 1.59M tokens, ~$0.14.
-- On GSM8K, free exact/13-gram/duplicate checks across the full 7,473 x 1,319 ran in 14 s and found no exact or near-duplicate records; the Snap pass on 5,000 train rows x 56 test items found nothing, and I read 10 flagged pairs and none is a leak.
-- On requests, the free static rule found real (minor) quadratic list-membership code in cookies.py, 4 locations; the Snap optimization layer gave 14 findings with a measured decoy false-positive rate of 0 and canary recall of 1.0.
+- Cost: the whole demo used 1.59M tokens (~$0.14 at $0.09/M, derived from the SubQ console, not an invoice). Dry-run estimates ran 4-5x HIGH (an upper bound, not a prediction), and `--budget-tokens` stopped runs.
+- On GSM8K, the free exact/13-gram/duplicate checks across the full 7,473 x 1,319 ran in 14 s and found no exact or near-duplicate records; I read 10 flagged pairs and none is a leak. Snap: the 1,400-row slice passed its canaries (canary recall 1.0) and found nothing. The 5,000-row Snap run is INVALID: it missed both canaries (canary_recall 0.0, `part2_snap5000.txt:51`), meaning Snap did not read that text, so it says nothing about contamination there.
+- On requests, the free static rule found real (minor) quadratic list-membership code in cookies.py, 4 locations. The Snap-only layers produced no confirmed defects when hand-graded (optimization ~27-33% precision, bank 0/12); their 0% decoy false-positive rate only shows the model can retrieve an exact sentence, not that its code findings are right.
 - Findings are candidates to review, not verdicts; the tool says so in its own output.
 
 ## 7. Limitations (say these too)
