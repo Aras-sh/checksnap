@@ -13,7 +13,9 @@ def post(srv, state, instr, headers=None):
 def test_default_scorer_and_usage():
     with FakeSnapServer() as srv:
         r = post(srv, "hello zebra", "[[needle]]zebra[[/needle]]").json()
-        assert r["answers"]["q0"]["noul"] == 0.95 and r["usage"]["input_tokens"] == 4
+        assert r["answers"]["q0"]["noul"] == 0.95
+        req = srv.requests[0]
+        assert req["q_chars"] > 0 and r["usage"]["input_tokens"] == req["input_tokens"] == -(-(len("hello zebra") + req["q_chars"]) // 3)   # questions are billed too
         assert post(srv, "hello", "[[needle]]zebra[[/needle]]").json()["answers"]["q0"]["noul"] == 0.04
         assert post(srv, "hello", "no markers").json()["answers"]["q0"]["noul"] == 0.04
         assert srv.calls == 3 and srv.last_state == "hello"

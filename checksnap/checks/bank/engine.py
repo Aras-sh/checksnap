@@ -5,7 +5,6 @@ never a crash. Packing, localizing and line pinning reuse the optimization snap 
 """
 from __future__ import annotations
 
-import dataclasses
 import hashlib
 import importlib
 import json
@@ -28,7 +27,8 @@ LOCAL_HITS_PER_ITEM = 3
 MIN_ABSENCE_FILES = 10     # "nothing like X anywhere" claims are only meaningful when the scan sees enough of the project
 BASELINE_MARGIN, BASELINE_MAX = 0.15, 0.5
 BASELINE_DIR = Path(__file__).parent / "baseline"
-MAX_LOCALIZE = 10          # each localize bisects with extra calls; beyond this, window-level evidence only
+MAX_LOCALIZE = 25          # each localize bisects with extra calls; beyond this, regex-hint / window-level attribution only
+MAX_HINT_FILES = 3         # a regex hint matching more files than this says nothing about where the bug is
 EXT_KINDS: dict[str, set[str]] = {}
 for _k, _exts in {
     "code": ".py .js .ts .tsx .jsx .go .rs .java .c .cpp .h .rb .php .sh .cs .kt",
@@ -148,16 +148,12 @@ def drop_absence(items: list[dict], n_files: int, include: bool) -> tuple[list[d
     return kept, len(items) - len(kept)
 
 
-def pack_per_file(files: list[tuple[str, str]], size: int, snap_mod: Any) -> tuple[list[Any], list[snap_layer.Span]]:
-    """One window per file (big files: one per part), so a window's best score always names exactly one file."""
-    windows: list[Any] = []
-    spans: list[snap_layer.Span] = []
-    for f in files:
-        ws, sp = snap_layer.pack([f], size, snap_mod)
-        base = windows[-1].end if windows else 0
-        spans += [dataclasses.replace(s, start=s.start + base, end=s.end + base, window=s.window + len(windows)) for s in sp]
-        windows += [snap_mod.Window(w.start + base, w.end + base, w.text) for w in ws]
-    return windows, spans
+def cap_items(items: list[dict], n: int | None) -> list[dict]:
+    """The n highest-severity items (stable: ties keep bank order); None or n >= len keeps all."""
+    if not n or n >= len(items):
+        return items
+    keep = {id(it) for it in sorted(items, key=lambda it: -int(it["severity"]))[:n]}
+    return [it for it in items if id(it) in keep]
 
 
 def _baseline_state(items: list[dict], cache_dir: Path):
@@ -176,7 +172,7 @@ def _baseline_state(items: list[dict], cache_dir: Path):
 def baseline_pending(items: list[dict], cache_dir: Path) -> tuple[int, int]:
     """(chars of baseline corpus, items not yet cached): what a baseline run would still cost. (0, 0) when fully cached."""
     files, _, _, _, todo = _baseline_state(items, cache_dir)
-    return (sum(len(t) for _, t in files), len(todo)) if todo else (0, 0)
+    return (sum(len(t) + len(rel) + 100 for rel, t in files), len(todo)) if todo else (0, 0)    # + '### FILE:' header per file
 
 
 def baseline_scores(snap: Any, items: list[dict], cache_dir: Path, snap_mod: Any) -> tuple[dict[str, float], Any]:
@@ -187,7 +183,7 @@ def baseline_scores(snap: Any, items: list[dict], cache_dir: Path, snap_mod: Any
     files, path, cache, ver, todo = _baseline_state(items, cache_dir)
     scan = None
     if todo and files:
-        windows, _ = pack_per_file(files, 100_000, snap_mod)
+        windows, _ = snap_layer.pack(files, 100_000, snap_mod)      # one packed window, same question batches as the real scan
         scan = snap.scan_windows(windows, questions(snap_mod, todo), label="bank-baseline")
         for it in todo:
             cache[it["id"]] = {"v": ver(it), "score": scan.per_question[it["id"]].max_score}
@@ -277,26 +273,45 @@ def interpret(scan: Any, items: list[dict], hints: dict[str, list[re.Pattern[str
         pats = hints.get(qid) or []
         shim = SimpleNamespace(info=SimpleNamespace(id=qid), hint=_AnyOf(pats) if pats else None)
         extra = {"window": [ws, we], "score": round(score, 4), "category": it["category"]}
-        ev: list[Evidence] = []
+        snip = None
         if n < MAX_LOCALIZE and hasattr(ctx.snap, "localize"):
             win = snap_layer._text_of(windows, ws, we, snap_mod)
             try:
                 snip = ctx.snap.localize(win, qmap[qid]) if win else None
             except snap_mod.SnapError as e:
                 notes.append(f"localize {qid} failed: {e}")
-                snip = None
-            if snip is not None:
-                ev = snap_layer._snippet_evidence(snip, spans, windows, shim, {}, extra)
-        if not ev:       # window level: the files inside it, with the first hint line per file when there is one
-            w = next((w for w in windows if w.start <= ws < w.end), None)
-            for sp in spans:
-                if len(ev) >= 5 or not (ws <= sp.start < we) or w is None:
-                    continue
-                body = w.text[sp.start - w.start + sp.header_len:sp.end - w.start]
-                line = next((i for i, ln in enumerate(body.splitlines()) if shim.hint and shim.hint.search(ln)), None)
-                ev.append(Evidence(sp.rel, None if line is None else sp.first_line + line, None if line is None else sp.first_line + line,
-                                   "" if line is None else body.splitlines()[line].strip()[:200], {**extra, "localized": False}))
-            ev = ev or [Evidence(None, None, None, "", {**extra, "localized": False})]
+        ev = attribute(snip.start if snip else ws, snip.end if snip else we, snip is not None, spans, windows, shim.hint, extra)
         out.append(Finding("bank", qid, it["severity"], it["title"],
                            f"Snap score {score:.2f} (candidate, not proof). {it['why']}", ev, score, "snap", it["fix"]))
     return out
+
+
+def attribute(lo: int, hi: int, localized: bool, spans: list[Any], windows: list[Any], hint: Any, extra: dict) -> list[Evidence]:
+    """Files for the text range [lo, hi): a snippet Snap localized, or else the whole window it flagged.
+
+    One file only when the range holds one file or a regex hint lands in at most MAX_HINT_FILES files; otherwise
+    one entry saying "somewhere in these N files" (never a guess at a single file)."""
+    secs = [sp for sp in spans if sp.start + sp.header_len < hi and sp.end > lo and (localized or lo <= sp.start < hi)]
+    hits: list[Evidence] = []
+    for sp in secs:
+        w = windows[sp.window]
+        a, b = max(sp.start + sp.header_len, lo), min(sp.end, hi)
+        l0 = snap_layer._line_at(sp, windows, a)
+        for i, ln in enumerate(w.text[a - w.start:b - w.start].splitlines()):
+            if hint and hint.search(ln):
+                hits.append(Evidence(sp.rel, l0 + i, l0 + i, ln.strip()[:200], {**extra, "localized": localized, "line_from": "regex hint"}))
+                break
+    if localized and len(secs) == 1:
+        sp = secs[0]
+        if hits:
+            return hits
+        w = windows[sp.window]
+        a, b = max(sp.start + sp.header_len, lo), min(sp.end, hi)
+        l0 = snap_layer._line_at(sp, windows, a)
+        piece = w.text[a - w.start:b - w.start]
+        return [Evidence(sp.rel, l0, l0 + piece.count("\n"), piece[:400], {**extra, "localized": True, "line_from": "snippet range"})]
+    if 0 < len(hits) <= MAX_HINT_FILES:
+        return hits
+    files = [h.file for h in hits] if hits else [sp.rel for sp in secs]
+    shown = ", ".join(files[:10]) + (f" (+{len(files) - 10} more)" if len(files) > 10 else "")
+    return [Evidence(None, None, None, f"somewhere in these {len(files)} files: {shown}" if files else "", {**extra, "localized": False, "files": files})]

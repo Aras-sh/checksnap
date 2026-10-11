@@ -14,6 +14,7 @@ BV = ROOT / ".bench-venv" / "bin"
 CSPY = ROOT / ".venv" / "bin" / "python"
 RES = HERE / "results.json"
 RAW.mkdir(exist_ok=True)
+os.environ["PATH"] = f"{BV}:{os.environ['PATH']}"      # adapters (--with-adapters) find bandit/ruff/detect-secrets here
 
 
 # ---------------------------------------------------------------- helpers
@@ -129,11 +130,15 @@ def task1():
         js = json.loads(r["out"] or "{}")
         return r["s"], [{"file": name(x["path"]), "line": x["start"]["line"], "rule": x["check_id"].split(".")[-1]} for x in js.get("results", [])]
 
-    def run_cs(d):
-        s, fl, _ = cs(["--check-security", d])
+    def run_cs(d, extra=()):
+        s, fl, _ = cs(["--check-security", d, *extra])
         return s, [{"file": name(x["file"]), "line": x["line"], "rule": x["rule"]} for x in fl]
 
-    for tname, fn in (("bandit", run_bandit), ("semgrep p/python", run_semgrep), ("checksnap --check-security", run_cs)):
+    def run_cs_ad(d):
+        return run_cs(d, ["--with-adapters"])
+
+    for tname, fn in (("bandit", run_bandit), ("semgrep p/python", run_semgrep), ("checksnap --check-security", run_cs),
+                      ("checksnap+adapters --check-security --with-adapters", run_cs_ad)):
         s1, f1 = fn(str(ex)); s2, f2 = fn(str(std))
         byfile = {}
         for x in f1: byfile.setdefault(x["file"], set()).add(x["rule"])
@@ -235,6 +240,8 @@ def _lint_all(d):
     out["flake8 (default)"] = (r["s"], [(name(a), int(b), c) for a, b, c in (l.split("|") for l in r["out"].splitlines() if l.count("|") == 2)])
     s, fl, _ = cs(["--check-optimization", d, "--static-only"])
     out["checksnap --check-optimization --static-only"] = (s, [(name(x["file"]), x["line"], x["rule"]) for x in fl])
+    s, fl, _ = cs(["--check-optimization", d, "--static-only", "--with-adapters"])
+    out["checksnap+adapters --check-optimization --static-only --with-adapters"] = (s, [(name(x["file"]), x["line"], x["rule"]) for x in fl])
     return out
 
 
@@ -546,9 +553,90 @@ def task6():
     return res
 
 
+# ---------------------------------------------------------------- after-improvements: t5a (bank, real API), t7 (--snap-verify, real API)
+KEY_SH = "set -a; . /home/aras/Projects/_scan_test/snap-contamination-scanner/.env >/dev/null 2>&1; set +a; "
+
+
+def _real(args, cache, budget="300000", dry=False):
+    """checksnap with the key sourced inside the shell (never printed). -> (doc | stdout text, seconds)."""
+    fmt = ["--dry-run"] if dry else ["--yes", "--budget-tokens", budget, "--format", "json", "--fail-on", "none"]
+    cmd = KEY_SH + f"exec nice -n 10 {CSPY} -m checksnap " + " ".join(map(str, [*args, *fmt, "--cache-dir", cache]))
+    t = time.perf_counter()
+    p = subprocess.run(["bash", "-c", cmd], capture_output=True, text=True, env=dict(os.environ, PYTHONPATH=str(ROOT)), timeout=900)
+    return (p.stdout + p.stderr if dry else json.loads(p.stdout)), round(time.perf_counter() - t, 1)
+
+
+def task5a():
+    """Same 60 files as task5 (data NOT regenerated), after-improvements checksnap, fresh cache so tokens are really spent (<=300k cap)."""
+    truth = json.load(open(DATA / "bank/truth.json")); proj = DATA / "bank/proj"
+    planted = {fn: v["item"] for fn, v in truth.items() if v["kind"] == "bug"}; byitem = {v: k for k, v in planted.items()}
+    cache = str(HERE / ".snapcache_costfix"); saved = RAW / "bank_costfix_proj.json"      # fresh cache: tokens really spent
+    args = ["--check-bank", str(proj), "--bank-top", "200"]
+    if saved.exists():
+        j = json.loads(saved.read_text()); r, secs, est_txt = j["result"], j["seconds"], j["dry_run"]
+    else:
+        est_txt, _ = _real(args, cache, dry=True)
+        doc, secs = _real(args, cache, budget="120000"); r = doc["results"][0]
+        saved.write_text(json.dumps({"result": r, "seconds": secs, "dry_run": est_txt}))
+    m = re.search(r"^bank\s+\S+ KB\s+(\d+)\s+([\d,]+)", est_txt, re.M)
+    est_tokens = int(m.group(2).replace(",", "")) if m else None
+    fl = r["findings"]; rank = {f["rule_id"]: i + 1 for i, f in enumerate(fl)}; items = set(planted.values()); st = r["stats"]
+    found = {i for i in items if i in rank}
+    out = {"seconds": secs, "input_tokens": r["usage"]["input_tokens"], "snap_calls": r["usage"]["snap_calls"], "dry_run_estimate_tokens": est_tokens,
+           "dry_run_includes_baseline": "baseline" in est_txt, "items_asked": st["items_asked"], "flagged_ge_0.5": st["flagged"], "suppressed": st.get("suppressed", 0),
+           "findings_shown": len(fl), "clean_code_fire_rate": st.get("clean_code_fire_rate"), "calibration": st["calibration"],
+           "planted_findings_surviving": f"{len(found)}/30", "planted_missed_or_suppressed": sorted(items - found)}
+    for k in (5, 10, 25, 50):
+        out[f"precision@{k}"] = f"{sum(f['rule_id'] in items for f in fl[:k])}/{min(k, len(fl))}"
+    ex = lambda f: (f["evidence"][0].get("extra") or {}) if f["evidence"] else {}  # noqa: E731
+    files_of = lambda f: [e["file"] for e in f["evidence"] if e["file"]]  # noqa: E731
+    loc = [f for f in fl if len(f["evidence"]) == 1 and files_of(f) and ex(f).get("localized")]          # Snap-localized, one file
+    hint = [f for f in fl if files_of(f) and f not in loc]                                                 # regex-hint attribution, 1-3 files
+    none = [f for f in fl if not files_of(f)]                                                              # "somewhere in these N files"
+    pl = [f for f in fl if f["rule_id"] in items]
+    ok = [f for f in pl if f in loc and files_of(f)[0] == byitem[f["rule_id"]]]
+    hint_ok = [f for f in pl if f in hint and byitem[f["rule_id"]] in files_of(f)]
+    cl_blame = {x for f in loc + hint for x in files_of(f) if truth[x]["kind"] == "clean"}
+    out.update({"findings_localized_to_one_file": len(loc), "planted_localized": sum(f in loc for f in pl), "planted_localized_correct_file": len(ok),
+                "findings_hint_attributed": len(hint), "planted_hint_attributed": sum(f in hint for f in pl), "planted_hint_attributed_includes_bug_file": len(hint_ok),
+                "findings_unattributed_somewhere_in_N_files": len(none), "planted_unattributed": sum(f in none for f in pl),
+                "clean_files_blamed": len(cl_blame), "localized_findings_on_clean_files": sum(files_of(f)[0] in cl_blame for f in loc),
+                "off_target_shown": len(fl) - len(found), "localize_calls_and_tokens_included_in_usage": True})
+    out["notes"] = r["notes"]
+    return out
+
+
+def task7():
+    """--snap-verify on the security check (real API): stdlib 30 clean-ish files + vulnerable bandit examples."""
+    sv, vd = DATA / "t1/verify", DATA / "t1/verify_vuln"
+    shutil.rmtree(vd, ignore_errors=True); vd.mkdir()
+    pick = ["eval.py", "pickle_deserialize.py", "yaml_load.py", "flask_debug.py", "subprocess_shell.py", "os_system.py", "crypto-md5.py",
+            "requests-ssl-verify-disabled.py", "tarfile_extractall.py", "sql_statements.py", "mktemp.py", "os-chmod.py"]
+    for f in pick: shutil.copy(DATA / "t1/cases" / f, vd / f)
+    shutil.rmtree(sv, ignore_errors=True); sv.mkdir()
+    for p in (DATA / "t1/stdlib").glob("*.py"): shutil.copy(p, sv / p.name)
+    out = {}; cache = str(HERE / ".snapcache_verify")
+    for label, d in (("stdlib_30", sv), ("vulnerable_12", vd)):
+        saved = RAW / f"verify_{label}.json"
+        _, base, _ = cs(["--check-security", str(d), "--with-adapters"])
+        if saved.exists(): j = json.loads(saved.read_text())
+        else:
+            doc, secs = _real(["--check-security", str(d), "--with-adapters", "--snap-verify"], cache, budget="60000")
+            j = {"result": doc["results"][0], "seconds": secs}; saved.write_text(json.dumps(j))
+        r = j["result"]; v = r["stats"].get("verify", {})
+        lowered = [{"rule": f["rule_id"], "file": name(f["evidence"][0]["file"]), "line": f["evidence"][0]["line_start"], "sev": f["severity"], "score": f.get("score")}
+                   for f in r["findings"] if "snap judged unlikely" in (f.get("detail") or "")]
+        out[label] = {"findings_total": len(r["findings"]), "verify_stats": {k: v.get(k) for k in ("candidates", "checked", "lowered")}, "sev_before": v.get("before"), "sev_after": v.get("after"),
+                      "lowered": lowered, "input_tokens": r["usage"]["input_tokens"], "snap_calls": r["usage"]["snap_calls"], "seconds": j["seconds"], "notes": r["notes"],
+                      "all_findings": [{"rule": f["rule_id"], "file": name(f["evidence"][0]["file"]), "line": f["evidence"][0]["line_start"], "sev": f["severity"], "score": f.get("score")} for f in r["findings"]]}
+    return out
+
+
 TASKS = {"t1": task1, "t2": task2, "t3": task3, "t4": task4, "t5": task5, "t6": task6}
+AFTER = {"t5a": task5a, "t7": task7}      # real-API tasks of the after-improvements run; not in the default list, ask for them by name
+TASKS.update(AFTER)
 if __name__ == "__main__":
-    which = sys.argv[1:] or list(TASKS)
+    which = sys.argv[1:] or [t for t in TASKS if t not in AFTER]
     if "versions" in which or not sys.argv[1:]:
         save("versions", versions())
     for t in which:

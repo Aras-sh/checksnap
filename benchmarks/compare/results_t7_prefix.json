@@ -1,0 +1,2718 @@
+{
+ "versions": {
+  "bandit": "bandit 1.9.4",
+  "semgrep": "1.180.0",
+  "detect-secrets": "1.5.0",
+  "ruff": "ruff 0.17.0",
+  "pylint": "pylint 4.1.3",
+  "flake8": "7.4.1 (mccabe: 0.7.0, pycodestyle: 2.15.0, pyflakes: 4.0.3) CPython 3.12.3 on",
+  "yamllint": "yamllint 1.38.0",
+  "sqlfluff": "sqlfluff, version 4.4.0",
+  "hadolint": "Haskell Dockerfile Linter 2.15.1",
+  "actionlint": "1.7.12",
+  "checksnap": "0.1.0",
+  "python": "3.12.3"
+ },
+ "t1": {
+  "positives": 76,
+  "benign_examples": 4,
+  "in_scope_for_checksnap": 20,
+  "tools": {
+   "bandit": {
+    "examples_detected": 76,
+    "examples_recall": 1.0,
+    "benign_examples_with_findings": [
+     "mark_safe_secure.py"
+    ],
+    "seconds_examples": 0.17,
+    "seconds_stdlib": 0.3,
+    "in_scope_detected": "20/20",
+    "in_scope_right_class": "19/20",
+    "missed_in_scope": [],
+    "stdlib_files_with_findings": "10/30",
+    "stdlib_findings_total": 26,
+    "stdlib_findings_per_file": 0.87,
+    "stdlib_by_rule": {
+     "B403": 3,
+     "B101": 16,
+     "B110": 2,
+     "B102": 1,
+     "B404": 1,
+     "B307": 1,
+     "B105": 1,
+     "B301": 1
+    }
+   },
+   "semgrep p/python": {
+    "examples_detected": 16,
+    "examples_recall": 0.211,
+    "benign_examples_with_findings": [],
+    "seconds_examples": 1.36,
+    "seconds_stdlib": 1.53,
+    "in_scope_detected": "7/20",
+    "missed_in_scope": [
+     "assert.py",
+     "django_sql_injection_raw.py",
+     "eval.py",
+     "exec.py",
+     "hardcoded-passwords.py",
+     "mktemp.py",
+     "os-popen.py",
+     "os_system.py",
+     "pickle_deserialize.py",
+     "pytorch_load.py",
+     "requests-ssl-verify-disabled.py",
+     "sql_statements.py",
+     "tarfile_extractall.py"
+    ],
+    "stdlib_files_with_findings": "0/30",
+    "stdlib_findings_total": 0,
+    "stdlib_findings_per_file": 0.0,
+    "stdlib_by_rule": {}
+   },
+   "checksnap --check-security": {
+    "examples_detected": 21,
+    "examples_recall": 0.276,
+    "benign_examples_with_findings": [],
+    "seconds_examples": 0.08,
+    "seconds_stdlib": 0.12,
+    "in_scope_detected": "17/20",
+    "in_scope_right_class": "17/20",
+    "missed_in_scope": [
+     "assert.py",
+     "django_sql_injection_raw.py",
+     "exec.py"
+    ],
+    "stdlib_files_with_findings": "6/30",
+    "stdlib_findings_total": 7,
+    "stdlib_findings_per_file": 0.23,
+    "stdlib_by_rule": {
+     "SEC-003": 2,
+     "SEC-001": 1,
+     "SEC-009": 4
+    }
+   },
+   "checksnap+adapters --check-security --with-adapters": {
+    "examples_detected": 76,
+    "examples_recall": 1.0,
+    "benign_examples_with_findings": [
+     "mark_safe_secure.py"
+    ],
+    "seconds_examples": 1.03,
+    "seconds_stdlib": 0.68,
+    "in_scope_detected": "20/20",
+    "in_scope_right_class": "17/20",
+    "missed_in_scope": [],
+    "stdlib_files_with_findings": "10/30",
+    "stdlib_findings_total": 26,
+    "stdlib_findings_per_file": 0.87,
+    "stdlib_by_rule": {
+     "SEC-003": 2,
+     "SEC-001": 1,
+     "EXT-BANDIT-B403": 3,
+     "SEC-009": 4,
+     "EXT-BANDIT-B110": 2,
+     "EXT-BANDIT-B404": 1,
+     "EXT-BANDIT-B101": 12,
+     "EXT-BANDIT-B105": 1
+    }
+   }
+  },
+  "_wall_s": 5.3
+ },
+ "t2": {
+  "detect-secrets": {
+   "per_format": {
+    "env": "10/10",
+    "json": "9/10",
+    "py": "10/10",
+    "sh": "10/10",
+    "txt": "6/10",
+    "yaml": "9/10"
+   },
+   "planted_files_detected": "54/60",
+   "recall": 0.9,
+   "line_exact": "53/60",
+   "per_kind": {
+    "aws": "10/10",
+    "ghp": "10/10",
+    "slack": "6/10",
+    "pkey": "10/10",
+    "jwt": "10/10",
+    "password": "8/10"
+   },
+   "decoy_files_with_findings": "21/60",
+   "decoy_findings": 21,
+   "seconds": 1.07,
+   "decoy_rules": [
+    "Base64 High Entropy String",
+    "Hex High Entropy String",
+    "Secret Keyword"
+   ]
+  },
+  "detect-secrets (entropy plugins off)": {
+   "per_format": {
+    "env": "9/10",
+    "json": "8/10",
+    "py": "9/10",
+    "sh": "8/10",
+    "txt": "6/10",
+    "yaml": "8/10"
+   },
+   "planted_files_detected": "48/60",
+   "recall": 0.8,
+   "line_exact": "47/60",
+   "per_kind": {
+    "aws": "10/10",
+    "ghp": "10/10",
+    "slack": "0/10",
+    "pkey": "10/10",
+    "jwt": "10/10",
+    "password": "8/10"
+   },
+   "decoy_files_with_findings": "4/60",
+   "decoy_findings": 4,
+   "seconds": 1.74,
+   "decoy_rules": [
+    "Secret Keyword"
+   ]
+  },
+  "checksnap --check-security": {
+   "per_format": {
+    "env": "0/10",
+    "json": "8/10",
+    "py": "10/10",
+    "sh": "7/10",
+    "txt": "0/10",
+    "yaml": "7/10"
+   },
+   "planted_files_detected": "32/60",
+   "recall": 0.533,
+   "line_exact": "32/60",
+   "per_kind": {
+    "aws": "7/10",
+    "ghp": "7/10",
+    "slack": "7/10",
+    "pkey": "7/10",
+    "jwt": "2/10",
+    "password": "2/10"
+   },
+   "decoy_files_with_findings": "0/60",
+   "decoy_findings": 0,
+   "seconds": 0.12,
+   "decoy_rules": []
+  },
+  "checksnap --check-config": {
+   "per_format": {
+    "env": "10/10",
+    "json": "10/10",
+    "py": "0/10",
+    "sh": "0/10",
+    "txt": "0/10",
+    "yaml": "9/10"
+   },
+   "planted_files_detected": "29/60",
+   "recall": 0.483,
+   "line_exact": "29/60",
+   "per_kind": {
+    "aws": "6/10",
+    "ghp": "6/10",
+    "slack": "5/10",
+    "pkey": "3/10",
+    "jwt": "4/10",
+    "password": "5/10"
+   },
+   "decoy_files_with_findings": "0/60",
+   "decoy_findings": 0,
+   "seconds": 0.12,
+   "decoy_rules": []
+  },
+  "checksnap security+config (union)": {
+   "per_format": {
+    "env": "10/10",
+    "json": "10/10",
+    "py": "10/10",
+    "sh": "7/10",
+    "txt": "0/10",
+    "yaml": "10/10"
+   },
+   "planted_files_detected": "47/60",
+   "recall": 0.783,
+   "line_exact": "47/60",
+   "per_kind": {
+    "aws": "9/10",
+    "ghp": "9/10",
+    "slack": "8/10",
+    "pkey": "8/10",
+    "jwt": "6/10",
+    "password": "7/10"
+   },
+   "decoy_files_with_findings": "0/60",
+   "decoy_findings": 0
+  },
+  "jsonl_records": {
+   "checksnap --check-dataset": {
+    "rules_on_planted": [
+     "DS-PII-001"
+    ],
+    "pii_findings_planted": 13,
+    "pii_lines_planted": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     7,
+     8,
+     9,
+     10,
+     11,
+     13,
+     14,
+     15
+    ],
+    "pii_findings_decoys": 0,
+    "all_rules_decoys": []
+   },
+   "detect-secrets": {
+    "planted_lines_flagged": [
+     1,
+     2,
+     4,
+     5,
+     7,
+     11,
+     13
+    ],
+    "decoys_lines_flagged": []
+   }
+  },
+  "_wall_s": 5.6
+ },
+ "t3": {
+  "ruff PERF,SIM,C4,B": {
+   "line_recall_all": "9/40",
+   "line_recall_checksnap_families": "5/28",
+   "line_recall_outside_families": "4/12",
+   "any_finding_on_bug_file": "13/40",
+   "clean_files_with_findings": "5/40",
+   "clean_findings_total": 6,
+   "clean_codes": {
+    "B007": 3,
+    "B905": 1,
+    "SIM115": 1,
+    "C420": 1
+   },
+   "other_findings_in_bug_files": 5,
+   "seconds": 0.01,
+   "missed_in_families": [
+    "concat_loop.py",
+    "concat_while.py",
+    "regex_loop2.py",
+    "member_list.py",
+    "member_list2.py",
+    "rangelen.py",
+    "file_in_loop.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "async_sleep.py",
+    "async_requests.py",
+    "nplus1.py",
+    "nplus1_orm.py",
+    "iterrows.py",
+    "apply_axis1.py",
+    "pop0.py",
+    "item_loop.py",
+    "dataloader.py",
+    "no_amp.py",
+    "tensor_loop.py",
+    "cpu_tensor.py",
+    "zero_grad.py",
+    "ckpt_step.py"
+   ],
+   "precision_line": 0.45,
+   "f1_line": 0.3
+  },
+  "pylint (default)": {
+   "line_recall_all": "7/40",
+   "line_recall_checksnap_families": "5/28",
+   "line_recall_outside_families": "2/12",
+   "any_finding_on_bug_file": "40/40",
+   "clean_files_with_findings": "40/40",
+   "clean_findings_total": 102,
+   "clean_codes": {
+    "C0116": 41,
+    "C0114": 40,
+    "E0401": 8,
+    "W1514": 3,
+    "W0611": 3,
+    "W0612": 3,
+    "C0115": 2,
+    "W0613": 1
+   },
+   "other_findings_in_bug_files": 108,
+   "seconds": 1.73,
+   "missed_in_families": [
+    "concat_loop.py",
+    "concat_while.py",
+    "regex_loop.py",
+    "regex_loop2.py",
+    "member_list.py",
+    "member_list2.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "async_sleep.py",
+    "async_requests.py",
+    "nplus1.py",
+    "iterrows.py",
+    "apply_axis1.py",
+    "list_copy_sum.py",
+    "pop0.py",
+    "item_loop.py",
+    "dataloader.py",
+    "no_amp.py",
+    "no_grad.py",
+    "tensor_loop.py",
+    "cpu_tensor.py",
+    "zero_grad.py",
+    "ckpt_step.py"
+   ],
+   "precision_line": 0.032,
+   "f1_line": 0.054
+  },
+  "pylint (default, minus C docstring/naming)": {
+   "line_recall_all": "7/40",
+   "line_recall_checksnap_families": "5/28",
+   "line_recall_outside_families": "2/12",
+   "any_finding_on_bug_file": "15/40",
+   "clean_files_with_findings": "12/40",
+   "clean_findings_total": 19,
+   "clean_codes": {
+    "E0401": 8,
+    "W1514": 3,
+    "W0611": 3,
+    "W0612": 3,
+    "W0613": 1,
+    "R1732": 1
+   },
+   "other_findings_in_bug_files": 15,
+   "seconds": 1.72,
+   "missed_in_families": [
+    "concat_loop.py",
+    "concat_while.py",
+    "regex_loop.py",
+    "regex_loop2.py",
+    "member_list.py",
+    "member_list2.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "async_sleep.py",
+    "async_requests.py",
+    "nplus1.py",
+    "iterrows.py",
+    "apply_axis1.py",
+    "list_copy_sum.py",
+    "pop0.py",
+    "item_loop.py",
+    "dataloader.py",
+    "no_amp.py",
+    "no_grad.py",
+    "tensor_loop.py",
+    "cpu_tensor.py",
+    "zero_grad.py",
+    "ckpt_step.py"
+   ],
+   "precision_line": 0.171,
+   "f1_line": 0.173
+  },
+  "flake8 (default)": {
+   "line_recall_all": "1/40",
+   "line_recall_checksnap_families": "1/28",
+   "line_recall_outside_families": "0/12",
+   "any_finding_on_bug_file": "13/40",
+   "clean_files_with_findings": "22/40",
+   "clean_findings_total": 28,
+   "clean_codes": {
+    "E302": 22,
+    "F401": 3,
+    "E741": 1,
+    "E501": 1,
+    "E305": 1
+   },
+   "other_findings_in_bug_files": 17,
+   "seconds": 0.14,
+   "missed_in_families": [
+    "concat_loop.py",
+    "concat_while.py",
+    "regex_loop.py",
+    "regex_loop2.py",
+    "member_list.py",
+    "member_list2.py",
+    "rangelen.py",
+    "file_in_loop.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "async_sleep.py",
+    "async_requests.py",
+    "nplus1.py",
+    "iterrows.py",
+    "apply_axis1.py",
+    "json_loop.py",
+    "lru_method.py",
+    "list_copy_sum.py",
+    "pop0.py",
+    "item_loop.py",
+    "dataloader.py",
+    "no_amp.py",
+    "no_grad.py",
+    "tensor_loop.py",
+    "cpu_tensor.py",
+    "zero_grad.py",
+    "ckpt_step.py"
+   ],
+   "precision_line": 0.022,
+   "f1_line": 0.023
+  },
+  "checksnap --check-optimization --static-only": {
+   "line_recall_all": "22/40",
+   "line_recall_checksnap_families": "21/28",
+   "line_recall_outside_families": "1/12",
+   "any_finding_on_bug_file": "23/40",
+   "clean_files_with_findings": "3/40",
+   "clean_findings_total": 3,
+   "clean_codes": {
+    "OPT-ML-003": 2,
+    "OPT-ML-002": 1
+   },
+   "other_findings_in_bug_files": 5,
+   "seconds": 0.15,
+   "missed_in_families": [
+    "concat_while.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "nplus1_orm.py",
+    "no_amp.py",
+    "no_grad.py",
+    "zero_grad.py"
+   ],
+   "precision_line": 0.733,
+   "f1_line": 0.629
+  },
+  "checksnap+adapters --check-optimization --static-only --with-adapters": {
+   "line_recall_all": "26/40",
+   "line_recall_checksnap_families": "22/28",
+   "line_recall_outside_families": "4/12",
+   "any_finding_on_bug_file": "30/40",
+   "clean_files_with_findings": "7/40",
+   "clean_findings_total": 8,
+   "clean_codes": {
+    "OPT-ML-003": 2,
+    "EXT-RUFF-B007": 2,
+    "OPT-ML-002": 1,
+    "EXT-RUFF-B905": 1,
+    "EXT-RUFF-SIM115": 1,
+    "EXT-RUFF-C420": 1
+   },
+   "other_findings_in_bug_files": 10,
+   "seconds": 0.16,
+   "missed_in_families": [
+    "concat_while.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "nplus1_orm.py",
+    "no_amp.py",
+    "zero_grad.py"
+   ],
+   "precision_line": 0.591,
+   "f1_line": 0.619
+  },
+  "_wall_s": 3.9
+ },
+ "t4": {
+  "sample_sizes": {
+   "workflows": 20,
+   "dockerfiles": 20,
+   "yaml": 20,
+   "sql": 15
+  },
+  "docker": {
+   "hadolint": {
+    "findings_excl_parse_errors": 26,
+    "files_hadolint_failed_to_parse(DL1000 heredoc)": 10,
+    "seconds": 0.04
+   },
+   "checksnap --check-docker": {
+    "findings_all_20_files": 52,
+    "findings_on_the_files_hadolint_parsed": 29,
+    "seconds": 0.06
+   },
+   "same_file_line": 2,
+   "only_first_tool_locations": 12,
+   "only_checksnap_locations": 16,
+   "same_concern_file_pairs": {
+    "hadolint_mapped": 1,
+    "also_checksnap": 1
+   },
+   "hadolint_codes": {
+    "DL3018": 5,
+    "DL3019": 5,
+    "DL3067": 4,
+    "DL3022": 4,
+    "DL3059": 4,
+    "DL3042": 2,
+    "DL3013": 1,
+    "DL3066": 1
+   },
+   "checksnap_rules": {
+    "DOC-010": 10,
+    "DOC-011": 9,
+    "DOC-002": 7,
+    "DOC-007": 2,
+    "DOC-009": 1
+   }
+  },
+  "ci": {
+   "actionlint": {
+    "findings": 15,
+    "seconds": 0.04,
+    "by_kind": {
+     "shellcheck": 15
+    }
+   },
+   "checksnap --check-ci": {
+    "findings": 54,
+    "seconds": 0.07,
+    "by_rule": {
+     "CI-014": 28,
+     "CI-008": 13,
+     "CI-009": 8,
+     "CI-001": 4,
+     "CI-002": 1
+    }
+   },
+   "same_file_line": 0,
+   "only_first_tool_locations": 10,
+   "only_checksnap_locations": 50
+  },
+  "yaml": {
+   "yamllint": {
+    "findings": 167,
+    "seconds": 0.12,
+    "by_rule": {
+     "line-length": 52,
+     "comments": 45,
+     "indentation": 36,
+     "document-start": 20,
+     "truthy": 12,
+     "comments-indentation": 1,
+     "hyphens": 1
+    }
+   },
+   "checksnap --check-config": {
+    "findings": 12,
+    "seconds": 0.07,
+    "by_rule": {
+     "CFG-003": 12
+    }
+   },
+   "same_file_line": 1,
+   "only_first_tool_locations": 132,
+   "only_checksnap_locations": 11
+  },
+  "sql": {
+   "sqlfluff": {
+    "findings": 1274,
+    "seconds": 4.61,
+    "by_rule": {
+     "LT01": 537,
+     "LT02": 330,
+     "LT05": 100,
+     "CP01": 86,
+     "CV06": 70,
+     "AL01": 18,
+     "LT09": 17,
+     "CP03": 14
+    },
+    "parse_errors(PRS/TMP)": 4
+   },
+   "checksnap --check-sql": {
+    "findings": 110,
+    "seconds": 0.09,
+    "by_rule": {
+     "SQL-002": 62,
+     "SQL-003": 34,
+     "SQL-006": 12,
+     "SQL-016": 1,
+     "SQL-004": 1
+    }
+   },
+   "same_file_line": 67,
+   "only_first_tool_locations": 513,
+   "only_checksnap_locations": 43
+  },
+  "manual_judgement_15_each": {
+   "method": "Each tool's 15 findings were drawn with random.Random(15).sample from raw/t4_findings.json (all findings if fewer than 15; see raw/t4_sample15.json) and read against the source line by one reviewer (the benchmark author, an LLM; subjective). 'correct' = the statement is true of that line and not a pattern the tool itself should recognise as valid.",
+   "hadolint": {
+    "n": 15,
+    "correct": 12,
+    "notes": "3 x DL3022 flag `COPY --from=<external image>` which is valid Docker; 10 of 20 Dockerfiles failed to parse at all (DL1000, heredoc RUN <<EOF followed by a comment), so these 15 come only from the 10 parsable files"
+   },
+   "checksnap --check-docker": {
+    "n": 15,
+    "correct": 15,
+    "notes": "all literally true; 5 of 15 are DOC-002 'no USER' on dev-only stages (low value); 4 are DOC-010 (no .dockerignore)"
+   },
+   "actionlint": {
+    "n": 15,
+    "correct": 15,
+    "notes": "all shellcheck SC2086/SC2006 findings inside run: blocks; true but mostly low-risk unquoted ${GITHUB_*} variables"
+   },
+   "checksnap --check-ci": {
+    "n": 15,
+    "correct": 15,
+    "notes": "all literally true; 7 of 15 are INFO/LOW hygiene (ubuntu-latest, no timeout-minutes, no concurrency); 1 HIGH (branch ref release/v1 on pypa publish action, which is that action's documented usage)"
+   },
+   "yamllint": {
+    "n": 15,
+    "correct": 12,
+    "notes": "15/15 violate default config literally, but 3 are `on:` truthy warnings on GitHub workflows (a well-known false positive) and 4 are line-length on SHA-pinned `uses:` lines that cannot be shortened; 0 of 15 are functional bugs"
+   },
+   "checksnap --check-config": {
+    "n": 12,
+    "correct": 0,
+    "notes": "ALL 12 findings (CFG-003 'Secret in plain text') are `${{ secrets.X }}` / `${{ github.token }}` expression references in GitHub workflows, i.e. the opposite of plain text; only 12 exist so the sample is the whole population"
+   },
+   "sqlfluff": {
+    "n": 15,
+    "correct": 14,
+    "notes": "all style/layout (LT01, LT02, LT05, CV06, CV10); 1 CV06 'must end with a semicolon' on `DELETE FROM store ;` which does end with one; none are bugs"
+   },
+   "checksnap --check-sql": {
+    "n": 15,
+    "correct": 15,
+    "notes": "literally true but 14/15 are SQL-002 DELETE-without-WHERE / SQL-003 DROP-without-IF-EXISTS inside files whose whole purpose is wipe-all / drop-all (sakila *-delete-data.sql, *-drop-objects.sql); only 1 (leading-wildcard LIKE in a CHECK) is a design finding. Corpus is adversarial for these rules"
+   }
+  },
+  "_wall_s": 5.1
+ },
+ "t5": {
+  "files": 60,
+  "planted_items": 30,
+  "project_run": {
+   "seconds_first_run": 19.75,
+   "input_tokens_first_run": 30913,
+   "snap_calls": 3,
+   "items_asked": 152,
+   "flagged_ge_0.5": 74,
+   "planted_flagged_any_rank": "30/30",
+   "planted_in_top5": 5,
+   "planted_in_top25": 19,
+   "planted_in_top50": 26,
+   "off_target_flagged": 44,
+   "calibration": {
+    "decoys": 24,
+    "false_positive_rate": 0.0,
+    "canaries": 3,
+    "canary_recall": 1.0
+   },
+   "planted_missed": [],
+   "localized_planted_findings": 9,
+   "localized_to_correct_file": 5,
+   "unlocalized_planted_whose_listed_files_contain_the_bug_file": 3,
+   "clean_files_blamed_by_localized_findings": 2
+  },
+  "small_projects_10_files_each": {
+   "tokens": 127245,
+   "seconds": 21.7,
+   "planted": 30,
+   "found": 28,
+   "found_top5": 18,
+   "off_target": 211,
+   "flagged": 239,
+   "clean_files": 30,
+   "per_batch": [
+    {
+     "flagged": 41,
+     "found": 5,
+     "off_target": 36,
+     "tokens": 21658,
+     "off_target_ids": [
+      "API-005",
+      "BANK-ARCH-002",
+      "BANK-ARCH-004",
+      "BANK-ARCH-009",
+      "BANK-ARCH-010",
+      "BANK-ARCH-014",
+      "BANK-ARCH-016",
+      "BANK-ARCH-019",
+      "BANK-ARCH-025",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-011",
+      "BANK-RELIAB-017",
+      "BANK-RELIAB-018",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-022",
+      "BANK-RELIAB-024",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-032",
+      "BANK-RELIAB-037",
+      "BANK-RELIAB-038",
+      "BANK-RELIAB-039",
+      "BANK-SEC-005",
+      "BANK-SEC-016",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-024",
+      "BANK-SEC-025",
+      "BANK-SEC-032",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "BANK-SEC-040",
+      "TEST-005"
+     ]
+    },
+    {
+     "flagged": 42,
+     "found": 5,
+     "off_target": 37,
+     "tokens": 21451,
+     "off_target_ids": [
+      "API-005",
+      "BANK-ARCH-002",
+      "BANK-ARCH-007",
+      "BANK-ARCH-009",
+      "BANK-ARCH-010",
+      "BANK-ARCH-014",
+      "BANK-ARCH-016",
+      "BANK-ARCH-019",
+      "BANK-ARCH-021",
+      "BANK-ARCH-025",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-013",
+      "BANK-RELIAB-014",
+      "BANK-RELIAB-015",
+      "BANK-RELIAB-017",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-022",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-032",
+      "BANK-RELIAB-033",
+      "BANK-RELIAB-037",
+      "BANK-RELIAB-038",
+      "BANK-RELIAB-039",
+      "BANK-RELIAB-042",
+      "BANK-SEC-002",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-025",
+      "BANK-SEC-032",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "PERF-GEN-002",
+      "PERF-GEN-008"
+     ]
+    },
+    {
+     "flagged": 38,
+     "found": 5,
+     "off_target": 33,
+     "tokens": 20770,
+     "off_target_ids": [
+      "API-005",
+      "BANK-ARCH-006",
+      "BANK-ARCH-007",
+      "BANK-ARCH-010",
+      "BANK-ARCH-016",
+      "BANK-ARCH-021",
+      "BANK-ARCH-025",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-RELIAB-002",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-011",
+      "BANK-RELIAB-016",
+      "BANK-RELIAB-017",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-022",
+      "BANK-RELIAB-024",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-033",
+      "BANK-RELIAB-038",
+      "BANK-RELIAB-039",
+      "BANK-RELIAB-041",
+      "BANK-SEC-002",
+      "BANK-SEC-016",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-024",
+      "BANK-SEC-025",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "TEST-010"
+     ]
+    },
+    {
+     "flagged": 41,
+     "found": 5,
+     "off_target": 36,
+     "tokens": 20998,
+     "off_target_ids": [
+      "API-003",
+      "API-005",
+      "BANK-ARCH-002",
+      "BANK-ARCH-007",
+      "BANK-ARCH-010",
+      "BANK-ARCH-016",
+      "BANK-ARCH-021",
+      "BANK-ARCH-025",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-014",
+      "BANK-RELIAB-017",
+      "BANK-RELIAB-020",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-024",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-033",
+      "BANK-RELIAB-037",
+      "BANK-RELIAB-038",
+      "BANK-RELIAB-039",
+      "BANK-RELIAB-041",
+      "BANK-RELIAB-042",
+      "BANK-SEC-007",
+      "BANK-SEC-016",
+      "BANK-SEC-020",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-024",
+      "BANK-SEC-025",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "BANK-SEC-040",
+      "PERF-GEN-002"
+     ]
+    },
+    {
+     "flagged": 39,
+     "found": 4,
+     "off_target": 35,
+     "tokens": 21190,
+     "off_target_ids": [
+      "API-005",
+      "BANK-ARCH-002",
+      "BANK-ARCH-004",
+      "BANK-ARCH-009",
+      "BANK-ARCH-010",
+      "BANK-ARCH-016",
+      "BANK-ARCH-019",
+      "BANK-ARCH-021",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-011",
+      "BANK-RELIAB-012",
+      "BANK-RELIAB-017",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-032",
+      "BANK-RELIAB-034",
+      "BANK-RELIAB-039",
+      "BANK-RELIAB-041",
+      "BANK-SEC-009",
+      "BANK-SEC-020",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-024",
+      "BANK-SEC-025",
+      "BANK-SEC-032",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "BANK-SEC-040",
+      "PERF-GEN-003",
+      "PERF-GEN-006",
+      "PERF-GEN-008"
+     ]
+    },
+    {
+     "flagged": 38,
+     "found": 4,
+     "off_target": 34,
+     "tokens": 21178,
+     "off_target_ids": [
+      "API-005",
+      "BANK-ARCH-009",
+      "BANK-ARCH-010",
+      "BANK-ARCH-016",
+      "BANK-ARCH-025",
+      "BANK-ARCH-035",
+      "BANK-ARCH-036",
+      "BANK-ARCH-037",
+      "BANK-RELIAB-004",
+      "BANK-RELIAB-005",
+      "BANK-RELIAB-008",
+      "BANK-RELIAB-009",
+      "BANK-RELIAB-018",
+      "BANK-RELIAB-021",
+      "BANK-RELIAB-024",
+      "BANK-RELIAB-026",
+      "BANK-RELIAB-032",
+      "BANK-RELIAB-033",
+      "BANK-RELIAB-037",
+      "BANK-RELIAB-038",
+      "BANK-RELIAB-039",
+      "BANK-SEC-002",
+      "BANK-SEC-003",
+      "BANK-SEC-014",
+      "BANK-SEC-020",
+      "BANK-SEC-021",
+      "BANK-SEC-022",
+      "BANK-SEC-024",
+      "BANK-SEC-025",
+      "BANK-SEC-032",
+      "BANK-SEC-033",
+      "BANK-SEC-034",
+      "BANK-SEC-040",
+      "PERF-GEN-003"
+     ]
+    }
+   ],
+   "off_target_hint_proxy": {
+    "hint_matches_somewhere": 76,
+    "hint_matches_nothing(likely_unsupported)": 133,
+    "item_has_no_hint": 2
+   },
+   "off_target_per_file": 3.52,
+   "off_target_per_10_file_project": 35.2,
+   "recall": "28/30",
+   "recall_top5_in_batch": "18/30"
+  },
+  "total_input_tokens_all_bank_runs": 158158,
+  "comparators": {
+   "ruff B,S,PERF,SIM,BLE,ASYNC,RUF,E,F": {
+    "buggy_files_with_any_finding": "19/30",
+    "buggy_files_with_relevant_finding": "7/30",
+    "clean_files_with_any_finding": "18/30",
+    "clean_findings": 33,
+    "seconds": 0.01,
+    "clean_codes": {
+     "F821": 9,
+     "E501": 7,
+     "E401": 6,
+     "F401": 3,
+     "E701": 2,
+     "S603": 2,
+     "S607": 2,
+     "S311": 1
+    }
+   },
+   "pylint (default minus C)": {
+    "buggy_files_with_any_finding": "21/30",
+    "buggy_files_with_relevant_finding": "5/30",
+    "clean_files_with_any_finding": "14/30",
+    "clean_findings": 25,
+    "seconds": 1.32,
+    "clean_codes": {
+     "E0401:import-error": 10,
+     "E0602:undefined-variable": 9,
+     "W0611:unused-import": 3,
+     "W1510:subprocess-run-check": 1,
+     "W1514:unspecified-encoding": 1,
+     "W0613:unused-argument": 1
+    }
+   },
+   "bandit": {
+    "buggy_files_with_any_finding": "5/30",
+    "buggy_files_with_relevant_finding": "5/30",
+    "clean_files_with_any_finding": "3/30",
+    "clean_findings": 7,
+    "seconds": 0.1,
+    "clean_codes": {
+     "B404": 2,
+     "B607": 2,
+     "B603": 2,
+     "B311": 1
+    }
+   },
+   "checksnap static (security+optimization)": {
+    "buggy_files_with_any_finding": "1/30",
+    "buggy_files_with_relevant_finding": "0/30",
+    "clean_files_with_any_finding": "0/30",
+    "clean_findings": 0,
+    "seconds": 0.15,
+    "clean_codes": {}
+   },
+   "_note": "'relevant' = hand-listed rule codes that actually describe the planted bug (RELEVANT in run_all.py); items with no listed code cannot count. 'any finding' is an upper bound that rewards noise."
+  },
+  "_wall_s": 1.7
+ },
+ "t6": {
+  "checksnap (self, copy)": {
+   "py_files": 114,
+   "py_loc": 15022,
+   "tools": {
+    "bandit -r": {
+     "seconds": 0.96,
+     "raw_chars": 512440
+    },
+    "semgrep p/python": {
+     "seconds": 2.91,
+     "raw_chars": 13778
+    },
+    "detect-secrets": {
+     "seconds": 0.46,
+     "raw_chars": 5173
+    },
+    "ruff PERF,SIM,C4,B": {
+     "seconds": 0.01,
+     "raw_chars": 29382
+    },
+    "pylint (default)": {
+     "seconds": 6.68,
+     "raw_chars": 1121003
+    },
+    "flake8": {
+     "seconds": 0.28,
+     "raw_chars": 556326
+    },
+    "yamllint": {
+     "seconds": 0.05,
+     "raw_chars": 1988
+    },
+    "sqlfluff lint (ansi)": {
+     "seconds": 0.31,
+     "raw_chars": 29610
+    },
+    "checksnap --check-all --no-snap": {
+     "seconds": 3.07,
+     "raw_chars": 142021,
+     "findings": 191,
+     "seconds_by_check": {
+      "bank": 1.54,
+      "ci": 0.01,
+      "config": 0.01,
+      "dataset": 0.01,
+      "dependencies": 0.14,
+      "docker": 0.01,
+      "optimization": 0.69,
+      "repo": 0.02,
+      "reproducibility": 0.37,
+      "security": 0.16,
+      "sql": 0.01,
+      "traininglog": 0.0,
+      "web": 0.01
+     }
+    }
+   },
+   "plugin_digest": {
+    "chars": 1918,
+    "approx_tokens": 479,
+    "seconds": 1.49
+   },
+   "sum_raw_chars_other_tools": 2269700,
+   "digest_vs_raw_other_tools": 0.00085,
+   "checksnap_full_json_chars": 142021
+  },
+  "requests": {
+   "py_files": 37,
+   "py_loc": 12032,
+   "tools": {
+    "bandit -r": {
+     "seconds": 0.45,
+     "raw_chars": 604414
+    },
+    "semgrep p/python": {
+     "seconds": 1.56,
+     "raw_chars": 7303
+    },
+    "detect-secrets": {
+     "seconds": 0.52,
+     "raw_chars": 6660
+    },
+    "ruff PERF,SIM,C4,B": {
+     "seconds": 0.01,
+     "raw_chars": 79656
+    },
+    "pylint (default)": {
+     "seconds": 5.92,
+     "raw_chars": 405782
+    },
+    "flake8": {
+     "seconds": 0.27,
+     "raw_chars": 55255
+    },
+    "yamllint": {
+     "seconds": 0.07,
+     "raw_chars": 12217
+    },
+    "sqlfluff lint (ansi)": {
+     "seconds": 0.15,
+     "raw_chars": 3
+    },
+    "checksnap --check-all --no-snap": {
+     "seconds": 1.45,
+     "raw_chars": 79200,
+     "findings": 108,
+     "seconds_by_check": {
+      "bank": 0.98,
+      "ci": 0.01,
+      "config": 0.01,
+      "dataset": 0.03,
+      "dependencies": 0.04,
+      "docker": 0.0,
+      "optimization": 0.15,
+      "repo": 0.03,
+      "reproducibility": 0.09,
+      "security": 0.04,
+      "sql": 0.0,
+      "traininglog": 0.0,
+      "web": 0.0
+     }
+    }
+   },
+   "plugin_digest": {
+    "chars": 1417,
+    "approx_tokens": 354,
+    "seconds": 0.41
+   },
+   "sum_raw_chars_other_tools": 1171290,
+   "digest_vs_raw_other_tools": 0.00121,
+   "checksnap_full_json_chars": 79200
+  },
+  "_wall_s": 31.6
+ },
+ "t5a": {
+  "seconds": 17.4,
+  "input_tokens": 119626,
+  "snap_calls": 58,
+  "dry_run_estimate_tokens": null,
+  "dry_run_includes_baseline": true,
+  "items_asked": 152,
+  "flagged_ge_0.5": 74,
+  "suppressed": 12,
+  "findings_shown": 62,
+  "clean_code_fire_rate": 0.099,
+  "calibration": {
+   "decoys": 24,
+   "false_positive_rate": 0.0,
+   "canaries": 3,
+   "canary_recall": 1.0
+  },
+  "planted_findings_surviving": "27/30",
+  "planted_missed_or_suppressed": [
+   "BANK-ARCH-018",
+   "BANK-RELIAB-011",
+   "BANK-RELIAB-033"
+  ],
+  "precision@5": "5/5",
+  "precision@10": "9/10",
+  "precision@25": "19/25",
+  "precision@50": "26/50",
+  "findings_localized_to_one_file": 5,
+  "planted_localized": 4,
+  "planted_localized_correct_file": 3,
+  "findings_hint_attributed": 25,
+  "planted_hint_attributed": 12,
+  "planted_hint_attributed_includes_bug_file": 12,
+  "findings_unattributed_somewhere_in_N_files": 32,
+  "planted_unattributed": 11,
+  "clean_files_blamed": 14,
+  "localized_findings_on_clean_files": 1,
+  "off_target_shown": 35,
+  "localize_calls_and_tokens_included_in_usage": true,
+  "notes": [
+   "12 items suppressed: fire on clean code",
+   "calibration: decoy false-positive rate 0% (24 decoys), canary recall 100%; clean-code baseline: 15/152 items score >= 0.5 on typical clean Python (real false-positive rate of this bank); 74 flagged, 12 suppressed, 62 shown"
+  ],
+  "_wall_s": 17.5
+ },
+ "t7": {
+  "stdlib_30": {
+   "findings_total": 26,
+   "verify_stats": {
+    "candidates": 25,
+    "checked": 25,
+    "lowered": 7
+   },
+   "sev_before": {
+    "INFO": 0,
+    "LOW": 23,
+    "MEDIUM": 0,
+    "HIGH": 3
+   },
+   "sev_after": {
+    "INFO": 5,
+    "LOW": 18,
+    "MEDIUM": 2,
+    "HIGH": 1
+   },
+   "lowered": [
+    {
+     "rule": "SEC-003",
+     "file": "04_runpy.py",
+     "line": 88,
+     "sev": "MEDIUM",
+     "score": 0.36857524514198303
+    },
+    {
+     "rule": "SEC-003",
+     "file": "09_rlcompleter.py",
+     "line": 155,
+     "sev": "MEDIUM",
+     "score": 0.4605400562286377
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 31,
+     "sev": "INFO",
+     "score": 0.09752688556909561
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 37,
+     "sev": "INFO",
+     "score": 0.0797979086637497
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "05_subprocess.py",
+     "line": 3,
+     "sev": "INFO",
+     "score": 0.16400419175624847
+    },
+    {
+     "rule": "SEC-009",
+     "file": "05_subprocess.py",
+     "line": 176,
+     "sev": "INFO",
+     "score": 0.21659401059150696
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "19_tracemalloc.py",
+     "line": 6,
+     "sev": "INFO",
+     "score": 0.2528228163719177
+    }
+   ],
+   "input_tokens": 18221,
+   "snap_calls": 1,
+   "seconds": 5.5,
+   "notes": [
+    "bandit: 19 extra finding(s), 7 duplicate or filtered",
+    "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+    "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length"
+   ],
+   "all_findings": [
+    {
+     "rule": "SEC-001",
+     "file": "19_tracemalloc.py",
+     "line": 439,
+     "sev": "HIGH",
+     "score": 0.675420343875885
+    },
+    {
+     "rule": "SEC-003",
+     "file": "04_runpy.py",
+     "line": 88,
+     "sev": "MEDIUM",
+     "score": 0.36857524514198303
+    },
+    {
+     "rule": "SEC-003",
+     "file": "09_rlcompleter.py",
+     "line": 155,
+     "sev": "MEDIUM",
+     "score": 0.4605400562286377
+    },
+    {
+     "rule": "SEC-009",
+     "file": "00_copyreg.py",
+     "line": 56,
+     "sev": "LOW",
+     "score": 0.5613974928855896
+    },
+    {
+     "rule": "EXT-BANDIT-B110",
+     "file": "00_copyreg.py",
+     "line": 153,
+     "sev": "LOW",
+     "score": 0.7368520498275757
+    },
+    {
+     "rule": "SEC-009",
+     "file": "12_process.py",
+     "line": 82,
+     "sev": "LOW",
+     "score": 0.7191199660301208
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 115,
+     "sev": "LOW",
+     "score": 0.7955994606018066
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 116,
+     "sev": "LOW",
+     "score": 0.8284856081008911
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 118,
+     "sev": "LOW",
+     "score": 0.8381801843643188
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 147,
+     "sev": "LOW",
+     "score": 0.8469721078872681
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 148,
+     "sev": "LOW",
+     "score": 0.8410658836364746
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 160,
+     "sev": "LOW",
+     "score": 0.845241367816925
+    },
+    {
+     "rule": "SEC-009",
+     "file": "12_process.py",
+     "line": 195,
+     "sev": "LOW",
+     "score": 0.8836801052093506
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 210,
+     "sev": "LOW",
+     "score": 0.8430144786834717
+    },
+    {
+     "rule": "EXT-BANDIT-B105",
+     "file": "16_cgitb.py",
+     "line": 98,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B110",
+     "file": "16_cgitb.py",
+     "line": 322,
+     "sev": "LOW",
+     "score": 0.6900016665458679
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "25__compat_pickle.py",
+     "line": 166,
+     "sev": "LOW",
+     "score": 0.7053705453872681
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "25__compat_pickle.py",
+     "line": 168,
+     "sev": "LOW",
+     "score": 0.7736629247665405
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "26_opcode.py",
+     "line": 73,
+     "sev": "LOW",
+     "score": 0.7554372549057007
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "29_pprint.py",
+     "line": 296,
+     "sev": "LOW",
+     "score": 0.7289062142372131
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "29_pprint.py",
+     "line": 297,
+     "sev": "LOW",
+     "score": 0.7911761403083801
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 31,
+     "sev": "INFO",
+     "score": 0.09752688556909561
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 37,
+     "sev": "INFO",
+     "score": 0.0797979086637497
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "05_subprocess.py",
+     "line": 3,
+     "sev": "INFO",
+     "score": 0.16400419175624847
+    },
+    {
+     "rule": "SEC-009",
+     "file": "05_subprocess.py",
+     "line": 176,
+     "sev": "INFO",
+     "score": 0.21659401059150696
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "19_tracemalloc.py",
+     "line": 6,
+     "sev": "INFO",
+     "score": 0.2528228163719177
+    }
+   ]
+  },
+  "vulnerable_12": {
+   "findings_total": 134,
+   "verify_stats": {
+    "candidates": 134,
+    "checked": 110,
+    "lowered": 34
+   },
+   "sev_before": {
+    "INFO": 0,
+    "LOW": 26,
+    "MEDIUM": 47,
+    "HIGH": 61
+   },
+   "sev_after": {
+    "INFO": 2,
+    "LOW": 33,
+    "MEDIUM": 61,
+    "HIGH": 38
+   },
+   "lowered": [
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.17527654767036438
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.39670637249946594
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 22,
+     "sev": "MEDIUM",
+     "score": 0.04157145693898201
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.040598683059215546
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.0350971445441246
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 28,
+     "sev": "MEDIUM",
+     "score": 0.04215371981263161
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.03602809086441994
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 32,
+     "sev": "MEDIUM",
+     "score": 0.035364825278520584
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.0402231365442276
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 36,
+     "sev": "MEDIUM",
+     "score": 0.03531014546751976
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.041491732001304626
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 40,
+     "sev": "MEDIUM",
+     "score": 0.051311906427145004
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 42,
+     "sev": "MEDIUM",
+     "score": 0.05840061604976654
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 19,
+     "sev": "MEDIUM",
+     "score": 0.4496569037437439
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 46,
+     "sev": "MEDIUM",
+     "score": 0.17363440990447998
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 47,
+     "sev": "MEDIUM",
+     "score": 0.08658182621002197
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 48,
+     "sev": "MEDIUM",
+     "score": 0.07393541932106018
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 49,
+     "sev": "MEDIUM",
+     "score": 0.3605594336986542
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 51,
+     "sev": "MEDIUM",
+     "score": 0.06940247118473053
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 52,
+     "sev": "MEDIUM",
+     "score": 0.12644538283348083
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 53,
+     "sev": "MEDIUM",
+     "score": 0.09392832964658737
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 54,
+     "sev": "MEDIUM",
+     "score": 0.14614078402519226
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.054438430815935135
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.24027512967586517
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 39,
+     "sev": "LOW",
+     "score": 0.3945225775241852
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 46,
+     "sev": "LOW",
+     "score": 0.3689808249473572
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.28980332612991333
+    },
+    {
+     "rule": "EXT-BANDIT-B108",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "LOW",
+     "score": 0.438034325838089
+    },
+    {
+     "rule": "SEC-005",
+     "file": "os_system.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.3578836917877197
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 47,
+     "sev": "LOW",
+     "score": 0.40226802229881287
+    },
+    {
+     "rule": "EXT-BANDIT-B604",
+     "file": "subprocess_shell.py",
+     "line": 12,
+     "sev": "LOW",
+     "score": 0.16912655532360077
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.06629882752895355
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "pickle_deserialize.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.3577813506126404
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 1,
+     "sev": "INFO",
+     "score": 0.3999257981777191
+    }
+   ],
+   "input_tokens": 66266,
+   "snap_calls": 2,
+   "seconds": 7.3,
+   "notes": [
+    "bandit: 76 extra finding(s), 58 duplicate or filtered",
+    "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+    "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length",
+    "snap-verify: budget exceeded, remaining findings unjudged (budget of 60000 tokens would be exceeded (used 66266, next call ~13079))"
+   ],
+   "all_findings": [
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 2,
+     "sev": "HIGH",
+     "score": 0.6200679540634155
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 3,
+     "sev": "HIGH",
+     "score": 0.6780449748039246
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 4,
+     "sev": "HIGH",
+     "score": 0.7041510343551636
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 5,
+     "sev": "HIGH",
+     "score": 0.5299440622329712
+    },
+    {
+     "rule": "SEC-003",
+     "file": "eval.py",
+     "line": 5,
+     "sev": "HIGH",
+     "score": 0.6366565227508545
+    },
+    {
+     "rule": "SEC-012",
+     "file": "flask_debug.py",
+     "line": 10,
+     "sev": "HIGH",
+     "score": 0.7003086805343628
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 6,
+     "sev": "HIGH",
+     "score": 0.7100998759269714
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 9,
+     "sev": "HIGH",
+     "score": 0.7386911511421204
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 11,
+     "sev": "HIGH",
+     "score": 0.7747328877449036
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 13,
+     "sev": "HIGH",
+     "score": 0.7384055852890015
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 14,
+     "sev": "HIGH",
+     "score": 0.7907585501670837
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "HIGH",
+     "score": 0.6892533302307129
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 17,
+     "sev": "HIGH",
+     "score": 0.7601693868637085
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 12,
+     "sev": "HIGH",
+     "score": 0.6317616105079651
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 15,
+     "sev": "HIGH",
+     "score": 0.7005748152732849
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 6,
+     "sev": "HIGH",
+     "score": 0.8167704343795776
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 8,
+     "sev": "HIGH",
+     "score": 0.8411357402801514
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 10,
+     "sev": "HIGH",
+     "score": 0.8492856025695801
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 12,
+     "sev": "HIGH",
+     "score": 0.8392173051834106
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 14,
+     "sev": "HIGH",
+     "score": 0.8814481496810913
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 16,
+     "sev": "HIGH",
+     "score": 0.8798394203186035
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 18,
+     "sev": "HIGH",
+     "score": 0.869400143623352
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 17,
+     "sev": "HIGH",
+     "score": 0.5874902009963989
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 18,
+     "sev": "HIGH",
+     "score": 0.519228994846344
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 20,
+     "sev": "HIGH",
+     "score": 0.8137922286987305
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 21,
+     "sev": "HIGH",
+     "score": 0.6931257843971252
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 23,
+     "sev": "HIGH",
+     "score": 0.7804545760154724
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 24,
+     "sev": "HIGH",
+     "score": 0.783363938331604
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 28,
+     "sev": "HIGH",
+     "score": 0.7311628460884094
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 29,
+     "sev": "HIGH",
+     "score": 0.6081476211547852
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 30,
+     "sev": "HIGH",
+     "score": 0.6404419541358948
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 31,
+     "sev": "HIGH",
+     "score": 0.6736560463905334
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 32,
+     "sev": "HIGH",
+     "score": 0.8135963678359985
+    },
+    {
+     "rule": "SEC-004",
+     "file": "subprocess_shell.py",
+     "line": 37,
+     "sev": "HIGH",
+     "score": 0.6897590160369873
+    },
+    {
+     "rule": "SEC-004",
+     "file": "subprocess_shell.py",
+     "line": 38,
+     "sev": "HIGH",
+     "score": 0.6878606081008911
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 41,
+     "sev": "HIGH",
+     "score": 0.7293859720230103
+    },
+    {
+     "rule": "SEC-002",
+     "file": "yaml_load.py",
+     "line": 9,
+     "sev": "HIGH",
+     "score": 0.5492553114891052
+    },
+    {
+     "rule": "SEC-002",
+     "file": "yaml_load.py",
+     "line": 22,
+     "sev": "HIGH",
+     "score": 0.826974630355835
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 13,
+     "sev": "MEDIUM",
+     "score": 0.863470733165741
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 14,
+     "sev": "MEDIUM",
+     "score": 0.8264512419700623
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 16,
+     "sev": "MEDIUM",
+     "score": 0.7658817768096924
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 18,
+     "sev": "MEDIUM",
+     "score": 0.852943480014801
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 20,
+     "sev": "MEDIUM",
+     "score": 0.829390823841095
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.8745770454406738
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 25,
+     "sev": "MEDIUM",
+     "score": 0.86965411901474
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.877895176410675
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 27,
+     "sev": "MEDIUM",
+     "score": 0.5580043196678162
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 29,
+     "sev": "MEDIUM",
+     "score": 0.8651037812232971
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.8901864290237427
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 31,
+     "sev": "MEDIUM",
+     "score": 0.8496582508087158
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.8539059162139893
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 35,
+     "sev": "MEDIUM",
+     "score": 0.8512604236602783
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 37,
+     "sev": "MEDIUM",
+     "score": 0.7982553243637085
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.8226891756057739
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 44,
+     "sev": "MEDIUM",
+     "score": 0.6830593347549438
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 45,
+     "sev": "MEDIUM",
+     "score": 0.7874516248703003
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 4,
+     "sev": "MEDIUM",
+     "score": 0.8754436373710632
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.8173741698265076
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.8575181365013123
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 9,
+     "sev": "MEDIUM",
+     "score": 0.9085999131202698
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 10,
+     "sev": "MEDIUM",
+     "score": 0.838951051235199
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.17527654767036438
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.5633003115653992
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 10,
+     "sev": "MEDIUM",
+     "score": 0.5924890637397766
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 12,
+     "sev": "MEDIUM",
+     "score": 0.6228498816490173
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.39670637249946594
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 22,
+     "sev": "MEDIUM",
+     "score": 0.04157145693898201
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.040598683059215546
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.0350971445441246
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 28,
+     "sev": "MEDIUM",
+     "score": 0.04215371981263161
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.03602809086441994
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 32,
+     "sev": "MEDIUM",
+     "score": 0.035364825278520584
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.0402231365442276
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 36,
+     "sev": "MEDIUM",
+     "score": 0.03531014546751976
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.041491732001304626
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 40,
+     "sev": "MEDIUM",
+     "score": 0.051311906427145004
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 42,
+     "sev": "MEDIUM",
+     "score": 0.05840061604976654
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 4,
+     "sev": "MEDIUM",
+     "score": 0.8218384981155396
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 5,
+     "sev": "MEDIUM",
+     "score": 0.6725056171417236
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 6,
+     "sev": "MEDIUM",
+     "score": 0.7995107769966125
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.7994658350944519
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.7996233105659485
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 9,
+     "sev": "MEDIUM",
+     "score": 0.8192858695983887
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 12,
+     "sev": "MEDIUM",
+     "score": 0.8154354095458984
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 13,
+     "sev": "MEDIUM",
+     "score": 0.8515127301216125
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 14,
+     "sev": "MEDIUM",
+     "score": 0.8006500005722046
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 19,
+     "sev": "MEDIUM",
+     "score": 0.4496569037437439
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 25,
+     "sev": "MEDIUM",
+     "score": 0.8523029685020447
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 46,
+     "sev": "MEDIUM",
+     "score": 0.17363440990447998
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 47,
+     "sev": "MEDIUM",
+     "score": 0.08658182621002197
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 48,
+     "sev": "MEDIUM",
+     "score": 0.07393541932106018
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 49,
+     "sev": "MEDIUM",
+     "score": 0.3605594336986542
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 51,
+     "sev": "MEDIUM",
+     "score": 0.06940247118473053
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 52,
+     "sev": "MEDIUM",
+     "score": 0.12644538283348083
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 53,
+     "sev": "MEDIUM",
+     "score": 0.09392832964658737
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 54,
+     "sev": "MEDIUM",
+     "score": 0.14614078402519226
+    },
+    {
+     "rule": "SEC-010",
+     "file": "tarfile_extractall.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.6487178206443787
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.054438430815935135
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.5866759419441223
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.24027512967586517
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 39,
+     "sev": "LOW",
+     "score": 0.3945225775241852
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 46,
+     "sev": "LOW",
+     "score": 0.3689808249473572
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.28980332612991333
+    },
+    {
+     "rule": "EXT-BANDIT-B108",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "LOW",
+     "score": 0.438034325838089
+    },
+    {
+     "rule": "SEC-005",
+     "file": "os_system.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.3578836917877197
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 47,
+     "sev": "LOW",
+     "score": 0.40226802229881287
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 2,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 11,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B604",
+     "file": "subprocess_shell.py",
+     "line": 12,
+     "sev": "LOW",
+     "score": 0.16912655532360077
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 14,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 15,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 16,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 18,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 21,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 23,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 24,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 26,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 27,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 28,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B605",
+     "file": "subprocess_shell.py",
+     "line": 30,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B605",
+     "file": "subprocess_shell.py",
+     "line": 31,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 33,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 34,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 36,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 43,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 56,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 57,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 58,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 59,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 60,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 14,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.06629882752895355
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "pickle_deserialize.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.3577813506126404
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 1,
+     "sev": "INFO",
+     "score": 0.3999257981777191
+    }
+   ]
+  },
+  "_wall_s": 13.8
+ }
+}

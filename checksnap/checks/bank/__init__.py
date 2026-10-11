@@ -13,6 +13,7 @@ from pathlib import Path
 from checksnap.core import Check, CheckResult, Context, CostEstimate, Finding, Severity, register
 from checksnap.checks.optimization import snap_layer
 from checksnap.checks.optimization.rules import RuleInfo
+from checksnap.snap.calibrate import question_chars
 
 from . import engine
 
@@ -43,6 +44,8 @@ class BankCheck(Check):
         g.add_argument("--bank-applies", choices=[*engine.KINDS, "any"], default=None, help="file kind to check (default: auto from extensions)")
         g.add_argument("--bank-file", metavar="FILE.json", help="extra items, same schema as the built-in ones")
         g.add_argument("--bank-top", type=int, default=DEFAULT_TOP, help="report at most N findings (default %(default)s)")
+        g.add_argument("--bank-max-items", type=int, default=None, metavar="N",
+                       help="ask only the N highest-severity items (default: all); caps cost, which grows with the number of questions")
         g.add_argument("--bank-include-absence", action="store_true",
                        help=f"also ask absence-style items (something is missing/never done); by default only when the scan covers >= {engine.MIN_ABSENCE_FILES} files")
         g.add_argument("--bank-list", action="store_true", help="list categories, counts and items instead of checking")
@@ -67,19 +70,32 @@ class BankCheck(Check):
         (files, found, _), ap = self._files(args)
         chosen = engine.select_items(items, cats, None if ap == "any" else ({ap} if ap else found))
         chosen, _ = engine.drop_absence(chosen, len(files), getattr(args, "bank_include_absence", False))
-        chars = sum(len(t) + len(r) + 20 for r, t in files)
-        if ctx.snap is not None and hasattr(ctx.snap, "estimate"):
-            est = ctx.snap.estimate(chars, len(chosen))      # engine counts every question batch re-reading every window
-            if chosen:                                       # but each file is its own window, so at least one call per file and question batch
-                est.snap_calls = max(est.snap_calls, len(files) * -(-len(chosen) // getattr(ctx.snap, 'per_call', 55)))
-                cache = getattr(ctx.snap, "cache", None)
-                base, n_todo = engine.baseline_pending(chosen, cache.root.parent if cache is not None else ctx.cache_dir)
-                if n_todo:                                   # one-time clean-code baseline; free once cached
-                    est = est + ctx.snap.estimate(base, n_todo)
-                    est.notes += "; includes the bundled clean-code baseline"
+        chosen = engine.cap_items(chosen, getattr(args, "bank_max_items", None))
+        if ctx.snap is not None and hasattr(ctx.snap, "estimate") and chosen:
+            from checksnap import snap as snap_mod
+            windows, _ = snap_layer.pack(files, self._window_size(ctx), snap_mod)
+            qs = engine.questions(snap_mod, chosen)
+            est = ctx.snap.estimate(sum(len(w.text) for w in windows), len(qs), q_chars=sum(question_chars(q) for q in qs), n_windows=len(windows),
+                                    localize=min(max(1, getattr(args, "bank_top", DEFAULT_TOP) or DEFAULT_TOP), engine.MAX_LOCALIZE, len(chosen)))
+            cache = getattr(ctx.snap, "cache", None)
+            base, n_todo = engine.baseline_pending(chosen, cache.root.parent if cache is not None else ctx.cache_dir)
+            if n_todo:                                       # one-time clean-code baseline (one packed window); free once cached
+                avg = sum(question_chars(q) for q in qs) / len(qs)
+                b = ctx.snap.estimate(base, n_todo, q_chars=int(avg * n_todo), n_windows=1)
+                b.notes = f"bundled clean-code baseline, one packed window, run once then cached: {b.notes.split(';')[0]}, {b.snap_calls} call(s)"
+                est = est + b
+            budget = getattr(ctx.snap, "budget_tokens", None)
+            if budget is not None and est.input_tokens > budget:       # the engine stops spending at the budget (localization degrades first)
+                est.input_tokens = budget
+                est.notes += f"; capped at --budget-tokens {budget}"
             return est
+        chars = sum(len(t) + len(r) + 20 for r, t in files)
         windows = max(1, -(-chars // 800_000)) * max(1, -(-len(chosen) // 56)) if chars and chosen else 0
         return CostEstimate(windows, int(chars * max(1, -(-len(chosen) // 56)) / 3.0), chars, "approximate: no engine attached")
+
+    @staticmethod
+    def _window_size(ctx: Context) -> int:
+        return max(10_000, int(getattr(ctx.snap, "window_chars", 800_000)) - 1000)
 
     def run(self, ctx: Context, args: argparse.Namespace) -> CheckResult:
         return self.timed(lambda: self._run(ctx, args))
@@ -100,6 +116,7 @@ class BankCheck(Check):
             chosen, skipped = engine.drop_absence(chosen, len(files), getattr(args, "bank_include_absence", False))
             if skipped:
                 res.notes.append(f"{skipped} absence items skipped: only {len(files)} files scanned (need {engine.MIN_ABSENCE_FILES}, or pass --bank-include-absence)")
+        chosen = engine.cap_items(chosen, getattr(args, "bank_max_items", None))
         res.stats.update(files=len(files), items_asked=len(chosen), kinds=sorted(found))
         if not files:
             res.notes.append("no files of a known kind found (try --bank-applies)")
@@ -128,8 +145,7 @@ class BankCheck(Check):
 
     def _snap(self, ctx: Context, files, chosen, hints, res: CheckResult, top: int) -> None:
         from checksnap import snap as snap_mod          # lazy: only needed when Snap runs
-        size = max(10_000, int(getattr(ctx.snap, "window_chars", 800_000)) - 1000)
-        windows, spans = engine.pack_per_file(files, size, snap_mod)
+        windows, spans = snap_layer.pack(files, self._window_size(ctx), snap_mod)      # packed: calls = windows x question batches
         res.stats["snap_windows"] = len(windows)
         try:
             scan = ctx.snap.scan_windows(windows, engine.questions(snap_mod, chosen), label="bank", progress=ctx.progress)
@@ -154,7 +170,10 @@ class BankCheck(Check):
         flagged = sum(qr.max_score >= ctx.threshold for qr in scan.per_question.values())
         res.stats["flagged"] = flagged
         baseline = self._baseline(ctx, chosen, snap_mod, res)
+        loc0 = (getattr(ctx.snap, "localize_calls", 0), getattr(ctx.snap, "localize_tokens", 0))
         res.findings += engine.interpret(scan, chosen, hints, windows, spans, ctx, snap_mod, res.notes, top, baseline, res.stats)
+        res.usage["snap_calls"] += getattr(ctx.snap, "localize_calls", 0) - loc0[0]       # localization bills too
+        res.usage["input_tokens"] += getattr(ctx.snap, "localize_tokens", 0) - loc0[1]
         shown = len(res.findings)
         if flagged - res.stats.get("suppressed", 0) > shown:
             res.notes.append(f"{flagged - res.stats.get('suppressed', 0)} items flagged; showing the top {top} by score x severity (raise --bank-top)")

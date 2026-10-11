@@ -11,7 +11,8 @@ from typing import Callable, Sequence
 
 from ..core import CostEstimate
 from .cache import DiskCache
-from .calibrate import CANARY_THRESHOLD, Calibration, CharsPerToken, detect_kind
+from .calibrate import (CALL_OVERHEAD_TOKENS, CANARY_THRESHOLD, QUESTION_CHARS_PER_TOKEN, Calibration, CharsPerToken,
+                        detect_kind, question_chars)
 from .client import Question, SnapClient
 from .errors import BudgetExceeded, SnapAuthError, SnapError, SnapQuotaError, SnapTooLargeError
 from .localize import bisect_hit
@@ -19,6 +20,8 @@ from .windows import Window, split_windows
 
 MIN_WINDOW = 2_000          # never halve below this: a 2 KB state rejected as too large is a different problem
 DECOY_PREFIX, CANARY_PREFIX = "__decoy_", "__canary_"
+AVG_QUESTION_CHARS = 360    # measured mean of the bank's questions (instructions + criteria); used when the caller has no texts
+QUESTION_OPT_CHARS_PER_TOKEN = 3.6
 
 
 @dataclass
@@ -79,6 +82,7 @@ class SnapEngine:
         self._spent = 0         # real input tokens used so far, across scans (the budget is per run)
         self._inflight = 0      # estimated tokens of calls in progress
         self._cap = math.inf    # largest state the service accepted, learned from 400s
+        self.localize_calls = self.localize_tokens = 0     # spent by localize(), which the scan results do not include
         self.fatal: Exception | None = None     # last auth/quota/budget stop; the CLI turns it into exit 3 even if a check swallowed it
 
     @property
@@ -86,21 +90,47 @@ class SnapEngine:
         return self._spent
 
     # ---- estimate (free) ----
-    def estimate(self, n_chars: int, n_questions: int, kind: str | None = None) -> CostEstimate:
+    def estimate(self, n_chars: int, n_questions: int, kind: str | None = None, *, q_chars: int | None = None,
+                 n_windows: int | None = None, localize: int = 0) -> CostEstimate:
         """input_tokens is the conservative upper bound (budgets and the privacy gate use it); notes carry the range.
-        `kind` is code|json|prose; unknown means code, the most token-hungry."""
+
+        Every call bills the state AND its questions (the real ones plus the decoys and canary), so
+        cost = windows x (state tokens + all question tokens) + one-question localization calls.
+        `q_chars` = total chars of the n_questions real questions (default: AVG_QUESTION_CHARS each); `n_windows` = the
+        caller's own (packed, non-overlapping) windows, whose chars are already in n_chars; `localize` = how many hits
+        may be bisected (worst case: both halves asked at every step). `kind` is code|json|prose; unknown means code."""
         if n_chars <= 0 or n_questions <= 0:
             return CostEstimate(notes="nothing to send")
         size, ov = self.window_chars, self.overlap_chars
-        windows = 1 if n_chars <= size else math.ceil((n_chars - ov) / (size - ov))
+        if n_windows is None:
+            windows = 1 if n_chars <= size else math.ceil((n_chars - ov) / (size - ov))
+            sent_once = n_chars + (windows - 1) * ov
+        else:
+            windows, sent_once = max(1, n_windows), n_chars
         chunks = math.ceil(n_questions / self.per_call)
-        sent = (n_chars + (windows - 1) * ov) * chunks      # every question chunk re-reads every window
+        calls = windows * chunks
         kind = kind or "code"
         opt, cons = self.cpt.bounds(kind)
-        lo, hi = math.ceil(sent / opt), math.ceil(sent / cons)
-        return CostEstimate(snap_calls=windows * chunks, input_tokens=hi, uploads_bytes=sent,
-                            notes=f"{_k(lo)}-{_k(hi)} tokens; {windows} window(s) x {chunks} question batch(es), "
-                                  f"{kind} at {cons:.2f}-{opt:.2f} chars/token")
+        extra_chars = sum(question_chars(q) for q in self._extras("x")[1])
+        q_total = q_chars if q_chars is not None else n_questions * (AVG_QUESTION_CHARS + 30)   # incl. per-question envelope
+        q_chars_sent = q_total + extra_chars * chunks         # question chars one window carries across all its chunks
+        state_lo, state_hi = math.ceil(sent_once * chunks / opt), math.ceil(sent_once * chunks / cons)
+        q_lo = math.ceil(windows * q_chars_sent / QUESTION_OPT_CHARS_PER_TOKEN) + calls * CALL_OVERHEAD_TOKENS
+        q_hi = math.ceil(windows * q_chars_sent / QUESTION_CHARS_PER_TOKEN) + calls * CALL_OVERHEAD_TOKENS
+        lo, hi, uploads = state_lo + q_lo, state_hi + q_hi, sent_once * chunks
+        loc_note = ""
+        if localize > 0:
+            n, steps, loc_chars = n_chars / windows, 0, 0.0
+            while n > 2000:                                 # mirrors bisect_hit: halves overlap by min(overlap, n/8); both are asked
+                n = n / 2 + min(self.overlap_chars, n / 8)
+                loc_chars, steps = loc_chars + 2 * n, steps + 1
+            per_q = q_total / n_questions + 30
+            loc_hi = localize * (math.ceil(loc_chars / cons) + 2 * steps * (math.ceil(per_q / QUESTION_CHARS_PER_TOKEN) + CALL_OVERHEAD_TOKENS))
+            hi, calls, uploads = hi + loc_hi, calls + localize * 2 * steps, uploads + int(localize * loc_chars)
+            loc_note = f"; includes up to {localize} localizations (<= {_k(loc_hi)} tokens, {steps * 2} one-question calls each)"
+        return CostEstimate(snap_calls=calls, input_tokens=hi, uploads_bytes=uploads,
+                            notes=f"{_k(lo)}-{_k(hi)} tokens; {windows} window(s) x {chunks} question batch(es), each call carries its questions "
+                                  f"(~{_k(q_hi)} of the total), {kind} at {cons:.2f}-{opt:.2f} chars/token{loc_note}")
 
     # ---- scanning ----
     def scan(self, text: str, questions: Sequence[Question], *, label: str = "", progress=None) -> ScanResult:
@@ -225,7 +255,8 @@ class SnapEngine:
                     run.cached += 1
                 return {q.id: float(hit["scores"][q.id]) for q in questions}, True
         kind = detect_kind(state)
-        est = math.ceil(len(state) / self.cpt.bounds(kind)[1])     # conservative, so the budget is never overrun by a bad guess
+        q_tok = sum(question_chars(q) for q in questions) / QUESTION_CHARS_PER_TOKEN + CALL_OVERHEAD_TOKENS     # questions are billed too
+        est = math.ceil(len(state) / self.cpt.bounds(kind)[1] + q_tok)     # conservative, so the budget is never overrun by a bad guess
         with self._lock:
             if self.budget_tokens is not None and self._spent + self._inflight + est > self.budget_tokens:
                 raise BudgetExceeded(f"budget of {self.budget_tokens} tokens would be exceeded "
@@ -240,7 +271,8 @@ class SnapEngine:
         with self._lock:
             self._inflight -= est
             self._spent += res.input_tokens
-            self.cpt.add(len(state), res.input_tokens, kind)
+            if res.input_tokens - q_tok > 0.1 * res.input_tokens:      # state-only ratio: the questions are billed too
+                self.cpt.add(len(state), int(res.input_tokens - q_tok), kind)
             run.calls += 1
             run.tokens += res.input_tokens
         if key:
@@ -262,4 +294,6 @@ class SnapEngine:
         except BudgetExceeded:
             return None     # ponytail: no partial snippet on budget stop; keep the whole-window evidence instead
         finally:
+            self.localize_calls += run.calls
+            self.localize_tokens += run.tokens
             self.cpt.save()

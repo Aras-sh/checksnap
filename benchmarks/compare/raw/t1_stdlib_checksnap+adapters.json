@@ -1,0 +1,132 @@
+[
+ {
+  "file": "04_runpy.py",
+  "line": 88,
+  "rule": "SEC-003"
+ },
+ {
+  "file": "09_rlcompleter.py",
+  "line": 155,
+  "rule": "SEC-003"
+ },
+ {
+  "file": "19_tracemalloc.py",
+  "line": 439,
+  "rule": "SEC-001"
+ },
+ {
+  "file": "00_copyreg.py",
+  "line": 31,
+  "rule": "EXT-BANDIT-B403"
+ },
+ {
+  "file": "00_copyreg.py",
+  "line": 37,
+  "rule": "EXT-BANDIT-B403"
+ },
+ {
+  "file": "00_copyreg.py",
+  "line": 56,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "00_copyreg.py",
+  "line": 153,
+  "rule": "EXT-BANDIT-B110"
+ },
+ {
+  "file": "05_subprocess.py",
+  "line": 3,
+  "rule": "EXT-BANDIT-B404"
+ },
+ {
+  "file": "05_subprocess.py",
+  "line": 176,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "12_process.py",
+  "line": 82,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "12_process.py",
+  "line": 115,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 116,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 118,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 147,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 148,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 160,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "12_process.py",
+  "line": 195,
+  "rule": "SEC-009"
+ },
+ {
+  "file": "12_process.py",
+  "line": 210,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "16_cgitb.py",
+  "line": 98,
+  "rule": "EXT-BANDIT-B105"
+ },
+ {
+  "file": "16_cgitb.py",
+  "line": 322,
+  "rule": "EXT-BANDIT-B110"
+ },
+ {
+  "file": "19_tracemalloc.py",
+  "line": 6,
+  "rule": "EXT-BANDIT-B403"
+ },
+ {
+  "file": "25__compat_pickle.py",
+  "line": 166,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "25__compat_pickle.py",
+  "line": 168,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "26_opcode.py",
+  "line": 73,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "29_pprint.py",
+  "line": 296,
+  "rule": "EXT-BANDIT-B101"
+ },
+ {
+  "file": "29_pprint.py",
+  "line": 297,
+  "rule": "EXT-BANDIT-B101"
+ }
+]

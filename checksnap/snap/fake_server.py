@@ -7,6 +7,7 @@ verbatim in the state, else 0.04. `fail` forces errors: an int status (always, e
 from __future__ import annotations
 
 import json
+import math
 import re
 import threading
 import time
@@ -23,7 +24,8 @@ def default_scorer(state: str, question: dict) -> float:
 
 class FakeSnapServer:
     def __init__(self, scorer: Callable[[str, dict], float] | None = None, fail: int | str | None = None,
-                 latency: float = 0.0):
+                 latency: float = 0.0, chars_per_token: float = 3.0):
+        self.chars_per_token = chars_per_token       # input_tokens = (state + question text) / this, as the real service bills both
         self.scorer = scorer or default_scorer
         self.fail = fail
         self.latency = latency
@@ -98,13 +100,15 @@ class FakeSnapServer:
         with self._lock:
             if status == 200:
                 status = self._forced_status(len(state)) or 200
-            self.requests.append({"status": status, "state_chars": len(state), "n_questions": len(questions)})
+            qc = sum(len(json.dumps(q)) for q in questions.values()) if isinstance(questions, dict) else 0
+            tokens = math.ceil((len(state) + qc) / self.chars_per_token)
+            self.requests.append({"status": status, "state_chars": len(state), "n_questions": len(questions), "q_chars": qc, "input_tokens": tokens})
             if status == 200:
                 self.last_state = state
         if status == 200:
             out = {"model": "subq-snap-preview",
                    "answers": {qid: {"type": "noul", "noul": self.scorer(state, q)} for qid, q in questions.items()},
-                   "usage": {"input_tokens": -(-len(state) // 3), "output_tokens": 0}}
+                   "usage": {"input_tokens": tokens, "output_tokens": 0}}
         data = json.dumps(out if status == 200 else {"error": f"fake {status}"}).encode()
         h.send_response(status)
         h.send_header("Content-Type", "application/json")

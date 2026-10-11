@@ -8,9 +8,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 DEFAULT_CHARS_PER_TOKEN = 3.3   # optimistic: the lower-bound ratio, and the global fallback
-# Conservative seeds (chars/token) that never under-estimate. Benchmark: a 60-file Python project used 30,913 real
-# tokens where 3.3 predicted 12,936, i.e. ~1.38 real chars/token; code seed 1.3 gives ~32.8k for that case.
-SEED_CHARS_PER_TOKEN = {"code": 1.3, "json": 1.8, "prose": 3.0}
+# Conservative seeds (chars/token) that never under-estimate. Real API probe (2026-10-11): Python state ~3.5 chars/token,
+# question text ~3.2 (the service bills both). The old 1.3 seed came from a run where question tokens were mistaken for state.
+SEED_CHARS_PER_TOKEN = {"code": 2.5, "json": 1.8, "prose": 3.0}
+QUESTION_CHARS_PER_TOKEN = 3.0  # conservative for question instructions + criteria (measured ~3.2); never calibrated from state
+QUESTION_ENVELOPE_CHARS = 30    # per question: id, type and criteria keys in the request JSON
+CALL_OVERHEAD_TOKENS = 50       # fixed cost of any call (measured ~50)
+CALIBRATION_VERSION = 2         # v1 files folded question tokens into the state ratio; they are ignored
 MARGIN = 0.9                    # calibrated upper bound uses 90% of the measured ratio
 MIN_SAMPLE_TOKENS = 1000
 _EXT = {".py": "code", ".js": "code", ".ts": "code", ".tsx": "code", ".jsx": "code", ".go": "code", ".rs": "code",
@@ -18,6 +22,11 @@ _EXT = {".py": "code", ".js": "code", ".ts": "code", ".tsx": "code", ".jsx": "co
         ".sql": "code", ".yml": "code", ".yaml": "code", ".toml": "code", ".html": "code", ".css": "code",
         ".json": "json", ".jsonl": "json", ".ndjson": "json",
         ".md": "prose", ".txt": "prose", ".rst": "prose"}
+
+
+def question_chars(q) -> int:
+    """Characters of one question as billed: instructions + criteria + a small envelope."""
+    return len(q.instructions) + len(q.true) + len(q.false) + QUESTION_ENVELOPE_CHARS
 
 
 def detect_kind(text: str = "", name: str = "") -> str:
@@ -66,6 +75,8 @@ class CharsPerToken:
         if self.path:
             try:
                 d = json.loads(self.path.read_text())
+                if d.get("version") != CALIBRATION_VERSION:
+                    raise ValueError("stale calibration format")
                 self.chars, self.tokens = int(d["chars"]), int(d["tokens"])
                 self.kinds = {k: [int(v[0]), int(v[1])] for k, v in (d.get("kinds") or {}).items()}
             except (OSError, ValueError, KeyError, TypeError, IndexError):
@@ -105,7 +116,8 @@ class CharsPerToken:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             fd, tmp = tempfile.mkstemp(dir=self.path.parent, suffix=".tmp")
             with os.fdopen(fd, "w") as f:
-                json.dump({"chars": self.chars, "tokens": self.tokens, "chars_per_token": self.value, "kinds": self.kinds}, f)
+                json.dump({"chars": self.chars, "tokens": self.tokens, "chars_per_token": self.value, "kinds": self.kinds,
+                           "version": CALIBRATION_VERSION}, f)
             os.replace(tmp, self.path)
         except OSError:
             pass

@@ -47,7 +47,7 @@
     "examples_detected": 16,
     "examples_recall": 0.211,
     "benign_examples_with_findings": [],
-    "seconds_examples": 1.42,
+    "seconds_examples": 1.36,
     "seconds_stdlib": 1.53,
     "in_scope_detected": "7/20",
     "missed_in_scope": [
@@ -91,9 +91,34 @@
      "SEC-001": 1,
      "SEC-009": 4
     }
+   },
+   "checksnap+adapters --check-security --with-adapters": {
+    "examples_detected": 76,
+    "examples_recall": 1.0,
+    "benign_examples_with_findings": [
+     "mark_safe_secure.py"
+    ],
+    "seconds_examples": 1.03,
+    "seconds_stdlib": 0.68,
+    "in_scope_detected": "20/20",
+    "in_scope_right_class": "17/20",
+    "missed_in_scope": [],
+    "stdlib_files_with_findings": "10/30",
+    "stdlib_findings_total": 26,
+    "stdlib_findings_per_file": 0.87,
+    "stdlib_by_rule": {
+     "SEC-003": 2,
+     "SEC-001": 1,
+     "EXT-BANDIT-B403": 3,
+     "SEC-009": 4,
+     "EXT-BANDIT-B110": 2,
+     "EXT-BANDIT-B404": 1,
+     "EXT-BANDIT-B101": 12,
+     "EXT-BANDIT-B105": 1
+    }
    }
   },
-  "_wall_s": 3.7
+  "_wall_s": 5.3
  },
  "t2": {
   "detect-secrets": {
@@ -279,7 +304,7 @@
     "C420": 1
    },
    "other_findings_in_bug_files": 5,
-   "seconds": 0.02,
+   "seconds": 0.01,
    "missed_in_families": [
     "concat_loop.py",
     "concat_while.py",
@@ -371,7 +396,7 @@
     "R1732": 1
    },
    "other_findings_in_bug_files": 15,
-   "seconds": 1.73,
+   "seconds": 1.72,
    "missed_in_families": [
     "concat_loop.py",
     "concat_while.py",
@@ -460,7 +485,7 @@
     "OPT-ML-002": 1
    },
    "other_findings_in_bug_files": 5,
-   "seconds": 0.14,
+   "seconds": 0.15,
    "missed_in_families": [
     "concat_while.py",
     "sort_in_loop.py",
@@ -473,7 +498,35 @@
    "precision_line": 0.733,
    "f1_line": 0.629
   },
-  "_wall_s": 3.8
+  "checksnap+adapters --check-optimization --static-only --with-adapters": {
+   "line_recall_all": "26/40",
+   "line_recall_checksnap_families": "22/28",
+   "line_recall_outside_families": "4/12",
+   "any_finding_on_bug_file": "30/40",
+   "clean_files_with_findings": "7/40",
+   "clean_findings_total": 8,
+   "clean_codes": {
+    "OPT-ML-003": 2,
+    "EXT-RUFF-B007": 2,
+    "OPT-ML-002": 1,
+    "EXT-RUFF-B905": 1,
+    "EXT-RUFF-SIM115": 1,
+    "EXT-RUFF-C420": 1
+   },
+   "other_findings_in_bug_files": 10,
+   "seconds": 0.16,
+   "missed_in_families": [
+    "concat_while.py",
+    "sort_in_loop.py",
+    "sort_in_loop2.py",
+    "nplus1_orm.py",
+    "no_amp.py",
+    "zero_grad.py"
+   ],
+   "precision_line": 0.591,
+   "f1_line": 0.619
+  },
+  "_wall_s": 3.9
  },
  "t4": {
   "sample_sizes": {
@@ -1141,5 +1194,3259 @@
    "checksnap_full_json_chars": 79200
   },
   "_wall_s": 31.6
+ },
+ "t5a": {
+  "seconds": 17.4,
+  "input_tokens": 119626,
+  "snap_calls": 58,
+  "dry_run_estimate_tokens": null,
+  "dry_run_includes_baseline": true,
+  "items_asked": 152,
+  "flagged_ge_0.5": 74,
+  "suppressed": 12,
+  "findings_shown": 62,
+  "clean_code_fire_rate": 0.099,
+  "calibration": {
+   "decoys": 24,
+   "false_positive_rate": 0.0,
+   "canaries": 3,
+   "canary_recall": 1.0
+  },
+  "planted_findings_surviving": "27/30",
+  "planted_missed_or_suppressed": [
+   "BANK-ARCH-018",
+   "BANK-RELIAB-011",
+   "BANK-RELIAB-033"
+  ],
+  "precision@5": "5/5",
+  "precision@10": "9/10",
+  "precision@25": "19/25",
+  "precision@50": "26/50",
+  "findings_localized_to_one_file": 5,
+  "planted_localized": 4,
+  "planted_localized_correct_file": 3,
+  "findings_hint_attributed": 25,
+  "planted_hint_attributed": 12,
+  "planted_hint_attributed_includes_bug_file": 12,
+  "findings_unattributed_somewhere_in_N_files": 32,
+  "planted_unattributed": 11,
+  "clean_files_blamed": 14,
+  "localized_findings_on_clean_files": 1,
+  "off_target_shown": 35,
+  "localize_calls_and_tokens_included_in_usage": true,
+  "notes": [
+   "12 items suppressed: fire on clean code",
+   "calibration: decoy false-positive rate 0% (24 decoys), canary recall 100%; clean-code baseline: 15/152 items score >= 0.5 on typical clean Python (real false-positive rate of this bank); 74 flagged, 12 suppressed, 62 shown"
+  ],
+  "_wall_s": 17.5
+ },
+ "t7": {
+  "stdlib_30": {
+   "findings_total": 26,
+   "verify_stats": {
+    "candidates": 25,
+    "checked": 25,
+    "lowered": 7
+   },
+   "sev_before": {
+    "INFO": 0,
+    "LOW": 23,
+    "MEDIUM": 0,
+    "HIGH": 3
+   },
+   "sev_after": {
+    "INFO": 5,
+    "LOW": 18,
+    "MEDIUM": 2,
+    "HIGH": 1
+   },
+   "lowered": [
+    {
+     "rule": "SEC-003",
+     "file": "04_runpy.py",
+     "line": 88,
+     "sev": "MEDIUM",
+     "score": 0.36857524514198303
+    },
+    {
+     "rule": "SEC-003",
+     "file": "09_rlcompleter.py",
+     "line": 155,
+     "sev": "MEDIUM",
+     "score": 0.4605400562286377
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 31,
+     "sev": "INFO",
+     "score": 0.09752688556909561
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 37,
+     "sev": "INFO",
+     "score": 0.0797979086637497
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "05_subprocess.py",
+     "line": 3,
+     "sev": "INFO",
+     "score": 0.16400419175624847
+    },
+    {
+     "rule": "SEC-009",
+     "file": "05_subprocess.py",
+     "line": 176,
+     "sev": "INFO",
+     "score": 0.21659401059150696
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "19_tracemalloc.py",
+     "line": 6,
+     "sev": "INFO",
+     "score": 0.2528228163719177
+    }
+   ],
+   "input_tokens": 0,
+   "snap_calls": 0,
+   "seconds": 1.4,
+   "notes": [
+    "bandit: 19 extra finding(s), 7 duplicate or filtered",
+    "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+    "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length"
+   ],
+   "all_findings": [
+    {
+     "rule": "SEC-001",
+     "file": "19_tracemalloc.py",
+     "line": 439,
+     "sev": "HIGH",
+     "score": 0.675420343875885
+    },
+    {
+     "rule": "SEC-003",
+     "file": "04_runpy.py",
+     "line": 88,
+     "sev": "MEDIUM",
+     "score": 0.36857524514198303
+    },
+    {
+     "rule": "SEC-003",
+     "file": "09_rlcompleter.py",
+     "line": 155,
+     "sev": "MEDIUM",
+     "score": 0.4605400562286377
+    },
+    {
+     "rule": "SEC-009",
+     "file": "00_copyreg.py",
+     "line": 56,
+     "sev": "LOW",
+     "score": 0.5613974928855896
+    },
+    {
+     "rule": "EXT-BANDIT-B110",
+     "file": "00_copyreg.py",
+     "line": 153,
+     "sev": "LOW",
+     "score": 0.7368520498275757
+    },
+    {
+     "rule": "SEC-009",
+     "file": "12_process.py",
+     "line": 82,
+     "sev": "LOW",
+     "score": 0.7191199660301208
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 115,
+     "sev": "LOW",
+     "score": 0.7955994606018066
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 116,
+     "sev": "LOW",
+     "score": 0.8284856081008911
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 118,
+     "sev": "LOW",
+     "score": 0.8381801843643188
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 147,
+     "sev": "LOW",
+     "score": 0.8469721078872681
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 148,
+     "sev": "LOW",
+     "score": 0.8410658836364746
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 160,
+     "sev": "LOW",
+     "score": 0.845241367816925
+    },
+    {
+     "rule": "SEC-009",
+     "file": "12_process.py",
+     "line": 195,
+     "sev": "LOW",
+     "score": 0.8836801052093506
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "12_process.py",
+     "line": 210,
+     "sev": "LOW",
+     "score": 0.8430144786834717
+    },
+    {
+     "rule": "EXT-BANDIT-B105",
+     "file": "16_cgitb.py",
+     "line": 98,
+     "sev": "LOW",
+     "score": null
+    },
+    {
+     "rule": "EXT-BANDIT-B110",
+     "file": "16_cgitb.py",
+     "line": 322,
+     "sev": "LOW",
+     "score": 0.6900016665458679
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "25__compat_pickle.py",
+     "line": 166,
+     "sev": "LOW",
+     "score": 0.7053705453872681
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "25__compat_pickle.py",
+     "line": 168,
+     "sev": "LOW",
+     "score": 0.7736629247665405
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "26_opcode.py",
+     "line": 73,
+     "sev": "LOW",
+     "score": 0.7554372549057007
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "29_pprint.py",
+     "line": 296,
+     "sev": "LOW",
+     "score": 0.7289062142372131
+    },
+    {
+     "rule": "EXT-BANDIT-B101",
+     "file": "29_pprint.py",
+     "line": 297,
+     "sev": "LOW",
+     "score": 0.7911761403083801
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 31,
+     "sev": "INFO",
+     "score": 0.09752688556909561
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "00_copyreg.py",
+     "line": 37,
+     "sev": "INFO",
+     "score": 0.0797979086637497
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "05_subprocess.py",
+     "line": 3,
+     "sev": "INFO",
+     "score": 0.16400419175624847
+    },
+    {
+     "rule": "SEC-009",
+     "file": "05_subprocess.py",
+     "line": 176,
+     "sev": "INFO",
+     "score": 0.21659401059150696
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "19_tracemalloc.py",
+     "line": 6,
+     "sev": "INFO",
+     "score": 0.2528228163719177
+    }
+   ]
+  },
+  "vulnerable_12": {
+   "findings_total": 134,
+   "verify_stats": {
+    "candidates": 134,
+    "checked": 134,
+    "lowered": 47
+   },
+   "sev_before": {
+    "INFO": 0,
+    "LOW": 26,
+    "MEDIUM": 47,
+    "HIGH": 61
+   },
+   "sev_after": {
+    "INFO": 15,
+    "LOW": 20,
+    "MEDIUM": 61,
+    "HIGH": 38
+   },
+   "lowered": [
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.17527654767036438
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.39670637249946594
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 22,
+     "sev": "MEDIUM",
+     "score": 0.04157145693898201
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.040598683059215546
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.0350971445441246
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 28,
+     "sev": "MEDIUM",
+     "score": 0.04215371981263161
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.03602809086441994
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 32,
+     "sev": "MEDIUM",
+     "score": 0.035364825278520584
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.0402231365442276
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 36,
+     "sev": "MEDIUM",
+     "score": 0.03531014546751976
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.041491732001304626
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 40,
+     "sev": "MEDIUM",
+     "score": 0.051311906427145004
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 42,
+     "sev": "MEDIUM",
+     "score": 0.05840061604976654
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 19,
+     "sev": "MEDIUM",
+     "score": 0.4496569037437439
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 46,
+     "sev": "MEDIUM",
+     "score": 0.17363440990447998
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 47,
+     "sev": "MEDIUM",
+     "score": 0.08658182621002197
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 48,
+     "sev": "MEDIUM",
+     "score": 0.07393541932106018
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 49,
+     "sev": "MEDIUM",
+     "score": 0.3605594336986542
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 51,
+     "sev": "MEDIUM",
+     "score": 0.06940247118473053
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 52,
+     "sev": "MEDIUM",
+     "score": 0.12644538283348083
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 53,
+     "sev": "MEDIUM",
+     "score": 0.09392832964658737
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 54,
+     "sev": "MEDIUM",
+     "score": 0.14614078402519226
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.054438430815935135
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.24027512967586517
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 39,
+     "sev": "LOW",
+     "score": 0.3945225775241852
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 46,
+     "sev": "LOW",
+     "score": 0.3689808249473572
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.28980332612991333
+    },
+    {
+     "rule": "EXT-BANDIT-B108",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "LOW",
+     "score": 0.438034325838089
+    },
+    {
+     "rule": "SEC-005",
+     "file": "os_system.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.3578836917877197
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 47,
+     "sev": "LOW",
+     "score": 0.40226802229881287
+    },
+    {
+     "rule": "EXT-BANDIT-B604",
+     "file": "subprocess_shell.py",
+     "line": 12,
+     "sev": "LOW",
+     "score": 0.16912655532360077
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.07366958260536194
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "pickle_deserialize.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.3577813506126404
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 1,
+     "sev": "INFO",
+     "score": 0.3999257981777191
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.4997751712799072
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 15,
+     "sev": "INFO",
+     "score": 0.03526599332690239
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 16,
+     "sev": "INFO",
+     "score": 0.07010557502508163
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 18,
+     "sev": "INFO",
+     "score": 0.05072629824280739
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 23,
+     "sev": "INFO",
+     "score": 0.07421092689037323
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 26,
+     "sev": "INFO",
+     "score": 0.05391136184334755
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 28,
+     "sev": "INFO",
+     "score": 0.05892249941825867
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 33,
+     "sev": "INFO",
+     "score": 0.040486834943294525
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 56,
+     "sev": "INFO",
+     "score": 0.0978853851556778
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 57,
+     "sev": "INFO",
+     "score": 0.04745763540267944
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 58,
+     "sev": "INFO",
+     "score": 0.06663724780082703
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 59,
+     "sev": "INFO",
+     "score": 0.05743212252855301
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 60,
+     "sev": "INFO",
+     "score": 0.06315301358699799
+    }
+   ],
+   "input_tokens": 46443,
+   "snap_calls": 2,
+   "seconds": 7.4,
+   "notes": [
+    "bandit: 76 extra finding(s), 58 duplicate or filtered",
+    "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+    "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length"
+   ],
+   "all_findings": [
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 2,
+     "sev": "HIGH",
+     "score": 0.6200679540634155
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 3,
+     "sev": "HIGH",
+     "score": 0.6780449748039246
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 4,
+     "sev": "HIGH",
+     "score": 0.7041510343551636
+    },
+    {
+     "rule": "EXT-BANDIT-B413",
+     "file": "crypto-md5.py",
+     "line": 5,
+     "sev": "HIGH",
+     "score": 0.5299440622329712
+    },
+    {
+     "rule": "SEC-003",
+     "file": "eval.py",
+     "line": 5,
+     "sev": "HIGH",
+     "score": 0.6366565227508545
+    },
+    {
+     "rule": "SEC-012",
+     "file": "flask_debug.py",
+     "line": 10,
+     "sev": "HIGH",
+     "score": 0.7003086805343628
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 6,
+     "sev": "HIGH",
+     "score": 0.7100998759269714
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 9,
+     "sev": "HIGH",
+     "score": 0.7386911511421204
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 11,
+     "sev": "HIGH",
+     "score": 0.7747328877449036
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 13,
+     "sev": "HIGH",
+     "score": 0.7384055852890015
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 14,
+     "sev": "HIGH",
+     "score": 0.7907585501670837
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "HIGH",
+     "score": 0.6892533302307129
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 17,
+     "sev": "HIGH",
+     "score": 0.7601693868637085
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 12,
+     "sev": "HIGH",
+     "score": 0.6317616105079651
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 15,
+     "sev": "HIGH",
+     "score": 0.7005748152732849
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 6,
+     "sev": "HIGH",
+     "score": 0.8167704343795776
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 8,
+     "sev": "HIGH",
+     "score": 0.8411357402801514
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 10,
+     "sev": "HIGH",
+     "score": 0.8492856025695801
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 12,
+     "sev": "HIGH",
+     "score": 0.8392173051834106
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 14,
+     "sev": "HIGH",
+     "score": 0.8814481496810913
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 16,
+     "sev": "HIGH",
+     "score": 0.8798394203186035
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 18,
+     "sev": "HIGH",
+     "score": 0.869400143623352
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 17,
+     "sev": "HIGH",
+     "score": 0.5874902009963989
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 18,
+     "sev": "HIGH",
+     "score": 0.519228994846344
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 20,
+     "sev": "HIGH",
+     "score": 0.8137922286987305
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 21,
+     "sev": "HIGH",
+     "score": 0.6931257843971252
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 23,
+     "sev": "HIGH",
+     "score": 0.7804545760154724
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 24,
+     "sev": "HIGH",
+     "score": 0.783363938331604
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 28,
+     "sev": "HIGH",
+     "score": 0.7311628460884094
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 29,
+     "sev": "HIGH",
+     "score": 0.6081476211547852
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 30,
+     "sev": "HIGH",
+     "score": 0.6404419541358948
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 31,
+     "sev": "HIGH",
+     "score": 0.6736560463905334
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 32,
+     "sev": "HIGH",
+     "score": 0.8135963678359985
+    },
+    {
+     "rule": "SEC-004",
+     "file": "subprocess_shell.py",
+     "line": 37,
+     "sev": "HIGH",
+     "score": 0.6897590160369873
+    },
+    {
+     "rule": "SEC-004",
+     "file": "subprocess_shell.py",
+     "line": 38,
+     "sev": "HIGH",
+     "score": 0.6878606081008911
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 41,
+     "sev": "HIGH",
+     "score": 0.7293859720230103
+    },
+    {
+     "rule": "SEC-002",
+     "file": "yaml_load.py",
+     "line": 9,
+     "sev": "HIGH",
+     "score": 0.5492553114891052
+    },
+    {
+     "rule": "SEC-002",
+     "file": "yaml_load.py",
+     "line": 22,
+     "sev": "HIGH",
+     "score": 0.826974630355835
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 13,
+     "sev": "MEDIUM",
+     "score": 0.863470733165741
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 14,
+     "sev": "MEDIUM",
+     "score": 0.8264512419700623
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 16,
+     "sev": "MEDIUM",
+     "score": 0.7658817768096924
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 18,
+     "sev": "MEDIUM",
+     "score": 0.852943480014801
+    },
+    {
+     "rule": "SEC-014",
+     "file": "crypto-md5.py",
+     "line": 20,
+     "sev": "MEDIUM",
+     "score": 0.829390823841095
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.8745770454406738
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 25,
+     "sev": "MEDIUM",
+     "score": 0.86965411901474
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.877895176410675
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 27,
+     "sev": "MEDIUM",
+     "score": 0.5580043196678162
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 29,
+     "sev": "MEDIUM",
+     "score": 0.8651037812232971
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.8901864290237427
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 31,
+     "sev": "MEDIUM",
+     "score": 0.8496582508087158
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.8539059162139893
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 35,
+     "sev": "MEDIUM",
+     "score": 0.8512604236602783
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 37,
+     "sev": "MEDIUM",
+     "score": 0.7982553243637085
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.8226891756057739
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 44,
+     "sev": "MEDIUM",
+     "score": 0.6830593347549438
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 45,
+     "sev": "MEDIUM",
+     "score": 0.7874516248703003
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 4,
+     "sev": "MEDIUM",
+     "score": 0.8754436373710632
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.8173741698265076
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.8575181365013123
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 9,
+     "sev": "MEDIUM",
+     "score": 0.9085999131202698
+    },
+    {
+     "rule": "SEC-007",
+     "file": "mktemp.py",
+     "line": 10,
+     "sev": "MEDIUM",
+     "score": 0.838951051235199
+    },
+    {
+     "rule": "SEC-015",
+     "file": "os-chmod.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.17527654767036438
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.5633003115653992
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 10,
+     "sev": "MEDIUM",
+     "score": 0.5924890637397766
+    },
+    {
+     "rule": "EXT-BANDIT-B103",
+     "file": "os-chmod.py",
+     "line": 12,
+     "sev": "MEDIUM",
+     "score": 0.6228498816490173
+    },
+    {
+     "rule": "SEC-001",
+     "file": "pickle_deserialize.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.39670637249946594
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 22,
+     "sev": "MEDIUM",
+     "score": 0.04157145693898201
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 24,
+     "sev": "MEDIUM",
+     "score": 0.040598683059215546
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.0350971445441246
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 28,
+     "sev": "MEDIUM",
+     "score": 0.04215371981263161
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 30,
+     "sev": "MEDIUM",
+     "score": 0.03602809086441994
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 32,
+     "sev": "MEDIUM",
+     "score": 0.035364825278520584
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 34,
+     "sev": "MEDIUM",
+     "score": 0.0402231365442276
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 36,
+     "sev": "MEDIUM",
+     "score": 0.03531014546751976
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.041491732001304626
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 40,
+     "sev": "MEDIUM",
+     "score": 0.051311906427145004
+    },
+    {
+     "rule": "SEC-008",
+     "file": "requests-ssl-verify-disabled.py",
+     "line": 42,
+     "sev": "MEDIUM",
+     "score": 0.05840061604976654
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 4,
+     "sev": "MEDIUM",
+     "score": 0.8218384981155396
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 5,
+     "sev": "MEDIUM",
+     "score": 0.6725056171417236
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 6,
+     "sev": "MEDIUM",
+     "score": 0.7995107769966125
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 7,
+     "sev": "MEDIUM",
+     "score": 0.7994658350944519
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.7996233105659485
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 9,
+     "sev": "MEDIUM",
+     "score": 0.8192858695983887
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 12,
+     "sev": "MEDIUM",
+     "score": 0.8154354095458984
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 13,
+     "sev": "MEDIUM",
+     "score": 0.8515127301216125
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 14,
+     "sev": "MEDIUM",
+     "score": 0.8006500005722046
+    },
+    {
+     "rule": "SEC-011",
+     "file": "sql_statements.py",
+     "line": 19,
+     "sev": "MEDIUM",
+     "score": 0.4496569037437439
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 25,
+     "sev": "MEDIUM",
+     "score": 0.8523029685020447
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 46,
+     "sev": "MEDIUM",
+     "score": 0.17363440990447998
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 47,
+     "sev": "MEDIUM",
+     "score": 0.08658182621002197
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 48,
+     "sev": "MEDIUM",
+     "score": 0.07393541932106018
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 49,
+     "sev": "MEDIUM",
+     "score": 0.3605594336986542
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 51,
+     "sev": "MEDIUM",
+     "score": 0.06940247118473053
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 52,
+     "sev": "MEDIUM",
+     "score": 0.12644538283348083
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 53,
+     "sev": "MEDIUM",
+     "score": 0.09392832964658737
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 54,
+     "sev": "MEDIUM",
+     "score": 0.14614078402519226
+    },
+    {
+     "rule": "SEC-010",
+     "file": "tarfile_extractall.py",
+     "line": 8,
+     "sev": "MEDIUM",
+     "score": 0.6487178206443787
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 26,
+     "sev": "MEDIUM",
+     "score": 0.054438430815935135
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 38,
+     "sev": "MEDIUM",
+     "score": 0.5866759419441223
+    },
+    {
+     "rule": "EXT-BANDIT-B303",
+     "file": "crypto-md5.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.24027512967586517
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 39,
+     "sev": "LOW",
+     "score": 0.3945225775241852
+    },
+    {
+     "rule": "EXT-BANDIT-B324",
+     "file": "crypto-md5.py",
+     "line": 46,
+     "sev": "LOW",
+     "score": 0.3689808249473572
+    },
+    {
+     "rule": "EXT-BANDIT-B307",
+     "file": "eval.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.28980332612991333
+    },
+    {
+     "rule": "EXT-BANDIT-B108",
+     "file": "os-chmod.py",
+     "line": 15,
+     "sev": "LOW",
+     "score": 0.438034325838089
+    },
+    {
+     "rule": "SEC-005",
+     "file": "os_system.py",
+     "line": 3,
+     "sev": "LOW",
+     "score": 0.3578836917877197
+    },
+    {
+     "rule": "EXT-BANDIT-B608",
+     "file": "sql_statements.py",
+     "line": 47,
+     "sev": "LOW",
+     "score": 0.40226802229881287
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 11,
+     "sev": "LOW",
+     "score": 0.7347627282142639
+    },
+    {
+     "rule": "EXT-BANDIT-B604",
+     "file": "subprocess_shell.py",
+     "line": 12,
+     "sev": "LOW",
+     "score": 0.16912655532360077
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 14,
+     "sev": "LOW",
+     "score": 0.8448654413223267
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 21,
+     "sev": "LOW",
+     "score": 0.8442856669425964
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 24,
+     "sev": "LOW",
+     "score": 0.875998854637146
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 27,
+     "sev": "LOW",
+     "score": 0.7945697903633118
+    },
+    {
+     "rule": "EXT-BANDIT-B605",
+     "file": "subprocess_shell.py",
+     "line": 30,
+     "sev": "LOW",
+     "score": 0.8408634662628174
+    },
+    {
+     "rule": "EXT-BANDIT-B605",
+     "file": "subprocess_shell.py",
+     "line": 31,
+     "sev": "LOW",
+     "score": 0.8497133255004883
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 34,
+     "sev": "LOW",
+     "score": 0.8535870313644409
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 36,
+     "sev": "LOW",
+     "score": 0.7270872592926025
+    },
+    {
+     "rule": "EXT-BANDIT-B602",
+     "file": "subprocess_shell.py",
+     "line": 43,
+     "sev": "LOW",
+     "score": 0.656951904296875
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 14,
+     "sev": "LOW",
+     "score": 0.6650609374046326
+    },
+    {
+     "rule": "EXT-BANDIT-B202",
+     "file": "tarfile_extractall.py",
+     "line": 32,
+     "sev": "LOW",
+     "score": 0.07366958260536194
+    },
+    {
+     "rule": "EXT-BANDIT-B403",
+     "file": "pickle_deserialize.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.3577813506126404
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 1,
+     "sev": "INFO",
+     "score": 0.3999257981777191
+    },
+    {
+     "rule": "EXT-BANDIT-B404",
+     "file": "subprocess_shell.py",
+     "line": 2,
+     "sev": "INFO",
+     "score": 0.4997751712799072
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 15,
+     "sev": "INFO",
+     "score": 0.03526599332690239
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 16,
+     "sev": "INFO",
+     "score": 0.07010557502508163
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 18,
+     "sev": "INFO",
+     "score": 0.05072629824280739
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 23,
+     "sev": "INFO",
+     "score": 0.07421092689037323
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 26,
+     "sev": "INFO",
+     "score": 0.05391136184334755
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 28,
+     "sev": "INFO",
+     "score": 0.05892249941825867
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 33,
+     "sev": "INFO",
+     "score": 0.040486834943294525
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 56,
+     "sev": "INFO",
+     "score": 0.0978853851556778
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 57,
+     "sev": "INFO",
+     "score": 0.04745763540267944
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 58,
+     "sev": "INFO",
+     "score": 0.06663724780082703
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 59,
+     "sev": "INFO",
+     "score": 0.05743212252855301
+    },
+    {
+     "rule": "EXT-BANDIT-B603",
+     "file": "subprocess_shell.py",
+     "line": 60,
+     "sev": "INFO",
+     "score": 0.06315301358699799
+    }
+   ]
+  },
+  "_wall_s": 9.8
+ },
+ "cost_fix": {
+  "design": "packed windows (calls = windows x question batches), localization top 25, bank-max-items, estimate counts question tokens + baseline + localization worst case, baseline one packed window cached",
+  "dry_run_estimate_uncapped": {
+   "tokens": 527080,
+   "calls": 256,
+   "scan_hi": 37000,
+   "baseline_hi": 29000,
+   "localization_worst_case_25x": 460000
+  },
+  "dry_run_estimate_with_budget_120000": 120000,
+  "actual": {
+   "tokens": 119626,
+   "calls": 58,
+   "scan_plus_baseline_tokens": 54938,
+   "scan_plus_baseline_calls": 6,
+   "localization_tokens": 64688,
+   "localization_calls": 52,
+   "localized_findings_approx": 5,
+   "seconds": 17.4
+  },
+  "per_file_design_before_fix": {
+   "tokens": 317904,
+   "calls": 49,
+   "partial": true,
+   "estimate": 45818
+  },
+  "t5": {
+   "seconds": 17.4,
+   "input_tokens": 119626,
+   "snap_calls": 58,
+   "dry_run_estimate_tokens": null,
+   "dry_run_includes_baseline": true,
+   "items_asked": 152,
+   "flagged_ge_0.5": 74,
+   "suppressed": 12,
+   "findings_shown": 62,
+   "clean_code_fire_rate": 0.099,
+   "calibration": {
+    "decoys": 24,
+    "false_positive_rate": 0.0,
+    "canaries": 3,
+    "canary_recall": 1.0
+   },
+   "planted_findings_surviving": "27/30",
+   "planted_missed_or_suppressed": [
+    "BANK-ARCH-018",
+    "BANK-RELIAB-011",
+    "BANK-RELIAB-033"
+   ],
+   "precision@5": "5/5",
+   "precision@10": "9/10",
+   "precision@25": "19/25",
+   "precision@50": "26/50",
+   "findings_localized_to_one_file": 5,
+   "planted_localized": 4,
+   "planted_localized_correct_file": 3,
+   "findings_hint_attributed": 25,
+   "planted_hint_attributed": 12,
+   "planted_hint_attributed_includes_bug_file": 12,
+   "findings_unattributed_somewhere_in_N_files": 32,
+   "planted_unattributed": 11,
+   "clean_files_blamed": 14,
+   "localized_findings_on_clean_files": 1,
+   "off_target_shown": 35,
+   "localize_calls_and_tokens_included_in_usage": true,
+   "notes": [
+    "12 items suppressed: fire on clean code",
+    "calibration: decoy false-positive rate 0% (24 decoys), canary recall 100%; clean-code baseline: 15/152 items score >= 0.5 on typical clean Python (real false-positive rate of this bank); 74 flagged, 12 suppressed, 62 shown"
+   ],
+   "_wall_s": 17.5
+  },
+  "t7": {
+   "first_run_tokens_stdlib": 18221,
+   "first_run_tokens_vulnerable": 66266,
+   "first_run_note": "60k cap overshot by 6.3k because the pre-call budget check ignored question tokens (fixed)",
+   "rerun_new_tokens_vulnerable": 46443,
+   "rerun_stdlib_tokens": 0,
+   "results": {
+    "stdlib_30": {
+     "findings_total": 26,
+     "verify_stats": {
+      "candidates": 25,
+      "checked": 25,
+      "lowered": 7
+     },
+     "sev_before": {
+      "INFO": 0,
+      "LOW": 23,
+      "MEDIUM": 0,
+      "HIGH": 3
+     },
+     "sev_after": {
+      "INFO": 5,
+      "LOW": 18,
+      "MEDIUM": 2,
+      "HIGH": 1
+     },
+     "lowered": [
+      {
+       "rule": "SEC-003",
+       "file": "04_runpy.py",
+       "line": 88,
+       "sev": "MEDIUM",
+       "score": 0.36857524514198303
+      },
+      {
+       "rule": "SEC-003",
+       "file": "09_rlcompleter.py",
+       "line": 155,
+       "sev": "MEDIUM",
+       "score": 0.4605400562286377
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "00_copyreg.py",
+       "line": 31,
+       "sev": "INFO",
+       "score": 0.09752688556909561
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "00_copyreg.py",
+       "line": 37,
+       "sev": "INFO",
+       "score": 0.0797979086637497
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "05_subprocess.py",
+       "line": 3,
+       "sev": "INFO",
+       "score": 0.16400419175624847
+      },
+      {
+       "rule": "SEC-009",
+       "file": "05_subprocess.py",
+       "line": 176,
+       "sev": "INFO",
+       "score": 0.21659401059150696
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "19_tracemalloc.py",
+       "line": 6,
+       "sev": "INFO",
+       "score": 0.2528228163719177
+      }
+     ],
+     "input_tokens": 0,
+     "snap_calls": 0,
+     "seconds": 1.4,
+     "notes": [
+      "bandit: 19 extra finding(s), 7 duplicate or filtered",
+      "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+      "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length"
+     ],
+     "all_findings": [
+      {
+       "rule": "SEC-001",
+       "file": "19_tracemalloc.py",
+       "line": 439,
+       "sev": "HIGH",
+       "score": 0.675420343875885
+      },
+      {
+       "rule": "SEC-003",
+       "file": "04_runpy.py",
+       "line": 88,
+       "sev": "MEDIUM",
+       "score": 0.36857524514198303
+      },
+      {
+       "rule": "SEC-003",
+       "file": "09_rlcompleter.py",
+       "line": 155,
+       "sev": "MEDIUM",
+       "score": 0.4605400562286377
+      },
+      {
+       "rule": "SEC-009",
+       "file": "00_copyreg.py",
+       "line": 56,
+       "sev": "LOW",
+       "score": 0.5613974928855896
+      },
+      {
+       "rule": "EXT-BANDIT-B110",
+       "file": "00_copyreg.py",
+       "line": 153,
+       "sev": "LOW",
+       "score": 0.7368520498275757
+      },
+      {
+       "rule": "SEC-009",
+       "file": "12_process.py",
+       "line": 82,
+       "sev": "LOW",
+       "score": 0.7191199660301208
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 115,
+       "sev": "LOW",
+       "score": 0.7955994606018066
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 116,
+       "sev": "LOW",
+       "score": 0.8284856081008911
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 118,
+       "sev": "LOW",
+       "score": 0.8381801843643188
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 147,
+       "sev": "LOW",
+       "score": 0.8469721078872681
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 148,
+       "sev": "LOW",
+       "score": 0.8410658836364746
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 160,
+       "sev": "LOW",
+       "score": 0.845241367816925
+      },
+      {
+       "rule": "SEC-009",
+       "file": "12_process.py",
+       "line": 195,
+       "sev": "LOW",
+       "score": 0.8836801052093506
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "12_process.py",
+       "line": 210,
+       "sev": "LOW",
+       "score": 0.8430144786834717
+      },
+      {
+       "rule": "EXT-BANDIT-B105",
+       "file": "16_cgitb.py",
+       "line": 98,
+       "sev": "LOW",
+       "score": null
+      },
+      {
+       "rule": "EXT-BANDIT-B110",
+       "file": "16_cgitb.py",
+       "line": 322,
+       "sev": "LOW",
+       "score": 0.6900016665458679
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "25__compat_pickle.py",
+       "line": 166,
+       "sev": "LOW",
+       "score": 0.7053705453872681
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "25__compat_pickle.py",
+       "line": 168,
+       "sev": "LOW",
+       "score": 0.7736629247665405
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "26_opcode.py",
+       "line": 73,
+       "sev": "LOW",
+       "score": 0.7554372549057007
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "29_pprint.py",
+       "line": 296,
+       "sev": "LOW",
+       "score": 0.7289062142372131
+      },
+      {
+       "rule": "EXT-BANDIT-B101",
+       "file": "29_pprint.py",
+       "line": 297,
+       "sev": "LOW",
+       "score": 0.7911761403083801
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "00_copyreg.py",
+       "line": 31,
+       "sev": "INFO",
+       "score": 0.09752688556909561
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "00_copyreg.py",
+       "line": 37,
+       "sev": "INFO",
+       "score": 0.0797979086637497
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "05_subprocess.py",
+       "line": 3,
+       "sev": "INFO",
+       "score": 0.16400419175624847
+      },
+      {
+       "rule": "SEC-009",
+       "file": "05_subprocess.py",
+       "line": 176,
+       "sev": "INFO",
+       "score": 0.21659401059150696
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "19_tracemalloc.py",
+       "line": 6,
+       "sev": "INFO",
+       "score": 0.2528228163719177
+      }
+     ]
+    },
+    "vulnerable_12": {
+     "findings_total": 134,
+     "verify_stats": {
+      "candidates": 134,
+      "checked": 134,
+      "lowered": 47
+     },
+     "sev_before": {
+      "INFO": 0,
+      "LOW": 26,
+      "MEDIUM": 47,
+      "HIGH": 61
+     },
+     "sev_after": {
+      "INFO": 15,
+      "LOW": 20,
+      "MEDIUM": 61,
+      "HIGH": 38
+     },
+     "lowered": [
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.17527654767036438
+      },
+      {
+       "rule": "SEC-001",
+       "file": "pickle_deserialize.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.39670637249946594
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 22,
+       "sev": "MEDIUM",
+       "score": 0.04157145693898201
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 24,
+       "sev": "MEDIUM",
+       "score": 0.040598683059215546
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 26,
+       "sev": "MEDIUM",
+       "score": 0.0350971445441246
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 28,
+       "sev": "MEDIUM",
+       "score": 0.04215371981263161
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 30,
+       "sev": "MEDIUM",
+       "score": 0.03602809086441994
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 32,
+       "sev": "MEDIUM",
+       "score": 0.035364825278520584
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 34,
+       "sev": "MEDIUM",
+       "score": 0.0402231365442276
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 36,
+       "sev": "MEDIUM",
+       "score": 0.03531014546751976
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 38,
+       "sev": "MEDIUM",
+       "score": 0.041491732001304626
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 40,
+       "sev": "MEDIUM",
+       "score": 0.051311906427145004
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 42,
+       "sev": "MEDIUM",
+       "score": 0.05840061604976654
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 19,
+       "sev": "MEDIUM",
+       "score": 0.4496569037437439
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 46,
+       "sev": "MEDIUM",
+       "score": 0.17363440990447998
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 47,
+       "sev": "MEDIUM",
+       "score": 0.08658182621002197
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 48,
+       "sev": "MEDIUM",
+       "score": 0.07393541932106018
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 49,
+       "sev": "MEDIUM",
+       "score": 0.3605594336986542
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 51,
+       "sev": "MEDIUM",
+       "score": 0.06940247118473053
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 52,
+       "sev": "MEDIUM",
+       "score": 0.12644538283348083
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 53,
+       "sev": "MEDIUM",
+       "score": 0.09392832964658737
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 54,
+       "sev": "MEDIUM",
+       "score": 0.14614078402519226
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 26,
+       "sev": "MEDIUM",
+       "score": 0.054438430815935135
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 32,
+       "sev": "LOW",
+       "score": 0.24027512967586517
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 39,
+       "sev": "LOW",
+       "score": 0.3945225775241852
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 46,
+       "sev": "LOW",
+       "score": 0.3689808249473572
+      },
+      {
+       "rule": "EXT-BANDIT-B307",
+       "file": "eval.py",
+       "line": 3,
+       "sev": "LOW",
+       "score": 0.28980332612991333
+      },
+      {
+       "rule": "EXT-BANDIT-B108",
+       "file": "os-chmod.py",
+       "line": 15,
+       "sev": "LOW",
+       "score": 0.438034325838089
+      },
+      {
+       "rule": "SEC-005",
+       "file": "os_system.py",
+       "line": 3,
+       "sev": "LOW",
+       "score": 0.3578836917877197
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 47,
+       "sev": "LOW",
+       "score": 0.40226802229881287
+      },
+      {
+       "rule": "EXT-BANDIT-B604",
+       "file": "subprocess_shell.py",
+       "line": 12,
+       "sev": "LOW",
+       "score": 0.16912655532360077
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 32,
+       "sev": "LOW",
+       "score": 0.07366958260536194
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "pickle_deserialize.py",
+       "line": 2,
+       "sev": "INFO",
+       "score": 0.3577813506126404
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "subprocess_shell.py",
+       "line": 1,
+       "sev": "INFO",
+       "score": 0.3999257981777191
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "subprocess_shell.py",
+       "line": 2,
+       "sev": "INFO",
+       "score": 0.4997751712799072
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 15,
+       "sev": "INFO",
+       "score": 0.03526599332690239
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 16,
+       "sev": "INFO",
+       "score": 0.07010557502508163
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 18,
+       "sev": "INFO",
+       "score": 0.05072629824280739
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 23,
+       "sev": "INFO",
+       "score": 0.07421092689037323
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 26,
+       "sev": "INFO",
+       "score": 0.05391136184334755
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 28,
+       "sev": "INFO",
+       "score": 0.05892249941825867
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 33,
+       "sev": "INFO",
+       "score": 0.040486834943294525
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 56,
+       "sev": "INFO",
+       "score": 0.0978853851556778
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 57,
+       "sev": "INFO",
+       "score": 0.04745763540267944
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 58,
+       "sev": "INFO",
+       "score": 0.06663724780082703
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 59,
+       "sev": "INFO",
+       "score": 0.05743212252855301
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 60,
+       "sev": "INFO",
+       "score": 0.06315301358699799
+      }
+     ],
+     "input_tokens": 46443,
+     "snap_calls": 2,
+     "seconds": 7.4,
+     "notes": [
+      "bandit: 76 extra finding(s), 58 duplicate or filtered",
+      "detect-secrets: 0 extra finding(s), 0 duplicate or filtered",
+      "static analysis only (no Snap layer unless --snap-verify); secrets are masked to 4 characters + length"
+     ],
+     "all_findings": [
+      {
+       "rule": "EXT-BANDIT-B413",
+       "file": "crypto-md5.py",
+       "line": 2,
+       "sev": "HIGH",
+       "score": 0.6200679540634155
+      },
+      {
+       "rule": "EXT-BANDIT-B413",
+       "file": "crypto-md5.py",
+       "line": 3,
+       "sev": "HIGH",
+       "score": 0.6780449748039246
+      },
+      {
+       "rule": "EXT-BANDIT-B413",
+       "file": "crypto-md5.py",
+       "line": 4,
+       "sev": "HIGH",
+       "score": 0.7041510343551636
+      },
+      {
+       "rule": "EXT-BANDIT-B413",
+       "file": "crypto-md5.py",
+       "line": 5,
+       "sev": "HIGH",
+       "score": 0.5299440622329712
+      },
+      {
+       "rule": "SEC-003",
+       "file": "eval.py",
+       "line": 5,
+       "sev": "HIGH",
+       "score": 0.6366565227508545
+      },
+      {
+       "rule": "SEC-012",
+       "file": "flask_debug.py",
+       "line": 10,
+       "sev": "HIGH",
+       "score": 0.7003086805343628
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 6,
+       "sev": "HIGH",
+       "score": 0.7100998759269714
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 9,
+       "sev": "HIGH",
+       "score": 0.7386911511421204
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 11,
+       "sev": "HIGH",
+       "score": 0.7747328877449036
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 13,
+       "sev": "HIGH",
+       "score": 0.7384055852890015
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 14,
+       "sev": "HIGH",
+       "score": 0.7907585501670837
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 15,
+       "sev": "HIGH",
+       "score": 0.6892533302307129
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 17,
+       "sev": "HIGH",
+       "score": 0.7601693868637085
+      },
+      {
+       "rule": "SEC-001",
+       "file": "pickle_deserialize.py",
+       "line": 12,
+       "sev": "HIGH",
+       "score": 0.6317616105079651
+      },
+      {
+       "rule": "SEC-001",
+       "file": "pickle_deserialize.py",
+       "line": 15,
+       "sev": "HIGH",
+       "score": 0.7005748152732849
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 6,
+       "sev": "HIGH",
+       "score": 0.8167704343795776
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 8,
+       "sev": "HIGH",
+       "score": 0.8411357402801514
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 10,
+       "sev": "HIGH",
+       "score": 0.8492856025695801
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 12,
+       "sev": "HIGH",
+       "score": 0.8392173051834106
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 14,
+       "sev": "HIGH",
+       "score": 0.8814481496810913
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 16,
+       "sev": "HIGH",
+       "score": 0.8798394203186035
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 18,
+       "sev": "HIGH",
+       "score": 0.869400143623352
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 17,
+       "sev": "HIGH",
+       "score": 0.5874902009963989
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 18,
+       "sev": "HIGH",
+       "score": 0.519228994846344
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 20,
+       "sev": "HIGH",
+       "score": 0.8137922286987305
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 21,
+       "sev": "HIGH",
+       "score": 0.6931257843971252
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 23,
+       "sev": "HIGH",
+       "score": 0.7804545760154724
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 24,
+       "sev": "HIGH",
+       "score": 0.783363938331604
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 28,
+       "sev": "HIGH",
+       "score": 0.7311628460884094
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 29,
+       "sev": "HIGH",
+       "score": 0.6081476211547852
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 30,
+       "sev": "HIGH",
+       "score": 0.6404419541358948
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 31,
+       "sev": "HIGH",
+       "score": 0.6736560463905334
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 32,
+       "sev": "HIGH",
+       "score": 0.8135963678359985
+      },
+      {
+       "rule": "SEC-004",
+       "file": "subprocess_shell.py",
+       "line": 37,
+       "sev": "HIGH",
+       "score": 0.6897590160369873
+      },
+      {
+       "rule": "SEC-004",
+       "file": "subprocess_shell.py",
+       "line": 38,
+       "sev": "HIGH",
+       "score": 0.6878606081008911
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 41,
+       "sev": "HIGH",
+       "score": 0.7293859720230103
+      },
+      {
+       "rule": "SEC-002",
+       "file": "yaml_load.py",
+       "line": 9,
+       "sev": "HIGH",
+       "score": 0.5492553114891052
+      },
+      {
+       "rule": "SEC-002",
+       "file": "yaml_load.py",
+       "line": 22,
+       "sev": "HIGH",
+       "score": 0.826974630355835
+      },
+      {
+       "rule": "SEC-014",
+       "file": "crypto-md5.py",
+       "line": 13,
+       "sev": "MEDIUM",
+       "score": 0.863470733165741
+      },
+      {
+       "rule": "SEC-014",
+       "file": "crypto-md5.py",
+       "line": 14,
+       "sev": "MEDIUM",
+       "score": 0.8264512419700623
+      },
+      {
+       "rule": "SEC-014",
+       "file": "crypto-md5.py",
+       "line": 16,
+       "sev": "MEDIUM",
+       "score": 0.7658817768096924
+      },
+      {
+       "rule": "SEC-014",
+       "file": "crypto-md5.py",
+       "line": 18,
+       "sev": "MEDIUM",
+       "score": 0.852943480014801
+      },
+      {
+       "rule": "SEC-014",
+       "file": "crypto-md5.py",
+       "line": 20,
+       "sev": "MEDIUM",
+       "score": 0.829390823841095
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 24,
+       "sev": "MEDIUM",
+       "score": 0.8745770454406738
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 25,
+       "sev": "MEDIUM",
+       "score": 0.86965411901474
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 26,
+       "sev": "MEDIUM",
+       "score": 0.877895176410675
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 27,
+       "sev": "MEDIUM",
+       "score": 0.5580043196678162
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 29,
+       "sev": "MEDIUM",
+       "score": 0.8651037812232971
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 30,
+       "sev": "MEDIUM",
+       "score": 0.8901864290237427
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 31,
+       "sev": "MEDIUM",
+       "score": 0.8496582508087158
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 34,
+       "sev": "MEDIUM",
+       "score": 0.8539059162139893
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 35,
+       "sev": "MEDIUM",
+       "score": 0.8512604236602783
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 37,
+       "sev": "MEDIUM",
+       "score": 0.7982553243637085
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 38,
+       "sev": "MEDIUM",
+       "score": 0.8226891756057739
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 44,
+       "sev": "MEDIUM",
+       "score": 0.6830593347549438
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 45,
+       "sev": "MEDIUM",
+       "score": 0.7874516248703003
+      },
+      {
+       "rule": "EXT-BANDIT-B307",
+       "file": "eval.py",
+       "line": 4,
+       "sev": "MEDIUM",
+       "score": 0.8754436373710632
+      },
+      {
+       "rule": "SEC-007",
+       "file": "mktemp.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.8173741698265076
+      },
+      {
+       "rule": "SEC-007",
+       "file": "mktemp.py",
+       "line": 8,
+       "sev": "MEDIUM",
+       "score": 0.8575181365013123
+      },
+      {
+       "rule": "SEC-007",
+       "file": "mktemp.py",
+       "line": 9,
+       "sev": "MEDIUM",
+       "score": 0.9085999131202698
+      },
+      {
+       "rule": "SEC-007",
+       "file": "mktemp.py",
+       "line": 10,
+       "sev": "MEDIUM",
+       "score": 0.838951051235199
+      },
+      {
+       "rule": "SEC-015",
+       "file": "os-chmod.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.17527654767036438
+      },
+      {
+       "rule": "EXT-BANDIT-B103",
+       "file": "os-chmod.py",
+       "line": 8,
+       "sev": "MEDIUM",
+       "score": 0.5633003115653992
+      },
+      {
+       "rule": "EXT-BANDIT-B103",
+       "file": "os-chmod.py",
+       "line": 10,
+       "sev": "MEDIUM",
+       "score": 0.5924890637397766
+      },
+      {
+       "rule": "EXT-BANDIT-B103",
+       "file": "os-chmod.py",
+       "line": 12,
+       "sev": "MEDIUM",
+       "score": 0.6228498816490173
+      },
+      {
+       "rule": "SEC-001",
+       "file": "pickle_deserialize.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.39670637249946594
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 22,
+       "sev": "MEDIUM",
+       "score": 0.04157145693898201
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 24,
+       "sev": "MEDIUM",
+       "score": 0.040598683059215546
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 26,
+       "sev": "MEDIUM",
+       "score": 0.0350971445441246
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 28,
+       "sev": "MEDIUM",
+       "score": 0.04215371981263161
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 30,
+       "sev": "MEDIUM",
+       "score": 0.03602809086441994
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 32,
+       "sev": "MEDIUM",
+       "score": 0.035364825278520584
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 34,
+       "sev": "MEDIUM",
+       "score": 0.0402231365442276
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 36,
+       "sev": "MEDIUM",
+       "score": 0.03531014546751976
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 38,
+       "sev": "MEDIUM",
+       "score": 0.041491732001304626
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 40,
+       "sev": "MEDIUM",
+       "score": 0.051311906427145004
+      },
+      {
+       "rule": "SEC-008",
+       "file": "requests-ssl-verify-disabled.py",
+       "line": 42,
+       "sev": "MEDIUM",
+       "score": 0.05840061604976654
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 4,
+       "sev": "MEDIUM",
+       "score": 0.8218384981155396
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 5,
+       "sev": "MEDIUM",
+       "score": 0.6725056171417236
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 6,
+       "sev": "MEDIUM",
+       "score": 0.7995107769966125
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 7,
+       "sev": "MEDIUM",
+       "score": 0.7994658350944519
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 8,
+       "sev": "MEDIUM",
+       "score": 0.7996233105659485
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 9,
+       "sev": "MEDIUM",
+       "score": 0.8192858695983887
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 12,
+       "sev": "MEDIUM",
+       "score": 0.8154354095458984
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 13,
+       "sev": "MEDIUM",
+       "score": 0.8515127301216125
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 14,
+       "sev": "MEDIUM",
+       "score": 0.8006500005722046
+      },
+      {
+       "rule": "SEC-011",
+       "file": "sql_statements.py",
+       "line": 19,
+       "sev": "MEDIUM",
+       "score": 0.4496569037437439
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 25,
+       "sev": "MEDIUM",
+       "score": 0.8523029685020447
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 46,
+       "sev": "MEDIUM",
+       "score": 0.17363440990447998
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 47,
+       "sev": "MEDIUM",
+       "score": 0.08658182621002197
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 48,
+       "sev": "MEDIUM",
+       "score": 0.07393541932106018
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 49,
+       "sev": "MEDIUM",
+       "score": 0.3605594336986542
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 51,
+       "sev": "MEDIUM",
+       "score": 0.06940247118473053
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 52,
+       "sev": "MEDIUM",
+       "score": 0.12644538283348083
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 53,
+       "sev": "MEDIUM",
+       "score": 0.09392832964658737
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 54,
+       "sev": "MEDIUM",
+       "score": 0.14614078402519226
+      },
+      {
+       "rule": "SEC-010",
+       "file": "tarfile_extractall.py",
+       "line": 8,
+       "sev": "MEDIUM",
+       "score": 0.6487178206443787
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 26,
+       "sev": "MEDIUM",
+       "score": 0.054438430815935135
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 38,
+       "sev": "MEDIUM",
+       "score": 0.5866759419441223
+      },
+      {
+       "rule": "EXT-BANDIT-B303",
+       "file": "crypto-md5.py",
+       "line": 32,
+       "sev": "LOW",
+       "score": 0.24027512967586517
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 39,
+       "sev": "LOW",
+       "score": 0.3945225775241852
+      },
+      {
+       "rule": "EXT-BANDIT-B324",
+       "file": "crypto-md5.py",
+       "line": 46,
+       "sev": "LOW",
+       "score": 0.3689808249473572
+      },
+      {
+       "rule": "EXT-BANDIT-B307",
+       "file": "eval.py",
+       "line": 3,
+       "sev": "LOW",
+       "score": 0.28980332612991333
+      },
+      {
+       "rule": "EXT-BANDIT-B108",
+       "file": "os-chmod.py",
+       "line": 15,
+       "sev": "LOW",
+       "score": 0.438034325838089
+      },
+      {
+       "rule": "SEC-005",
+       "file": "os_system.py",
+       "line": 3,
+       "sev": "LOW",
+       "score": 0.3578836917877197
+      },
+      {
+       "rule": "EXT-BANDIT-B608",
+       "file": "sql_statements.py",
+       "line": 47,
+       "sev": "LOW",
+       "score": 0.40226802229881287
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 11,
+       "sev": "LOW",
+       "score": 0.7347627282142639
+      },
+      {
+       "rule": "EXT-BANDIT-B604",
+       "file": "subprocess_shell.py",
+       "line": 12,
+       "sev": "LOW",
+       "score": 0.16912655532360077
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 14,
+       "sev": "LOW",
+       "score": 0.8448654413223267
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 21,
+       "sev": "LOW",
+       "score": 0.8442856669425964
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 24,
+       "sev": "LOW",
+       "score": 0.875998854637146
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 27,
+       "sev": "LOW",
+       "score": 0.7945697903633118
+      },
+      {
+       "rule": "EXT-BANDIT-B605",
+       "file": "subprocess_shell.py",
+       "line": 30,
+       "sev": "LOW",
+       "score": 0.8408634662628174
+      },
+      {
+       "rule": "EXT-BANDIT-B605",
+       "file": "subprocess_shell.py",
+       "line": 31,
+       "sev": "LOW",
+       "score": 0.8497133255004883
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 34,
+       "sev": "LOW",
+       "score": 0.8535870313644409
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 36,
+       "sev": "LOW",
+       "score": 0.7270872592926025
+      },
+      {
+       "rule": "EXT-BANDIT-B602",
+       "file": "subprocess_shell.py",
+       "line": 43,
+       "sev": "LOW",
+       "score": 0.656951904296875
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 14,
+       "sev": "LOW",
+       "score": 0.6650609374046326
+      },
+      {
+       "rule": "EXT-BANDIT-B202",
+       "file": "tarfile_extractall.py",
+       "line": 32,
+       "sev": "LOW",
+       "score": 0.07366958260536194
+      },
+      {
+       "rule": "EXT-BANDIT-B403",
+       "file": "pickle_deserialize.py",
+       "line": 2,
+       "sev": "INFO",
+       "score": 0.3577813506126404
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "subprocess_shell.py",
+       "line": 1,
+       "sev": "INFO",
+       "score": 0.3999257981777191
+      },
+      {
+       "rule": "EXT-BANDIT-B404",
+       "file": "subprocess_shell.py",
+       "line": 2,
+       "sev": "INFO",
+       "score": 0.4997751712799072
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 15,
+       "sev": "INFO",
+       "score": 0.03526599332690239
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 16,
+       "sev": "INFO",
+       "score": 0.07010557502508163
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 18,
+       "sev": "INFO",
+       "score": 0.05072629824280739
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 23,
+       "sev": "INFO",
+       "score": 0.07421092689037323
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 26,
+       "sev": "INFO",
+       "score": 0.05391136184334755
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 28,
+       "sev": "INFO",
+       "score": 0.05892249941825867
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 33,
+       "sev": "INFO",
+       "score": 0.040486834943294525
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 56,
+       "sev": "INFO",
+       "score": 0.0978853851556778
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 57,
+       "sev": "INFO",
+       "score": 0.04745763540267944
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 58,
+       "sev": "INFO",
+       "score": 0.06663724780082703
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 59,
+       "sev": "INFO",
+       "score": 0.05743212252855301
+      },
+      {
+       "rule": "EXT-BANDIT-B603",
+       "file": "subprocess_shell.py",
+       "line": 60,
+       "sev": "INFO",
+       "score": 0.06315301358699799
+      }
+     ]
+    },
+    "_wall_s": 9.8
+   }
+  }
  }
 }

@@ -1,4 +1,124 @@
-# checksnap vs existing tools: benchmark results (2026-10-11)
+# checksnap vs existing tools: benchmark results
+
+# After cost fix (2026-10-11, same day)
+
+Cause of the regression: every Snap call bills the state **and all its questions** (up to 64 per call, ~360 chars / ~110 tokens each, about 7k tokens per call). Real probe: 50 questions + a 12-char state = 5,568 tokens; the 13.7 KB project state alone = ~3.9k tokens (3.5 chars/token). Cost = calls x (state + questions), and per-file windows multiplied the calls by 60. Verified with `FakeSnapServer` (now bills question text like the real service): the per-file design on the 60 files made 204 calls (180 scan + 24 baseline) with an average of 103 state tokens against 7,516 question tokens per call, 99% of the spend. The old "30,913 tokens = 1.38 chars/token" calibration was also wrong: it folded question tokens into the state ratio (that is why the old seeds, 1.3 chars/token for code, were far too pessimistic for state and far too optimistic for the question-heavy case).
+
+Changes: bank back to **packed windows** (1 window for the 60 files, 3 question batches = 3 calls); Snap flags (item, window) -> `localize()` for the top 25 (was 10); the rest are attributed by regex hint to at most 3 files, otherwise "somewhere in these N files" (never a single-file guess); baseline = one packed window of the 8 clean files, same batches, cached; `--bank-max-items N`; estimate = windows x (state + all question tokens incl. decoys/canary + call overhead) + 25 x worst-case localization + one-time baseline; budget check per call now counts question tokens; chars/token calibration is state-only and v1 calibration files are ignored; localization tokens now count in `usage`. Raw: `raw/bank_costfix_proj.json`, `results.json` (`cost_fix`, `t5a`, `t7`), previous per-file result kept in `raw/bank_after_perfile_proj.json` and `results_after_perfile.json`. Tests: 163 passed.
+
+## Bank, same 60 files, real API, `--budget-tokens 120000`
+
+| Metric | Before (single window, original) | Per-file (previous block) | **After cost fix** |
+|---|---|---|---|
+| Input tokens | 30,913 (excludes localization, which was not counted) | 317,904, partial | **119,626** (scan+baseline 54.9k in 6 calls; localization 64.7k in 52 calls) |
+| Calls | 3 | 49 (partial) | **58** |
+| Completed | yes | no | yes, but **localization was cut by the budget** (about 5 findings got a single-file pin, the rest fell back to hint/window attribution) |
+| Planted found (survive suppression) | 30/30 | 23/30 | **27/30** (3 lost to the baseline: BANK-ARCH-018, BANK-RELIAB-011, BANK-RELIAB-033 score 0.87/0.95/0.80 but also 0.98/0.95/0.80 on clean code) |
+| Precision@5 / @10 / @25 / @50 | 5/5, 9/10, 19/25, 26/50 | 5/5, 9/10, 18/25, 23/50 | **5/5, 9/10, 19/25, 26/50** |
+| Items flagged >= 0.5 / suppressed / shown | 74 / n.a. / 74 | 66 / 0 / 66 | 74 / **12** / 62 (9 off-target + 3 planted suppressed) |
+| Baseline `clean_code_fire_rate` | n.a. | not measured | **0.099** (15/152 items score >= 0.5 on clean code) |
+| Calibration | decoy FPR 0, canary 1.0 | same | decoy FPR 0.0 (24 decoys), canary recall 1.0 |
+| Time | 19.8 s | 7.2 s (aborted) | 17.5 s |
+
+File attribution (62 findings shown, 30 planted of which 27 shown): **Snap-localized to one file: 5 findings, 4 planted, 3 correct file** (1 localized finding landed on a clean file). **Regex-hint attributed (1-3 files): 25 findings, 12 planted, the bug file is among the listed files in 12/12**, but this blames 14 distinct clean files in total (hints match clean twins). **"Somewhere in these N files": 32 findings, 11 planted.** Compared with the per-file design (8 of 9 correct, 0 clean blamed) attribution is clearly **worse**: single-file precision costs tokens, and the 120k cap bought 5 localizations. Each localization of the 60-file window cost about 13k tokens (about 10 one-question calls, overlapping halves of 62% of the window), so 25 of them would cost about 325k.
+
+## Estimate vs actual
+
+| | Estimate | Actual | Ratio |
+|---|---|---|---|
+| `--dry-run` (no budget given) | **527,080 tokens**, 256 calls (scan 37k + baseline 29k + localization worst case 460k) | 119,626 | estimate **4.4x** actual, an upper bound but not within 2x, because the budget stopped localization |
+| `--dry-run --budget-tokens 120000` | 120,000 (capped) | 119,626 | 1.0x |
+| Scan + baseline part only | ~66k | 54.9k (6 calls) | 1.2x |
+| One localization | <= 18k worst case | ~13k | 1.4x |
+
+Linear extrapolation (not measured): uncapped, 25 localizations would cost about 325k + 55k = 380k, i.e. the 527k estimate would be 1.4x. On the fake server the estimate/actual ratio for a full-localization run is 1.5x (test `test_estimate_is_an_upper_bound_within_2x`). Before: the estimate was 2.4x under (12.9k vs 30.9k); per-file: 45.8k vs >= 317.9k (6.9x under).
+
+## --snap-verify (T7, real API)
+
+First run, cap 60k: stdlib 30 files: 25 candidates, all checked, 7 lowered, **18,221 tokens, 1 call**. Vulnerable 12 files: 134 candidates, 110 checked, 34 lowered, **66,266 tokens, 2 calls, cap overshot by 6.3k (10%)**: the pre-call budget check counted only state, not the 134 verification questions. Fixed (budget now counts question tokens). Re-run with the fix (earlier calls served from cache, 0 tokens): remaining candidates cost **46,443 new tokens in 2 calls**, so all 134 candidates were checked and 47 were lowered (severity after: INFO 15, LOW 20, MEDIUM 61, HIGH 38; before: LOW 26, MEDIUM 47, HIGH 61). Full verification of the 12 vulnerable files therefore costs about 113k tokens, not under 60k. Lowered true positives are in `results.json` (`t7.vulnerable_12.lowered`). I did not hand-grade the 47, so whether the lowered findings are false positives or lost true positives is unmeasured (e.g. all `requests-ssl-verify-disabled.py` SEC-008 lines scored 0.04 and were lowered).
+
+## Net (honest)
+
+Fixed: cost (317.9k partial -> 119.6k complete, 2.7x lower than the broken version and still 3.9x the original 30.9k because localization is now counted and run), the estimate (upper bound now), baseline runs (4 calls -> 3 calls, cached), budget accounting. **Regressed vs per-file: file attribution** (3/4 localized correct, 14 clean files named by hints); **vs original: 3 planted findings (10%) now suppressed by the baseline**. Next lever for cost: bisect on file boundaries without overlap (about 1.5x cheaper per localization) or a lower `--bank-top`; `--bank-max-items 50` should cut the question part of the scan by about 2/3 (not measured).
+
+# After improvements (2026-10-11, same day re-run)
+
+checksnap changes under test: `--with-adapters` (bandit/ruff/detect-secrets wrappers), `--snap-verify`, per-file bank scans with a clean-code baseline and absence items, per-type token estimates. Same machine, same data (T1 and T3 data regenerated from the same seeds; T5 reused the 60 generated files unchanged). `.bench-venv/bin` was put on PATH so the adapters find bandit/ruff/detect-secrets. Raw numbers: `results.json` (after; `t1`, `t3`, `t5a`), `results_before.json` (before). Everything else in this file below "Before" is unchanged and was not re-run (T2, T4, T6).
+
+**Two things did not go to plan and are reported first.**
+
+1. **Task 5 (bank, real API) blew the 300k token cap and is a partial run.** The 60-file project, scanned per file, spent **317,904 input tokens in 49 calls** (cap 300,000; overshoot 6%, because parallel in-flight calls finish after the budget check) and then stopped with "budget exceeded; results are partial". Before: 30,913 tokens for the same files, completed. The clean-code baseline (the feature that suppresses items firing on clean code) never ran, so `suppressed = 0` and `clean_code_fire_rate` is unmeasured. Not re-run: the cap was already spent.
+2. **Task 7 (`--snap-verify` with the real API) was not run.** The 300k total cap was already used up by task 5, so I did not spend more. The code is in `run_all.py` (`t7`, 30 stdlib files + 12 vulnerable bandit examples, `--with-adapters --snap-verify`, 60k budget, results would go to `raw/verify_*.json`). Run `.bench-venv/bin/python run_all.py t7` to get the numbers (local candidate count: 26 stdlib findings, of which the hard-coded-secret one is never uploaded).
+
+## A1. Security (T1), adapters row
+
+| Tool | 76 vulnerable files with any finding | In-scope 20: any / right class | Expected-clean examples flagged (of 4) | Stdlib 30: files / findings | Wall time (examples + stdlib) |
+|---|---|---|---|---|---|
+| bandit 1.9.4 | 76/76 (circular) | 20/20 / 19/20 | 1 | 10/30 / 26 | 0.17 s + 0.30 s |
+| checksnap `--check-security` (before) | 21/76 (27.6%) | 17/20 / 17/20 | 0 | 6/30 / 7 | 0.08 s + 0.12 s |
+| checksnap `--check-security` (after, plain) | 21/76 (27.6%) | 17/20 / 17/20 | 0 | 6/30 / 7 | 0.08 s + 0.12 s |
+| **checksnap+adapters** `--with-adapters` | **76/76 (100%)** | **20/20** / 17/20 (a) | 1 (same `mark_safe_secure.py` as bandit) | 10/30 / 26 | 1.03 s + 0.68 s |
+
+(a) "Right class" is scored by checksnap rule id (SEC-0xx); the three files only bandit found carry `EXT-BANDIT-*` ids, so they count as detected but not as the right checksnap class. Plain checksnap is bit-for-bit unchanged, as expected. The adapter row is bandit's result with checksnap's own findings merged in (76/76 and 26 stdlib findings equal bandit's numbers; it inherits bandit's 1 benign-example false positive and the 16 assert findings, 12 as B101 plus 4 as SEC-009). So the 28% -> 100% gain is bandit's coverage, delivered through checksnap, at about 10x the wall time (still about 1 s). It requires bandit installed; without it the adapter is a note.
+
+## A2. Performance (T3), adapters row
+
+| Tool | Line recall all | In checksnap's 28 | In outside 12 | Clean files flagged | Clean findings | Other | Precision | F1 | Time |
+|---|---|---|---|---|---|---|---|---|---|
+| ruff `PERF,SIM,C4,B` | 9/40 | 5/28 | 4/12 | 5/40 | 6 | 5 | 0.45 | 0.30 | 0.01 s |
+| checksnap (before) | 22/40 | 21/28 | 1/12 | 3/40 | 3 | 5 | 0.73 | 0.63 | 0.14 s |
+| checksnap (after, plain) | 22/40 | 21/28 | 1/12 | 3/40 | 3 | 5 | 0.73 | 0.63 | 0.15 s |
+| **checksnap+adapters** | **26/40** | 22/28 | 4/12 | **7/40** | 8 | 10 | **0.59** | 0.62 | 0.16 s |
+
+Recall rises by 4 lines (ruff's rules fill the outside-12 gap: 1/12 -> 4/12, plus `no_grad` in-family), but precision **drops** 0.73 -> 0.59 and F1 is flat (0.63 -> 0.62): clean-file findings go from 3 to 8 over 7 files, "other" findings from 5 to 10. Under the strict scoring (every unlabelled finding is a false positive) the adapter row is not better overall, only broader. Still missed in-family: `concat_while`, `sort_in_loop` x2, `nplus1_orm`, `no_amp`, `zero_grad` (6; before 7).
+
+## A3. Snap bank (T5, real API), same 60 files, per-file scan, PARTIAL RUN
+
+| Metric | Before | After (partial: stopped at token cap) |
+|---|---|---|
+| Completed | yes | **no**: 49 calls of 60 windows, baseline never ran |
+| Planted items flagged, any rank | 30/30 | 23/30 (7 missing: BANK-RELIAB-001, RELIAB-019, SEC-001, SEC-006, SEC-010, SEC-015, SEC-026; most likely from unscanned files, not shown to be a real recall loss) |
+| Precision@5 / @10 / @25 / @50 | 5/5, 9/10, 19/25, 26/50 | 5/5, 9/10, 18/25, 23/50 |
+| Items flagged >= 0.5 (of 152 asked) | 74 | 66 (43 off-target shown) |
+| Suppressed by the clean-code baseline | n/a | **0** (baseline did not run) |
+| Planted findings with a single file/line | 9 | 9 |
+| ... of which correct file | 5 of 9 | **8 of 9** |
+| Unlocalized planted findings whose listed files include the bug file | 3 | 4 |
+| Clean twin files blamed by localized findings | 2 | **0** |
+| % of items firing on clean files (baseline `clean_code_fire_rate`) | n/a | **not measured** (baseline did not run) |
+| Calibration | decoy FPR 0.0, canary recall 1.0 | decoy FPR 0.0 over 392 decoys, canary recall 1.0 (49 canaries) |
+| Input tokens | 30,913 (completed) | **317,904 and incomplete** (10.3x, before the baseline and the remaining 11 windows) |
+| Calls | 3 | 49 |
+| Time | 19.8 s | 7.2 s (aborted early, cached none) |
+
+Reading: the file-attribution gain (5/9 -> 8/9 correct, 2 -> 0 clean files blamed) is real in this run, but it is measured on a partial scan. Precision@25/@50 are slightly lower (18/25, 23/50) which is consistent with a partial scan but cannot be separated from a regression. Whether the baseline reduces the 49% base rate is **unanswered by this run**. The honest headline is a **cost regression**: scanning each of 60 files as its own window with ~8 decoys and a canary per window cost at least 10x the tokens of the single-window design (about 6.5k tokens per window, mostly calibration questions: 392 decoys, 49 canaries) for the same 12 KB of code.
+
+## A4. Dry-run estimate vs actual (60-file bank project)
+
+| | Estimate | Actual | Ratio |
+|---|---|---|---|
+| Before | 12,936 tokens | 30,913 | actual 2.4x the estimate |
+| After (with the baseline included in the estimate: 45,818, 183 calls) | 45,818 | >= 317,904 (partial, 49 of 60 windows, baseline not run) | actual >= 6.9x the estimate, **worse than before** |
+
+The new estimate is higher (13.9k without key, 45.8k with the engine and baseline) but is still off by roughly an order of magnitude because it does not account for the per-file decoy/canary overhead (an inference from the call count and decoy count; I did not isolate it). The dry run said "183 calls" and the run made 49 before stopping. The estimate's own note says "13k-33k tokens" for the project part, i.e. the real cost is about 10x its upper bound.
+
+Also: `--budget-tokens 300000` was overshot by 17,904 tokens (6%); the budget check happens before each call, parallel workers finish calls already in flight.
+
+## A5. Net
+
+| | Before | After |
+|---|---|---|
+| Security: files with any finding (of 76 bandit examples) | 21 (28%) | 76 (100%, via bandit adapter; plain unchanged) |
+| Perf line recall / precision / F1 | 22/40, 0.73, 0.63 | 26/40, 0.59, 0.62 (adapters), plain unchanged |
+| Bank: correct file on localized planted findings | 5/9 | 8/9 (partial run) |
+| Bank: tokens for 60 files | 30.9k | >= 317.9k, incomplete |
+| Bank: estimate accuracy | 2.4x under | >= 6.9x under |
+| `--snap-verify` | n/a | not measured (token cap spent) |
+
+# Before
+
+(Original results, unchanged; also kept as `RESULTS_before.md` / `results_before.json`.)
+
 
 All numbers come from `run_all.py` -> `results.json` (raw per-finding dumps in `raw/`). CPU only, `nice -n 10`, one machine, single run per timing (no repeats, so treat timings as +/-20%). Synthetic data was written by the benchmark author; see Limitations before quoting any number.
 
